@@ -7,7 +7,7 @@ import {
 
 const LoginScreen: React.FC = (props: any) => {
     const signIn = async () => {
-        const response = await fetch('https://ff900f4cc352.ngrok.io/authorize')
+        const response = await fetch('http://e5aca0e3a1ec.ngrok.io/authorize')
         const data = await response.json()
         // console.log("DATA: ", decodeURIComponent(data.url))
         props.navigation.navigate('AuthUrlScreen', {

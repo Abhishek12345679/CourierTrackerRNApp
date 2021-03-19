@@ -22,3 +22,13 @@ export const AuthNavigator = () => {
         </AuthStackNavigator.Navigator>
     );
 };
+
+
+const RootStackNavigator = createStackNavigator();
+export const RootNavigator = () => {
+    return (
+        <RootStackNavigator.Navigator>
+            <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} />
+        </RootStackNavigator.Navigator>
+    );
+};

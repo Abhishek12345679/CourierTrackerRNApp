@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking } from 'react-native'
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen: React.FC = (props: any) => {
 
@@ -21,20 +23,39 @@ const HomeScreen: React.FC = (props: any) => {
         ];
     };
 
-    const auth: string = props.route.params.auth
-    // console.log(JSON.parse(auth))
+    type Credentials = {
+        access_token: string;
+        refresh_token: string;
+        scope: string;
+        token_type: string;
+        expiry_date: number;
+    }
 
-    const quotes = '&#34;'
-    const quotesPattern = new RegExp(quotes, 'g')
+    const [auth, setAuth] = useState<Credentials>()
+    // const quotes = '&#34;'
+    // const quotesPattern = new RegExp(quotes, 'g')
+    // const tokens = auth.replace(quotesPattern, "\"")
 
-    const tokens = auth.replace(quotesPattern, "\"")
-    // const tokenObject = JSON.parse(correctedString)
-
-    const [orders, setOrders] = useState<[Order]>()
+    const [orders, setOrders] = useState<Order[]>()
     const [amazonInvoices, setAmazonInvoices] = useState<[]>()
 
+
+    const getCredentials = async () => {
+        try {
+            const creds = await AsyncStorage.getItem('credentials')
+            console.log("saved creds: ", creds);
+            return creds != null ? JSON.parse(creds!) : null
+        } catch (e) {
+            // read error
+            console.log(e)
+        }
+
+        console.log('Done.')
+
+    }
+
     const getFlipkartOrders = async () => {
-        const FKResponse = await fetch(`https://ff900f4cc352.ngrok.io/getFlipkartOrderDetails?tokens=${tokens}`)
+        const FKResponse = await fetch(`http://e5aca0e3a1ec.ngrok.io/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
         const FlipkartOrders = await FKResponse.json()
 
         console.log(JSON.stringify(FlipkartOrders, null, 2))
@@ -46,15 +67,20 @@ const HomeScreen: React.FC = (props: any) => {
          *  check the keep me signed in check box
          * check the box where it says do not ask for OTP on this device from now on
         */
-
-
-
-        const AZResponse = await fetch(`https://ff900f4cc352.ngrok.io/getAmazonInvoiceLink?tokens=${tokens}`)
+        const AZResponse = await fetch(`http://e5aca0e3a1ec.ngrok.io/getAmazonInvoiceLink?tokens=${JSON.stringify(auth)}`)
         const AmazonInvoices = await AZResponse.json()
 
         console.log(JSON.stringify(AmazonInvoices, null, 2))
         setAmazonInvoices(AmazonInvoices.invoiceLinks)
     }
+
+    useEffect(() => {
+        getCredentials().then((creds) => {
+            console.log("Creds: ", creds)
+            setAuth(creds as Credentials)
+        })
+
+    }, [])
 
     return (
         <ScrollView style={{ flex: 1 }}>
@@ -86,7 +112,7 @@ const HomeScreen: React.FC = (props: any) => {
 
             {orders &&
                 orders.map((order, i) => (
-                    <View>
+                    <View key={i}>
                         <Text>{order.totalPrice}</Text>
                         <Text>{order.orderNumber}</Text>
 
@@ -108,7 +134,13 @@ const HomeScreen: React.FC = (props: any) => {
                 ))
             }
             {amazonInvoices && amazonInvoices?.map((invoices, i) => (
-                <Text style={{ fontSize: 40 }} onPress={() => Linking.openURL(invoices)}>Link: {i + 1}</Text>
+                <Text
+                    key={i}
+                    style={{ fontSize: 40 }}
+                    onPress={() => Linking.openURL(invoices)}
+                >
+                    Link: {i + 1}
+                </Text>
             ))
 
             }
