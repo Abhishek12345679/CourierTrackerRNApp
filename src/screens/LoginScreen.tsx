@@ -4,10 +4,11 @@ import { View } from 'react-native'
 import {
     GoogleSigninButton,
 } from '@react-native-google-signin/google-signin';
+import { sensitiveData } from '../../constants/sen_data';
 
 const LoginScreen: React.FC = (props: any) => {
     const signIn = async () => {
-        const response = await fetch('http://e5aca0e3a1ec.ngrok.io/authorize')
+        const response = await fetch(`${sensitiveData.baseUrl}/authorize`)
         const data = await response.json()
         // console.log("DATA: ", decodeURIComponent(data.url))
         props.navigation.navigate('AuthUrlScreen', {

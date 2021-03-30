@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking } from 'react-native'
+import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking, Button } from 'react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sensitiveData } from '../../constants/sen_data';
 
 const HomeScreen: React.FC = (props: any) => {
 
@@ -55,7 +56,7 @@ const HomeScreen: React.FC = (props: any) => {
     }
 
     const getFlipkartOrders = async () => {
-        const FKResponse = await fetch(`http://e5aca0e3a1ec.ngrok.io/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
+        const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
         const FlipkartOrders = await FKResponse.json()
 
         console.log(JSON.stringify(FlipkartOrders, null, 2))
@@ -67,7 +68,7 @@ const HomeScreen: React.FC = (props: any) => {
          *  check the keep me signed in check box
          * check the box where it says do not ask for OTP on this device from now on
         */
-        const AZResponse = await fetch(`http://e5aca0e3a1ec.ngrok.io/getAmazonInvoiceLink?tokens=${JSON.stringify(auth)}`)
+        const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonInvoiceLink?tokens=${JSON.stringify(auth)}`)
         const AmazonInvoices = await AZResponse.json()
 
         console.log(JSON.stringify(AmazonInvoices, null, 2))
@@ -109,6 +110,10 @@ const HomeScreen: React.FC = (props: any) => {
                 }}>
                 <Text style={{ color: "#fff" }}>Get Amazon Invoices</Text>
             </Pressable>
+
+            <Button title="Logout" onPress={() => {
+                AsyncStorage.removeItem('credentials')
+            }} />
 
             {orders &&
                 orders.map((order, i) => (

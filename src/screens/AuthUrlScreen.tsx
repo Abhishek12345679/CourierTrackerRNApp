@@ -30,12 +30,13 @@ const AuthUrlScreen = (props: any) => {
     }
 
     const onMessage = (data: any) => {
-        console.log(data)
-        // Alert.alert(data.nativeEvent.data);
-        console.log(data.nativeEvent.data);
-        setCredentials(data.nativeEvent.data).then(() => {
+
+        const authData = data.nativeEvent.data
+        console.log(authData)
+        Alert.alert(authData);
+        setCredentials(authData).then(() => {
             props.navigation.navigate("HomeScreen", {
-                auth: data.nativeEvent.data
+                auth: authData
             });
         }).catch((err) => { console.log("Credentials not saved!: ", err) })
 
@@ -60,7 +61,7 @@ const AuthUrlScreen = (props: any) => {
             <WebView
                 ref={webviewRef}
                 source={{ uri: url }}
-                userAgent={"Mozilla/5.0 (Android; Mobile; rv:40.0) Gecko/40.0 Firefox/40.0"}
+                userAgent={"Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.1 Mobile/15E148 Safari/604.1"}
                 onMessage={onMessage}
                 renderLoading={LoadingIndicatorView}
                 startInLoadingState={true}
