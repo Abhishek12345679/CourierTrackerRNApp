@@ -1,4 +1,7 @@
 {
-  "name": "CourierTracker",
-  "displayName": "CourierTracker"
+    "name": "CourierTracker",
+    "displayName": "CourierTracker",
+    "android": {
+        "useNextNotificationsApi": true
+    }
 }

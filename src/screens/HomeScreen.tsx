@@ -4,6 +4,10 @@ import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking, Bu
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sensitiveData } from '../../constants/sen_data';
 
+import { FileSystem, Constants } from 'react-native-unimodules'
+
+const uuid = require('react-native-uuid')
+
 const HomeScreen: React.FC = (props: any) => {
 
     type Order = {
@@ -55,6 +59,42 @@ const HomeScreen: React.FC = (props: any) => {
 
     }
 
+    const downloadInvoices = (downloadLink: string) => {
+        // FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'invoices/', { intermediates: true });
+        FileSystem.downloadAsync(
+            downloadLink,
+            FileSystem.documentDirectory + `${uuid.v4()}.pdf`
+        )
+            .then(({ uri }) => {
+                // const formdata = new FormData();
+                // formdata.append("file", uri);
+                // console.log('Finished downloading to ', uri);
+                // fetch(`${sensitiveData.baseUrl}/multipart-upload`, {
+                //     method: 'PATCH',
+                //     // headers: {
+                //     //     'Accept': 'multipart/form-data',
+                //     //     'Content-Type': 'multipart/form-data'
+                //     // },
+                //     body: formdata,
+
+                // }).then(response => response.text())
+                //     .then(result => console.log(result))
+                //     .catch(error => console.log('error', error));
+                FileSystem.uploadAsync(`${sensitiveData.baseUrl}/multipart-upload`, uri, {
+                    httpMethod: "PATCH",
+                    sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
+                    uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+                    fieldName: 'file',
+                    mimeType: 'multipart/form-data'
+                }).then((res) => { res.status }).then((data) => console.log(data))
+
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+    }
+
     const getFlipkartOrders = async () => {
         const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
         const FlipkartOrders = await FKResponse.json()
@@ -85,6 +125,8 @@ const HomeScreen: React.FC = (props: any) => {
 
     return (
         <ScrollView style={{ flex: 1 }}>
+            <Text style={{ color: "#000" }}>{Constants.deviceName!}</Text>
+
             <Pressable onPress={getFlipkartOrders} android_ripple={{ color: '#ccc', borderless: false, }}
                 style={{
                     backgroundColor: 'black',
@@ -142,7 +184,8 @@ const HomeScreen: React.FC = (props: any) => {
                 <Text
                     key={i}
                     style={{ fontSize: 40 }}
-                    onPress={() => Linking.openURL(invoices)}
+                    // onPress={() => Linking.openURL(decodeURIComponent(invoices))}
+                    onPress={() => { downloadInvoices(invoices) }}
                 >
                     Link: {i + 1}
                 </Text>
