@@ -1,5 +1,6 @@
 package com.couriertracker;
 
+import com.rnfs.RNFSPackage; 
 import com.couriertracker.generated.BasePackageList;
 
 import android.app.Application;
@@ -39,6 +40,7 @@ public class MainApplication extends Application implements ReactApplication {
           // Add unimodules
           List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
             new ModuleRegistryAdapter(mModuleRegistryProvider)
+            // new RNFSPackage()
           );
           packages.addAll(unimodules);
 

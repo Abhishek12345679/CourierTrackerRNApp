@@ -28,6 +28,14 @@ const HomeScreen: React.FC = (props: any) => {
         ];
     };
 
+    type AmazonOrder = {
+        totalPrice: string;
+        orderNumber: string;
+        ETA: string;
+        delivery_address: string;
+        invoiceLink: string
+    };
+
     type Credentials = {
         access_token: string;
         refresh_token: string;
@@ -37,12 +45,8 @@ const HomeScreen: React.FC = (props: any) => {
     }
 
     const [auth, setAuth] = useState<Credentials>()
-    // const quotes = '&#34;'
-    // const quotesPattern = new RegExp(quotes, 'g')
-    // const tokens = auth.replace(quotesPattern, "\"")
-
     const [orders, setOrders] = useState<Order[]>()
-    const [amazonInvoices, setAmazonInvoices] = useState<[]>()
+    const [amazonOrders, setAmazonOrders] = useState<[]>()
 
 
     const getCredentials = async () => {
@@ -59,41 +63,38 @@ const HomeScreen: React.FC = (props: any) => {
 
     }
 
-    const downloadInvoices = (downloadLink: string) => {
-        // FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'invoices/', { intermediates: true });
-        FileSystem.downloadAsync(
-            downloadLink,
-            FileSystem.documentDirectory + `${uuid.v4()}.pdf`
-        )
-            .then(({ uri }) => {
-                // const formdata = new FormData();
-                // formdata.append("file", uri);
-                // console.log('Finished downloading to ', uri);
-                // fetch(`${sensitiveData.baseUrl}/multipart-upload`, {
-                //     method: 'PATCH',
-                //     // headers: {
-                //     //     'Accept': 'multipart/form-data',
-                //     //     'Content-Type': 'multipart/form-data'
-                //     // },
-                //     body: formdata,
+    // const downloadInvoices = (downloadLinks: string[]) => {
+    //     console.log(downloadLinks)
+    //     const links = downloadLinks.map((link, i) => (
+    //         FileSystem.downloadAsync(
+    //             link,
+    //             FileSystem.documentDirectory + `${uuid.v4()}.pdf`
+    //         ).then(({ uri }) => uri))
+    //     )
 
-                // }).then(response => response.text())
-                //     .then(result => console.log(result))
-                //     .catch(error => console.log('error', error));
-                FileSystem.uploadAsync(`${sensitiveData.baseUrl}/multipart-upload`, uri, {
-                    httpMethod: "PATCH",
-                    sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
-                    uploadType: FileSystem.FileSystemUploadType.MULTIPART,
-                    fieldName: 'file',
-                    mimeType: 'multipart/form-data'
-                }).then((res) => { res.status }).then((data) => console.log(data))
+    //     Promise.all(links).then((uriList) => {
+    //         console.log(uriList)
+    //         if (uriList) {
+    //             uriList.map((uri, i) => {
+    //                 console.log(uri)
+    //                 FileSystem.uploadAsync(`${sensitiveData.baseUrl}/multipart-upload`, uri, {
+    //                     httpMethod: "PATCH",
+    //                     sessionType: FileSystem.FileSystemSessionType.BACKGROUND,
+    //                     uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+    //                     fieldName: 'file',
+    //                     mimeType: 'multipart/form-data'
+    //                 }).then((res) => { console.log(res.status) })
+    //             })
+    //         }
+    //     }).then(() => {
+    //         console.log("success!")
 
-            })
-            .catch(error => {
-                console.error(error);
-            });
+    //     }).catch((err) => {
+    //         console.log(err)
+    //     })
 
-    }
+
+    // }
 
     const getFlipkartOrders = async () => {
         const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
@@ -103,16 +104,12 @@ const HomeScreen: React.FC = (props: any) => {
         setOrders(FlipkartOrders.flipkartOrders)
     }
 
-    const getAmazonInvoices = async () => {
-        /** 
-         *  check the keep me signed in check box
-         * check the box where it says do not ask for OTP on this device from now on
-        */
-        const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonInvoiceLink?tokens=${JSON.stringify(auth)}`)
+    const getAmazonOrders = async () => {
+        const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrdersDetails?tokens=${JSON.stringify(auth)}`)
         const AmazonInvoices = await AZResponse.json()
 
         console.log(JSON.stringify(AmazonInvoices, null, 2))
-        setAmazonInvoices(AmazonInvoices.invoiceLinks)
+        setAmazonOrders(AmazonInvoices.invoiceLinks)
     }
 
     useEffect(() => {
@@ -126,6 +123,7 @@ const HomeScreen: React.FC = (props: any) => {
     return (
         <ScrollView style={{ flex: 1 }}>
             <Text style={{ color: "#000" }}>{Constants.deviceName!}</Text>
+            <Text style={{ color: "#000" }} onPress={() => Linking.openURL('com.amazon.mobile.shopping://www.amazon.in/orders/407-7191539-6151544')}>Link</Text>
 
             <Pressable onPress={getFlipkartOrders} android_ripple={{ color: '#ccc', borderless: false, }}
                 style={{
@@ -140,7 +138,7 @@ const HomeScreen: React.FC = (props: any) => {
                 <Text style={{ color: "#fff" }}>Get Flipkart Orders</Text>
             </Pressable>
 
-            <Pressable onPress={getAmazonInvoices} android_ripple={{ color: '#ccc', borderless: false, }}
+            <Pressable onPress={getAmazonOrders} android_ripple={{ color: '#ccc', borderless: false, }}
                 style={{
                     backgroundColor: 'black',
                     borderRadius: 10,
@@ -180,17 +178,16 @@ const HomeScreen: React.FC = (props: any) => {
                     </View>
                 ))
             }
-            {amazonInvoices && amazonInvoices?.map((invoices, i) => (
+            {amazonOrders && amazonOrders?.map((order, i) => (
                 <Text
                     key={i}
                     style={{ fontSize: 40 }}
-                    // onPress={() => Linking.openURL(decodeURIComponent(invoices))}
-                    onPress={() => { downloadInvoices(invoices) }}
+                // onPress={() => Linking.openURL(`com.amazon.mobile.shopping://www.amazon.in/orders/${order.orderNumber}`)}
+                // onPress={() => downloadInvoices(["http://www.africau.edu/images/default/sample.pdf", "http://www.africau.edu/images/default/sample.pdf", "http://www.africau.edu/images/default/sample.pdf"])}
                 >
                     Link: {i + 1}
                 </Text>
             ))
-
             }
         </ScrollView>
     )
