@@ -17,11 +17,20 @@ const AuthUrlScreen = (props: any) => {
     const setCredentials = async (credentials: string) => {
         try {
             // let tokens = JSON.stringify(credentials)
-            let tokens = credentials.replace(quotesPattern, "\"")
-            console.log("credentials from first time login: ", JSON.parse(tokens))
+            let tokens = JSON.parse(credentials.replace(quotesPattern, "\""))
+            console.log("credentials", tokens)
 
-            if (JSON.parse(tokens).refresh_token) {
+            const refresh_token: string = tokens.refresh_token
+            if (!!refresh_token) {
                 await AsyncStorage.setItem('credentials', tokens)
+                await AsyncStorage.setItem('refresh_token', refresh_token)
+                return credentials
+            } else {
+                const refresh_token = await AsyncStorage.getItem('refresh_token')
+                console.log("rtoken: ", refresh_token)
+                tokens.refresh_token = refresh_token
+                await AsyncStorage.setItem('credentials', JSON.stringify(tokens))
+                return tokens
             }
         } catch (e) {
             console.log("Error: ", e)
@@ -32,11 +41,11 @@ const AuthUrlScreen = (props: any) => {
     const onMessage = (data: any) => {
 
         const authData = data.nativeEvent.data
-        console.log(authData)
-        Alert.alert(authData);
-        setCredentials(authData).then(() => {
+        console.log("from server: ", authData)
+        setCredentials(authData).then((creds) => {
+            console.log("After adding refresh_token: ", creds)
             props.navigation.navigate("HomeScreen", {
-                auth: authData
+                auth: creds
             });
         }).catch((err) => { console.log("Credentials not saved!: ", err) })
 
@@ -53,7 +62,7 @@ const AuthUrlScreen = (props: any) => {
                     justifyContent: "center",
                 }}
             />
-        );
+        )
     }
 
     return (
