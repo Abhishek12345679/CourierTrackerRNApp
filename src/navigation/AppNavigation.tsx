@@ -8,6 +8,7 @@ import LoginScreen from "../screens/LoginScreen";
 import AmazonOrdersScreen from '../screens/AmazonOrdersScreen';
 import FlipkartOrdersScreen from '../screens/FlipkartOrdersScreen';
 import MyntraOrdersScreen from '../screens/MyntraOrdersScreen';
+import { Image, Text } from 'react-native';
 
 
 const AuthStackNavigator = createStackNavigator();
@@ -40,11 +41,45 @@ export const RootNavigator = () => {
 const SitesTopTabNavigator = createMaterialTopTabNavigator()
 export const SitesNavigator = () => {
     return (
-        <SitesTopTabNavigator.Navigator tabBarOptions={{ scrollEnabled: true }}>
-            <SitesTopTabNavigator.Screen name="Home" component={HomeScreen} />
-            <SitesTopTabNavigator.Screen name="Amazon" component={AmazonOrdersScreen} />
-            <SitesTopTabNavigator.Screen name="Flipkart" component={FlipkartOrdersScreen} />
-            <SitesTopTabNavigator.Screen name="Myntra" component={MyntraOrdersScreen} />
+        <SitesTopTabNavigator.Navigator tabBarOptions={{ scrollEnabled: true, showIcon: true, showLabel: false }}>
+            <SitesTopTabNavigator.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{
+                    tabBarIcon: ({ focused, color }) => (
+                        <Text style={{ width: 100 }}>Home</Text>
+
+                    )
+
+                }}
+            />
+            <SitesTopTabNavigator.Screen
+                name="Amazon"
+                component={AmazonOrdersScreen}
+                options={{
+                    tabBarIcon: ({ focused, color }) => (
+                        <Image source={require("../Assets/BrandLogos/amazon.png")} style={{ width: 30, height: 30 }} />
+                    )
+
+                }} />
+            <SitesTopTabNavigator.Screen
+                name="Flipkart"
+                component={FlipkartOrdersScreen}
+                options={{
+                    tabBarIcon: ({ focused, color }) => (
+                        <Image source={require("../Assets/BrandLogos/flipkart.png")} style={{ width: 30, height: 30 }} />
+                    )
+                }}
+            />
+            <SitesTopTabNavigator.Screen
+                name="Myntra"
+                component={MyntraOrdersScreen}
+                options={{
+                    tabBarIcon: ({ focused, color }) => (
+                        <Image source={require("../Assets/BrandLogos/myntra.png")} style={{ width: 30, height: 30 }} />
+                    )
+                }}
+            />
         </SitesTopTabNavigator.Navigator>
     )
 }
