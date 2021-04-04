@@ -81,7 +81,7 @@ const FlipkartOrdersScreen = () => {
             data={orders}
             renderItem={({ item, index }) => (
                 <TouchableOpacity
-                    style={{ width: '100%', height: 100, marginTop: 10, backgroundColor: 'orange', borderRadius: 10 }}
+                    style={{ width: '100%', height: 100, marginTop: 10, backgroundColor: 'yellow', borderRadius: 10 }}
                     // onPress={() => Linking.openURL(`com.amazon.mobile.shopping://www.amazon.in/orders/${item.orderNumber}`)}
                     key={index}
                 >
