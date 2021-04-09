@@ -8,13 +8,16 @@ import LoginScreen from "../screens/LoginScreen";
 import AmazonOrdersScreen from '../screens/AmazonOrdersScreen';
 import FlipkartOrdersScreen from '../screens/FlipkartOrdersScreen';
 import MyntraOrdersScreen from '../screens/MyntraOrdersScreen';
-import { Image, Text } from 'react-native';
+import { Image, Text, View } from 'react-native';
+import { enableScreens } from 'react-native-screens';
+import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 
 
-const AuthStackNavigator = createStackNavigator();
+enableScreens()
+const AuthStackNavigator = createNativeStackNavigator();
 export const AuthNavigator = () => {
     return (
-        <AuthStackNavigator.Navigator>
+        <AuthStackNavigator.Navigator screenOptions={{ headerShown: false }}>
             <AuthStackNavigator.Screen
                 name="LoginScreen"
                 component={LoginScreen}
@@ -22,6 +25,7 @@ export const AuthNavigator = () => {
             <AuthStackNavigator.Screen
                 name="AuthUrlScreen"
                 component={AuthUrlScreen}
+                options={{ stackPresentation: 'modal' }}
             />
             <AuthStackNavigator.Screen name="HomeScreen" component={HomeScreen} />
         </AuthStackNavigator.Navigator>
@@ -32,7 +36,14 @@ export const AuthNavigator = () => {
 const RootStackNavigator = createStackNavigator();
 export const RootNavigator = () => {
     return (
-        <RootStackNavigator.Navigator>
+        <RootStackNavigator.Navigator screenOptions={{
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                borderBottomWidth: 0,
+                alignSelf: 'center'
+
+            }
+        }}>
             <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} />
         </RootStackNavigator.Navigator>
     );
@@ -41,18 +52,20 @@ export const RootNavigator = () => {
 const SitesTopTabNavigator = createMaterialTopTabNavigator()
 export const SitesNavigator = () => {
     return (
-        <SitesTopTabNavigator.Navigator tabBarOptions={{ scrollEnabled: true, showIcon: true, showLabel: false }}>
-            <SitesTopTabNavigator.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{
-                    tabBarIcon: ({ focused, color }) => (
-                        <Text style={{ width: 100 }}>Home</Text>
+        <SitesTopTabNavigator.Navigator
+            tabBarPosition="bottom"
+            lazy={true}
+            tabBarOptions={{
+                scrollEnabled: true,
+                showIcon: true,
+                showLabel: false,
+                tabStyle: {
+                    width: 125
+                },
+            }}
+        // tabBar={() => (<View><Text>Courier Tracker</Text></View>)}
+        >
 
-                    )
-
-                }}
-            />
             <SitesTopTabNavigator.Screen
                 name="Amazon"
                 component={AmazonOrdersScreen}
@@ -78,6 +91,16 @@ export const SitesNavigator = () => {
                     tabBarIcon: ({ focused, color }) => (
                         <Image source={require("../Assets/BrandLogos/myntra.png")} style={{ width: 30, height: 30 }} />
                     )
+                }}
+            />
+            <SitesTopTabNavigator.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{
+                    tabBarIcon: ({ focused, color }) => (
+                        <Text style={{ width: 100 }}>Home</Text>
+
+                    ),
                 }}
             />
         </SitesTopTabNavigator.Navigator>

@@ -1,18 +1,23 @@
-import React, { useState, useEffect } from 'react'
-import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking, Button } from 'react-native'
+import React from 'react'
+import { View, Button } from 'react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { sensitiveData } from '../../constants/sen_data';
-
-import { FileSystem, Constants } from 'react-native-unimodules'
-
-const uuid = require('react-native-uuid')
 
 const HomeScreen: React.FC = (props: any) => {
+    return (
+        <View style={{ flex: 1 }}>
+            <Button title="sign out" onPress={() => {
+                AsyncStorage.removeItem('credentials').then(() => {
+                    props.navigation.goBack()
+                })
+            }} />
+        </View>
+    )
+}
 
+export default HomeScreen
 
-
-    // const downloadInvoices = (downloadLinks: string[]) => {
+// const downloadInvoices = (downloadLinks: string[]) => {
     //     console.log(downloadLinks)
     //     const links = downloadLinks.map((link, i) => (
     //         FileSystem.downloadAsync(
@@ -43,17 +48,6 @@ const HomeScreen: React.FC = (props: any) => {
     //     })
 
 
-    // }
-
-
-
-    return (
-        <View style={{ flex: 1 }}>
-            <Text>Home</Text>
-        </View>
-    )
-}
-
-export default HomeScreen
+// }
 
 

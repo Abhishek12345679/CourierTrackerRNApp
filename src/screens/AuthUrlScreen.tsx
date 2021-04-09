@@ -44,6 +44,7 @@ const AuthUrlScreen = (props: any) => {
         console.log("from server: ", authData)
         setCredentials(authData).then((creds) => {
             console.log("After adding refresh_token: ", creds)
+            // use state management
             props.navigation.navigate("HomeScreen", {
                 auth: creds
             });
