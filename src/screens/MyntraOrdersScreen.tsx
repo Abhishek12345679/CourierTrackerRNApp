@@ -3,52 +3,41 @@ import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking, Bu
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sensitiveData } from '../../constants/sen_data';
+import store from '../store/store';
 
-const uuid = require('react-native-uuid')
+
+type Order = {
+    totalPrice: string;
+    orderNumber: string;
+    orderItems: [
+        {
+            productName: string;
+            productImage: string;
+            sellerName: string;
+            deliveryCharges?: string;
+            ETA: string;
+            quantity: string;
+            deliveryDiscount?: string;
+            productPrice: string;
+            productLink?: string;
+
+        }
+    ];
+    totalDeliveryCharges?: string;
+};
+
+
+type Credentials = {
+    access_token: string;
+    refresh_token: string;
+    scope: string;
+    token_type: string;
+    expiry_date: number;
+}
 
 const MyntraOrdersScreen = () => {
 
-    type Order = {
-        totalPrice: string;
-        orderNumber: string;
-        orderItems: [
-            {
-                productName: string;
-                productImage: string;
-                sellerName: string;
-                deliveryCharges?: string;
-                ETA: string;
-                quantity: string;
-                deliveryDiscount?: string;
-                productPrice: string;
-                productLink?: string;
-
-            }
-        ];
-        totalDeliveryCharges?: string;
-    };
-
-
-    type Credentials = {
-        access_token: string;
-        refresh_token: string;
-        scope: string;
-        token_type: string;
-        expiry_date: number;
-    }
-
     const [orders, setOrders] = useState<Order[]>()
-
-
-    const getCredentials = async () => {
-        try {
-            const creds = await AsyncStorage.getItem('credentials')
-            // console.log("saved creds: ", creds);
-            return creds != null ? JSON.parse(creds!) : null
-        } catch (e) {
-            console.log(e)
-        }
-    }
 
     const getMyntraOrders = async (auth: Credentials) => {
         const FKResponse = await fetch(`${sensitiveData.baseUrl}/getMyntraOrderDetails?tokens=${JSON.stringify(auth)}`)
@@ -59,14 +48,7 @@ const MyntraOrdersScreen = () => {
     }
 
     useEffect(() => {
-        getCredentials().then((creds) => {
-            console.log("Creds: ", creds)
-            try {
-                getMyntraOrders(creds)
-            } catch (err) {
-                console.log(err)
-            }
-        })
+        getMyntraOrders(store.googleCredentials)
     }, [])
 
     if (!!!orders) {

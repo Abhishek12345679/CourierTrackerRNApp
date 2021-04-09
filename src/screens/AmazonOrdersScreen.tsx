@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, Linking, FlatList, ActivityIndicator, TouchableOpacity, ListRenderItem } from 'react-native'
 import { sensitiveData } from '../../constants/sen_data';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import OrderItem from '../components/OrderItem';
-
-
+import store from '../store/store';
 
 export type AmazonOrder = {
     totalPrice: string;
@@ -24,22 +22,7 @@ export type Credentials = {
 
 const AmazonOrdersScreen = () => {
 
-
-    const [auth, setAuth] = useState<Credentials>()
     const [amazonOrders, setAmazonOrders] = useState<AmazonOrder[]>()
-
-    const getCredentials = async () => {
-        try {
-            const creds = await AsyncStorage.getItem('credentials')
-            console.log("saved creds: ", creds);
-            return creds != null ? JSON.parse(creds!) : null
-        } catch (e) {
-            console.log(e)
-        }
-
-        console.log('Done.')
-
-    }
 
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}`)
@@ -50,11 +33,7 @@ const AmazonOrdersScreen = () => {
     }
 
     useEffect(() => {
-        getCredentials().then((creds) => {
-            console.log("Creds: ", creds)
-            // setAuth(creds as Credentials)
-            getAmazonOrders(creds)
-        }).catch((err) => { console.log(err) })
+        getAmazonOrders(store.googleCredentials)
     }, [])
 
     if (!!!amazonOrders) {

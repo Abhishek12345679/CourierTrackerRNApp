@@ -8,31 +8,34 @@ import HomeScreen from "../screens/HomeScreen";
 import { Text, View } from 'react-native';
 import { LightTheme } from '../../constants/Themes/LightTheme';
 import { DarkTheme } from '../../constants/Themes/DarkTheme';
+import store from '../store/store';
+import { observer } from 'mobx-react';
 
 
-const AppContainer = () => {
-    const [isSignedIn, setIsSignedIn] = useState(false)
+const AppContainer = observer(() => {
+    // const [isSignedIn, setIsSignedIn] = useState(false)
 
-    const getCredentials = async () => {
-        try {
-            const creds = await AsyncStorage.getItem('credentials')
-            if (creds) {
-                setIsSignedIn(true)
-            }
-        } catch (e) {
-            console.log(e)
-        }
-    }
-    useEffect(() => {
-        getCredentials()
-    }, [])
+    // const getCredentials = async () => {
+    //     try {
+    //         const creds = await AsyncStorage.getItem('credentials')
+    //         if (creds) {
+    //             setIsSignedIn(true)
+    //         }
+    //     } catch (e) {
+    //         console.log(e)
+    //     }
+    // }
+    // useEffect(() => {
+    //     getCredentials()
+    // }, [])
+    console.log(store.googleCredentials)
     return (
         <NavigationContainer
-            theme={DarkTheme}
+            theme={LightTheme}
         >
-            {isSignedIn ? <SitesNavigator /> : <AuthNavigator />}
+            {store.googleCredentials.refresh_token ? <SitesNavigator /> : <AuthNavigator />}
         </NavigationContainer>
     );
-};
+})
 
 export default AppContainer;

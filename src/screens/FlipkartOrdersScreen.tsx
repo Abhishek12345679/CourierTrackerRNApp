@@ -4,8 +4,8 @@ import { View, Text, TouchableOpacity, FlatList, ActivityIndicator, ListRenderIt
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sensitiveData } from '../../constants/sen_data';
 import OrderItem from '../components/OrderItem';
+import store from '../store/store';
 
-const uuid = require('react-native-uuid')
 
 export type Order = {
     totalPrice: string;
@@ -38,23 +38,8 @@ export type Credentials = {
 
 const FlipkartOrdersScreen = () => {
 
-
-
     const [orders, setOrders] = useState<Order[]>()
 
-
-    const getCredentials = async () => {
-        try {
-            const creds = await AsyncStorage.getItem('credentials')
-            console.log("saved creds: ", creds);
-            return creds != null ? JSON.parse(creds!) : null
-        } catch (e) {
-            console.log(e)
-        }
-
-        console.log('Done.')
-
-    }
 
     const getFlipkartOrders = async (auth: Credentials) => {
         const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
@@ -64,16 +49,8 @@ const FlipkartOrdersScreen = () => {
 
     }
 
-
     useEffect(() => {
-        getCredentials().then((creds) => {
-            console.log("Creds: ", creds)
-            try {
-                getFlipkartOrders(creds)
-            } catch (err) {
-                console.log(err)
-            }
-        })
+        getFlipkartOrders(store.googleCredentials)
     }, [])
 
     if (!!!orders) {

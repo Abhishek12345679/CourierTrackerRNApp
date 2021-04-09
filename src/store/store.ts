@@ -1,7 +1,8 @@
-import {applySnapshot, types} from 'mobx-state-tree';
+import {applySnapshot, onSnapshot, types} from 'mobx-state-tree';
 
 export type Credentials = {
   access_token: string;
+  refresh_token: string;
   scope: string;
   token_type: string;
   expiry_date: number;
@@ -10,6 +11,7 @@ export type Credentials = {
 // TODO: Add firebase to store refresh_token for future logins (if uninstalled)
 const googleCredentials = types.model('googleCredentials', {
   access_token: types.optional(types.string, ''),
+  refresh_token: types.optional(types.string, ''),
   scope: types.optional(types.string, ''),
   token_type: types.optional(types.string, ''),
   expiry_date: types.optional(types.number, 0),
@@ -19,14 +21,26 @@ const googleCredentials = types.model('googleCredentials', {
 const store = types
   .model('store', {
     googleCredentials: types.optional(googleCredentials, {}),
+    authenticated: types.optional(types.boolean, false),
   })
   .actions((self) => ({
     setCredentials(credentials: Credentials) {
       self.googleCredentials = credentials;
+      self.authenticated = true;
     },
     resetCredentials() {
       applySnapshot(self.googleCredentials, {});
     },
-  }));
+    afterCreate() {
+      onSnapshot(self.googleCredentials, () => {
+        console.log('State change in Credentials!');
+        if (!!self.googleCredentials) {
+          console.log('auth success: ', self.googleCredentials);
+          self.authenticated = true;
+        }
+      });
+    },
+  }))
+  .create({});
 
 export default store;
