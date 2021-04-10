@@ -21,22 +21,23 @@ const googleCredentials = types.model('googleCredentials', {
 const store = types
   .model('store', {
     googleCredentials: types.optional(googleCredentials, {}),
-    authenticated: types.optional(types.boolean, false),
+    didTryAutoLogin: types.optional(types.boolean, false),
   })
   .actions((self) => ({
     setCredentials(credentials: Credentials) {
       self.googleCredentials = credentials;
-      self.authenticated = true;
     },
     resetCredentials() {
       applySnapshot(self.googleCredentials, {});
+    },
+    setTryAutoLogin() {
+      self.didTryAutoLogin = true;
     },
     afterCreate() {
       onSnapshot(self.googleCredentials, () => {
         console.log('State change in Credentials!');
         if (!!self.googleCredentials) {
           console.log('auth success: ', self.googleCredentials);
-          self.authenticated = true;
         }
       });
     },
