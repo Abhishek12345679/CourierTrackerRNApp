@@ -52,6 +52,7 @@ const AmazonOrdersScreen = () => {
         />
     )
 
+
     return (
         <FlatList
             showsVerticalScrollIndicator={false}

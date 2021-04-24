@@ -23,9 +23,9 @@ const LoginScreen: React.FC = (props: any) => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
 
-            <Image
+            {/* <Image
                 source={require('../Assets/Images/Welcome.png')}
-                style={{ width: '100%', height: 350, marginTop: 50 }} />
+                style={{ width: '100%', height: 100, marginTop: 50 }} /> */}
             <View style={styles.form}>
                 <Text style={styles.text}>{`Welcome \nHooman 🥳`}</Text>
 

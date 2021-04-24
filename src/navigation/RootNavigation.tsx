@@ -16,7 +16,7 @@ const AppContainer = observer(() => {
             theme={LightTheme}
         >
             {/* {store.googleCredentials.refresh_token ? <SitesNavigator /> : <AuthNavigator />} */}
-            {!!store.googleCredentials.refresh_token && <SitesNavigator />}
+            {!!store.googleCredentials.refresh_token && <RootNavigator />}
             {!!!store.googleCredentials.refresh_token && !!store.didTryAutoLogin && <AuthNavigator />}
 
             {!!!store.googleCredentials.refresh_token && !!!store.didTryAutoLogin && <SplashScreen />}

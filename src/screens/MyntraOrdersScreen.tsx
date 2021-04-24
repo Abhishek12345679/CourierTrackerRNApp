@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking, Button, FlatList, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, Linking, FlatList, ActivityIndicator } from 'react-native'
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sensitiveData } from '../../constants/sen_data';

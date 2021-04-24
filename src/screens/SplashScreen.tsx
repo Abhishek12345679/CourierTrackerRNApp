@@ -29,7 +29,7 @@ const SplashScreen = () => {
 
     return (
         <View>
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Courier Tracker</Text>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Courier Trackerss</Text>
         </View>
     )
 }

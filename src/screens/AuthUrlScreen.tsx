@@ -63,8 +63,7 @@ const AuthUrlScreen = (props: any) => {
     }
 
     return (
-        <View style={{ backgroundColor: "pink", flex: 1 }}>
-            <Text>Bullocks</Text>
+        <View style={{ backgroundColor: "#fff", flex: 1 }}>
             <WebView
                 ref={webviewRef}
                 source={{ uri: url }}

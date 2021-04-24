@@ -14,7 +14,7 @@ export type Order = {
         {
             productName: string;
             productImage: string;
-            sellerName: string;
+            sellerName?: string;
             deliveryCharges?: string;
             ETA: string;
             quantity: string;

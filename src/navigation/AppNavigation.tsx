@@ -8,12 +8,16 @@ import LoginScreen from "../screens/LoginScreen";
 import AmazonOrdersScreen from '../screens/AmazonOrdersScreen';
 import FlipkartOrdersScreen from '../screens/FlipkartOrdersScreen';
 import MyntraOrdersScreen from '../screens/MyntraOrdersScreen';
-import { Image, Text, View } from 'react-native';
+import { Animated, Dimensions, Image, Pressable, SafeAreaView, Text, TouchableOpacity, TouchableOpacityBase, View } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 
 
 enableScreens()
+
+
+
+
 const AuthStackNavigator = createNativeStackNavigator();
 export const AuthNavigator = () => {
     return (
@@ -35,14 +39,51 @@ export const AuthNavigator = () => {
 
 const RootStackNavigator = createStackNavigator();
 export const RootNavigator = () => {
+
     return (
         <RootStackNavigator.Navigator screenOptions={{
             headerTitleStyle: {
-                fontWeight: 'bold',
+                // fontWeight: 'bold',
                 borderBottomWidth: 0,
-                alignSelf: 'center'
+                alignSelf: 'center',
+                color: "#FFF"
+            },
+            headerTintColor: "#000",
+            headerStyle: {
+                backgroundColor: "#000000",
+                height: 70
+            },
+            headerTitle: "Courier Tracker",
+            headerLeft: () => (
+                <SafeAreaView
+                    style={{
+                        width: Dimensions.get('window').width / 5,
+                        height: 70 - 20,
+                        backgroundColor: "#554f4f",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5
+                    }}>
 
-            }
+                    <Pressable
+                        style={({ pressed }) => [{
+                            backgroundColor: "#fff",
+                            width: 50,
+                            height: 50,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: 15,
+                            transform: [{ scale: pressed ? 0.8 : 1 }]
+                        }]}
+                        onPress={() => {
+                            console.log("clicked!")
+                        }}
+                    >
+                        <Image source={require("../Assets/Images/smartphone.png")} style={{ height: 40, width: 40 }} />
+                    </Pressable>
+
+                </SafeAreaView>
+            )
         }}>
             <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} />
         </RootStackNavigator.Navigator>
