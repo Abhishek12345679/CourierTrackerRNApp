@@ -1,9 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 import { View, Text } from 'react-native'
 import store from '../store/store'
 
-const SplashScreen = () => {
+const SplashScreen = observer(() => {
     // fetch credentials from the Local Storage of the device
     const getCredentials = async () => {
         console.log('splash screen')
@@ -32,6 +33,6 @@ const SplashScreen = () => {
             <Text style={{ fontSize: 20, fontWeight: "bold" }}>Courier Trackerss</Text>
         </View>
     )
-}
+})
 
 export default SplashScreen

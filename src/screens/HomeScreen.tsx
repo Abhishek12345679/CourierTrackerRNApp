@@ -6,8 +6,9 @@ import { AmazonOrder } from './AmazonOrdersScreen';
 import store, { Credentials } from '../store/store';
 import { sensitiveData } from '../../constants/sen_data';
 import DateIcon from '../components/DateIcon';
+import { observer } from 'mobx-react';
 
-const HomeScreen: React.FC = (props: any) => {
+const HomeScreen: React.FC = observer((props: any) => {
 
     const [amazonOrders, setAmazonOrders] = useState<AmazonOrder[]>()
 
@@ -20,7 +21,8 @@ const HomeScreen: React.FC = (props: any) => {
     }
 
     useEffect(() => {
-        getAmazonOrders(store.googleCredentials)
+        // getAmazonOrders(store.googleCredentials)
+        console.log(store)
     }, [])
 
 
@@ -51,13 +53,22 @@ const HomeScreen: React.FC = (props: any) => {
                         })
 
 
-                        // amazonOrders.fi
                     }
+                    <Button title="logout" onPress={async () => {
+                        try {
+                            await AsyncStorage.removeItem('credentials')
+                            store.resetCredentials()
+                            console.log("HS:", store.googleCredentials)
+                        } catch (err) {
+                            console.error(err)
+                        }
+
+                    }} />
                 </View>
             </View>
         </ScrollView>
     )
-}
+})
 
 export default HomeScreen
 

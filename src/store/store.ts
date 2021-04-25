@@ -29,6 +29,7 @@ const store = types
     },
     resetCredentials() {
       applySnapshot(self.googleCredentials, {});
+      console.log(self.googleCredentials);
     },
     setTryAutoLogin() {
       self.didTryAutoLogin = true;

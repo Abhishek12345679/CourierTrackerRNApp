@@ -6,9 +6,10 @@ import {
 } from '@react-native-google-signin/google-signin';
 import { sensitiveData } from '../../constants/sen_data';
 import { useTheme } from '@react-navigation/native';
+import { observer } from 'mobx-react';
 
 
-const LoginScreen: React.FC = (props: any) => {
+const LoginScreen: React.FC = observer((props: any) => {
     const signIn = async () => {
         const response = await fetch(`${sensitiveData.baseUrl}/authorize`)
         const data = await response.json()
@@ -69,7 +70,7 @@ const LoginScreen: React.FC = (props: any) => {
             </View>
         </SafeAreaView >
     )
-}
+})
 
 const styles = StyleSheet.create({
     text: {

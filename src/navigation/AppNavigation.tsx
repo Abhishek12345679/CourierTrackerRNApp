@@ -14,10 +14,6 @@ import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 
 
 enableScreens()
-
-
-
-
 const AuthStackNavigator = createNativeStackNavigator();
 export const AuthNavigator = () => {
     return (
@@ -31,7 +27,6 @@ export const AuthNavigator = () => {
                 component={AuthUrlScreen}
                 options={{ stackPresentation: 'modal' }}
             />
-            <AuthStackNavigator.Screen name="HomeScreen" component={HomeScreen} />
         </AuthStackNavigator.Navigator>
     );
 };
@@ -58,7 +53,7 @@ export const RootNavigator = () => {
                 <SafeAreaView
                     style={{
                         width: Dimensions.get('window').width / 5,
-                        height: 70 - 20,
+                        height: 70,
                         backgroundColor: "#554f4f",
                         justifyContent: "center",
                         alignItems: "center",
