@@ -84,27 +84,27 @@ const LoginScreen: React.FC = observer((props: any) => {
                     containerStyle={{ height: 50, borderWidth: 2, borderColor: "#000", justifyContent: "center", borderRadius: 10, marginVertical: 15 }}
                     fieldStyle={{ marginHorizontal: 20 }}
                     placeholder="Email"
-
                     value={email}
-
                     onChangeText={setEmail}
                 />
                 <TextField
+                    editable={email.length > 5}
                     containerStyle={{ height: 50, borderWidth: 2, borderColor: "#000", justifyContent: "center", borderRadius: 10, marginVertical: 20 }}
                     fieldStyle={{ marginHorizontal: 20 }}
                     placeholder="Password"
                     trailingAccessory={
-                        <AntDesign
+                        password.length >= 8 ? <AntDesign
                             name="rightcircle"
                             size={24}
                             color="blue"
                             onPress={
                                 () => {
                                     console.log("clicked!")
-                                    EmailPasswordSignIn()
+                                    // EmailPasswordSignIn()
                                 }
                             }
-                        />
+
+                        /> : <></>
                     }
                     value={password}
                     secureTextEntry

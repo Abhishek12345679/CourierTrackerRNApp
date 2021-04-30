@@ -41,7 +41,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     return (
         <ScrollView style={{ flex: 1, }}
             contentContainerStyle={{ flexGrow: 1 }}>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
+            {/* <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={{ flex: 1, backgroundColor: "#121212", elevation: 10, alignItems: 'center' }}
                 >
 
@@ -76,8 +76,9 @@ const HomeScreen: React.FC = observer((props: any) => {
                         }
 
                     }} />
-                </View>
-            </View>
+                </View> */}
+            {/* </View> */}
+            <Text>Home screen</Text>
         </ScrollView>
     )
 })
