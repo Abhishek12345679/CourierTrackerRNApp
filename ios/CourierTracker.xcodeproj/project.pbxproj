@@ -11,6 +11,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		332BCFE578E88277FCE19B3A /* libPods-CourierTracker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AD9B3C4FFD34D4625A5E198 /* libPods-CourierTracker.a */; };
+		461D8C9C263BEAD8008D88A0 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 461D8C9B263BEAD8008D88A0 /* GoogleService-Info.plist */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,7 @@
 		3AD9B3C4FFD34D4625A5E198 /* libPods-CourierTracker.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CourierTracker.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3F8AF0665A927D141D334EE0 /* Pods-CourierTracker-CourierTrackerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CourierTracker-CourierTrackerTests.debug.xcconfig"; path = "Target Support Files/Pods-CourierTracker-CourierTrackerTests/Pods-CourierTracker-CourierTrackerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3FA2D205CAC4F10EE7B74655 /* Pods-CourierTracker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CourierTracker.release.xcconfig"; path = "Target Support Files/Pods-CourierTracker/Pods-CourierTracker.release.xcconfig"; sourceTree = "<group>"; };
+		461D8C9B263BEAD8008D88A0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4EBE09571FB776D5250A8B45 /* Pods-CourierTracker-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CourierTracker-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-CourierTracker-tvOSTests/Pods-CourierTracker-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4FAC01A304C292AA8CFB43F6 /* libPods-CourierTracker-CourierTrackerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CourierTracker-CourierTrackerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		57B9CB8E66A84665A131A003 /* libPods-CourierTracker-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CourierTracker-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +124,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				461D8C9B263BEAD8008D88A0 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* CourierTracker */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* CourierTrackerTests */,
@@ -206,6 +209,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				461D8C9C263BEAD8008D88A0 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

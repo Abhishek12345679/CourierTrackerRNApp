@@ -8,6 +8,12 @@ export type Credentials = {
   expiry_date: number;
 };
 
+export type loginCredentialsType = {
+  email: string;
+  uid: string;
+  token: string;
+};
+
 // TODO: Add firebase to store refresh_token for future logins (if uninstalled)
 const googleCredentials = types.model('googleCredentials', {
   access_token: types.optional(types.string, ''),
@@ -17,13 +23,27 @@ const googleCredentials = types.model('googleCredentials', {
   expiry_date: types.optional(types.number, 0),
 });
 
+const loginCredentials = types.model('loginCredentials', {
+  email: types.optional(types.string, ''),
+  uid: types.optional(types.string, ''),
+  token: types.optional(types.string, ''),
+});
+
 // central Store
 const store = types
   .model('store', {
     googleCredentials: types.optional(googleCredentials, {}),
+    loginCredentials: types.optional(loginCredentials, {}),
     didTryAutoLogin: types.optional(types.boolean, false),
   })
   .actions((self) => ({
+    setLoginCredentials(credentials: loginCredentialsType) {
+      self.loginCredentials = credentials;
+    },
+    resetLoginCredentials() {
+      applySnapshot(self.loginCredentials, {});
+      console.log(self.loginCredentials);
+    },
     setCredentials(credentials: Credentials) {
       self.googleCredentials = credentials;
     },
@@ -35,10 +55,10 @@ const store = types
       self.didTryAutoLogin = true;
     },
     afterCreate() {
-      onSnapshot(self.googleCredentials, () => {
+      onSnapshot(self.loginCredentials, () => {
         console.log('State change in Credentials!');
-        if (!!self.googleCredentials) {
-          console.log('auth success: ', self.googleCredentials);
+        if (!!self.loginCredentials) {
+          console.log('auth success: ', self.loginCredentials);
         }
       });
     },

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "231836884150",
+    "project_id": "couriertrackerapp-f6168",
+    "storage_bucket": "couriertrackerapp-f6168.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:231836884150:android:5b4bba1f3e1e2e77431a17",
+        "android_client_info": {
+          "package_name": "com.couriertracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "231836884150-260rl2q5ke7uo5dgp3u6v1cr9fv54kpf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRJfBcyHRKrEPQjde982mFgOXvigaqNgE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "231836884150-260rl2q5ke7uo5dgp3u6v1cr9fv54kpf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

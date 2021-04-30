@@ -4,8 +4,9 @@ import { WebView } from 'react-native-webview';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import store from '../store/store';
+import { observer } from 'mobx-react';
 
-const AuthUrlScreen = (props: any) => {
+const AuthUrlScreen = observer((props: any) => {
     const url = props.route.params.url
     const webviewRef = useRef(null);
 
@@ -74,6 +75,6 @@ const AuthUrlScreen = (props: any) => {
             />
         </View>
     )
-}
+})
 
 export default AuthUrlScreen

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { AuthNavigator, RootNavigator, SitesNavigator } from './AppNavigation';
@@ -12,20 +12,31 @@ import SplashScreen from '../screens/SplashScreen';
 
 const AppContainer = observer(() => {
 
-    if (store.googleCredentials.refresh_token.length === 0 && store.didTryAutoLogin) {
-        console.log("AuthNavigator...")
-    }
+    // if (store.loginCredentials && store.didTryAutoLogin) {
+    //     console.log("AuthNavigator...")
+    // }
+    const loginCredsKeysLength = Object.values(store.loginCredentials)
+    let isLoggedIn = false
 
+    loginCredsKeysLength.forEach((value, index) => {
+        if (value !== "") {
+            isLoggedIn = true
+        } else {
+            isLoggedIn = false
+        }
+    })
+
+
+
+    useEffect(() => { console.log("Logged in:", isLoggedIn) }, [])
 
     return (
         <NavigationContainer
             theme={LightTheme}
         >
-            {store.googleCredentials.refresh_token.length > 0 && <RootNavigator />}
-            {store.googleCredentials.refresh_token.length === 0 &&
-                (store.didTryAutoLogin ? <AuthNavigator /> : <SplashScreen />)}
-
-            {/* {store.googleCredentials.refresh_token.length === 0 && !!!store.didTryAutoLogin && <SplashScreen />} */}
+            {isLoggedIn && <RootNavigator />}
+            {!isLoggedIn && store.didTryAutoLogin && <AuthNavigator />}
+            {!isLoggedIn && !store.didTryAutoLogin && <SplashScreen />}
 
         </NavigationContainer>
     );

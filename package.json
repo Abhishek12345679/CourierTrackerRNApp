@@ -10,8 +10,11 @@
         "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
     },
     "dependencies": {
+        "@expo/vector-icons": "^12.0.4",
         "@react-native-async-storage/async-storage": "^1.14.1",
         "@react-native-community/masked-view": "^0.1.10",
+        "@react-native-firebase/app": "^11.4.1",
+        "@react-native-firebase/auth": "^11.4.1",
         "@react-native-google-signin/google-signin": "^6.0.0",
         "@react-navigation/material-top-tabs": "^5.3.14",
         "@react-navigation/native": "^5.9.3",
@@ -29,6 +32,7 @@
         "react-native-safe-area-context": "^3.2.0",
         "react-native-screens": "^3.0.0",
         "react-native-tab-view": "^2.16.0",
+        "react-native-ui-lib": "^5.23.3",
         "react-native-unimodules": "^0.12.0",
         "react-native-uuid": "^1.4.9",
         "react-native-webview": "^11.2.5"

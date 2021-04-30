@@ -16,14 +16,26 @@ const HomeScreen: React.FC = observer((props: any) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}`)
         const AmazonOrders = await AZResponse.json()
 
-        console.log(JSON.stringify(AmazonOrders, null, 2))
-        setAmazonOrders(AmazonOrders.amazonOrders)
+        // console.log(JSON.stringify(AmazonOrders, null, 2))
+        const sortedArray = sortOrders(AmazonOrders.amazonOrders)
+        console.log(JSON.stringify(sortedArray, null, 2))
+        setAmazonOrders(sortedArray.reverse())
     }
 
     useEffect(() => {
         // getAmazonOrders(store.googleCredentials)
-        console.log(store)
+        // console.log(store.loginCredentials)
     }, [])
+
+
+    const sortOrders = (orders: AmazonOrder[]) => {
+        var months = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"];
+        return orders.sort((a, b) =>
+            months.indexOf(a.ETA.substring(a.ETA.indexOf(',') + 2, a.ETA.lastIndexOf(" ")))
+            - months.indexOf(b.ETA.substring(b.ETA.indexOf(',') + 2, b.ETA.lastIndexOf(" ")))
+        );
+    }
 
 
     return (
@@ -45,7 +57,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                     {
                         amazonOrders?.map((order, idx) => {
                             return (
-                                <View style={{ height: 100 }}>
+                                <View style={{ height: 100, marginTop: 10, backgroundColor: "red", marginHorizontal: 5 }}>
                                     <Text>{order.orderNumber}</Text>
                                     <Text>{order.ETA}</Text>
                                 </View>
@@ -53,12 +65,12 @@ const HomeScreen: React.FC = observer((props: any) => {
                         })
 
 
+
                     }
                     <Button title="logout" onPress={async () => {
                         try {
-                            await AsyncStorage.removeItem('credentials')
-                            store.resetCredentials()
-                            console.log("HS:", store.googleCredentials)
+                            await AsyncStorage.removeItem('loginCredentials')
+                            store.resetLoginCredentials()
                         } catch (err) {
                             console.error(err)
                         }

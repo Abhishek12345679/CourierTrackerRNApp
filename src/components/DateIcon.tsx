@@ -4,7 +4,15 @@ import { View, Text, Dimensions } from 'react-native'
 const DateIcon = ({ date }: any) => {
     const Days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat']
     return (
-        <View style={{ backgroundColor: '#fff', width: Dimensions.get('window').width / 5 - 20, height: 55, borderRadius: 15, marginTop: 10, alignItems: "center", justifyContent: 'center' }}>
+        <View style={{
+            backgroundColor: '#fff',
+            width: Dimensions.get('window').width / 5 - 20,
+            height: 65,
+            borderRadius: 15,
+            marginTop: 20,
+            alignItems: "center",
+            justifyContent: 'center'
+        }}>
             <Text
                 style={{
                     color: "#000",
