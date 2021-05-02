@@ -9,12 +9,16 @@ const SplashScreen = observer(() => {
     const getCredentials = async () => {
         console.log('splash screen')
         const credentials = await AsyncStorage.getItem('loginCredentials')
-        console.log(credentials)
+        const googleCredentials = await AsyncStorage.getItem('credentials')
+        const refToken = await AsyncStorage.getItem('refresh_token')
 
-        store.setCredentials(JSON.parse(credentials!))
+        let newCreds = JSON.parse(googleCredentials!)
+        newCreds.refresh_token = refToken
+
+        store.setCredentials(newCreds)
+        store.setLoginCredentials(JSON.parse(credentials!))
         store.setTryAutoLogin()
         console.log('Credentials: ', credentials)
-
     }
 
     useEffect(() => {
@@ -24,7 +28,7 @@ const SplashScreen = observer(() => {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Image source={require('../../src/Assets/Images/smartphone.png')} style={{ width: 200, height: 200, marginVertical: 20 }} />
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Courier Trackerssss</Text>
+            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Wooosh</Text>
         </View>
     )
 })

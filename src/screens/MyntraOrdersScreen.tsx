@@ -6,7 +6,7 @@ import { sensitiveData } from '../../constants/sen_data';
 import store from '../store/store';
 
 
-type Order = {
+export type Order = {
     totalPrice: string;
     orderNumber: string;
     orderItems: [

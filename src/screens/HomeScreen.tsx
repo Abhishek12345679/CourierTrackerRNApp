@@ -1,30 +1,81 @@
 import React, { useEffect, useState } from 'react'
-import { View, Button, Text, ScrollView } from 'react-native'
+import { View, Button, Text, ScrollView, FlatList, ListRenderItem } from 'react-native'
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AmazonOrder } from './AmazonOrdersScreen';
 import store, { Credentials } from '../store/store';
 import { sensitiveData } from '../../constants/sen_data';
-import DateIcon from '../components/DateIcon';
 import { observer } from 'mobx-react';
+import GoogleSignInCard from '../components/GoogleSignInCard';
+import { Order as FlipkartOrder } from './FlipkartOrdersScreen';
+import { Order as MyntraOrder } from './MyntraOrdersScreen';
+import OrderItem from '../components/OrderItem';
+import OrderList from '../components/OrderList';
 
 const HomeScreen: React.FC = observer((props: any) => {
 
-    const [amazonOrders, setAmazonOrders] = useState<AmazonOrder[]>()
+    const [amazonOrders, setAmazonOrders] = useState<AmazonOrder[]>([])
+    const [flipkartOrders, setFlipkartOrders] = useState<FlipkartOrder[]>([])
+    const [myntraOrders, setMyntraOrders] = useState<MyntraOrder[]>([])
+    const [ajioOrders, setAjioOrders] = useState<MyntraOrder[]>([])
+    const [gmailAccessStatus, setGmailAccessStatus] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
 
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}`)
         const AmazonOrders = await AZResponse.json()
 
-        // console.log(JSON.stringify(AmazonOrders, null, 2))
-        const sortedArray = sortOrders(AmazonOrders.amazonOrders)
-        console.log(JSON.stringify(sortedArray, null, 2))
-        setAmazonOrders(sortedArray.reverse())
+        // const sortedArray = sortOrders(AmazonOrders.amazonOrders)
+        // console.log(JSON.stringify(sortedArray, null, 2))
+        setAmazonOrders(AmazonOrders)
     }
+
+    const getFlipkartOrders = async (auth: Credentials) => {
+        const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
+        const FlipkartOrders = await FKResponse.json()
+
+        // const sortedArray = sortOrders(FlipkartOrders.flipkartOrders)
+        console.log(JSON.stringify(FlipkartOrders.flipkartOrders, null, 2))
+        setFlipkartOrders(FlipkartOrders.flipkartOrders)
+    }
+    const getMyntraOrders = async (auth: Credentials) => {
+        const MResponse = await fetch(`${sensitiveData.baseUrl}/getMyntraOrderDetails?tokens=${JSON.stringify(auth)}`)
+        const MyntraOrders = await MResponse.json()
+
+        // const sortedArray = sortOrders(FlipkartOrders.flipkartOrders)
+        // console.log(JSON.stringify(sortedArray, null, 2))
+        setMyntraOrders(MyntraOrders)
+    }
+
+    const getAjioOrders = async (auth: Credentials) => {
+        const AResponse = await fetch(`${sensitiveData.baseUrl}/getAjioOrderDetails?tokens=${JSON.stringify(auth)}`)
+        const AjioOrders = await AResponse.json()
+
+        // const sortedArray = sortOrders(FlipkartOrders.flipkartOrders)
+        // console.log(JSON.stringify(sortedArray, null, 2))
+        setAjioOrders(AjioOrders)
+    }
+
+
+
+    const getGoogleAccess = async () => {
+        setIsLoading(true)
+        const response = await fetch(`${sensitiveData.baseUrl}/authorize`)
+        const data = await response.json()
+        setIsLoading(false)
+        props.navigation.navigate('AuthUrlScreen', {
+            url: decodeURIComponent(data.url)
+        })
+    }
+
 
     useEffect(() => {
         // getAmazonOrders(store.googleCredentials)
-        // console.log(store.loginCredentials)
+        getFlipkartOrders(store.googleCredentials)
+        console.log(store.googleCredentials)
+
+        if (store.googleCredentials.refresh_token !== "") {
+            setGmailAccessStatus(true)
+        }
     }, [])
 
 
@@ -37,48 +88,28 @@ const HomeScreen: React.FC = observer((props: any) => {
         );
     }
 
+    const renderOrderItem: ListRenderItem<FlipkartOrder> = ({ item, index, separators }) => (
+        <OrderList
+            item={item}
+            index={index}
+            separators={separators}
+        />
+    )
+
+
 
     return (
-        <ScrollView style={{ flex: 1, }}
-            contentContainerStyle={{ flexGrow: 1 }}>
-            {/* <View style={{ flex: 1, flexDirection: 'row' }}>
-                <View style={{ flex: 1, backgroundColor: "#121212", elevation: 10, alignItems: 'center' }}
-                >
-
-                    {amazonOrders?.map((order, idx) => {
-                        return (
-                            <DateIcon date={order.ETA} />
-                        )
-                    })}
-
-                </View>
-
-                <View style={{ flex: 4, }}>
-                    {
-                        amazonOrders?.map((order, idx) => {
-                            return (
-                                <View style={{ height: 100, marginTop: 10, backgroundColor: "red", marginHorizontal: 5 }}>
-                                    <Text>{order.orderNumber}</Text>
-                                    <Text>{order.ETA}</Text>
-                                </View>
-                            )
-                        })
-
-
-
-                    }
-                    <Button title="logout" onPress={async () => {
-                        try {
-                            await AsyncStorage.removeItem('loginCredentials')
-                            store.resetLoginCredentials()
-                        } catch (err) {
-                            console.error(err)
-                        }
-
-                    }} />
-                </View> */}
-            {/* </View> */}
-            <Text>Home screen</Text>
+        <ScrollView style={{}}
+            contentContainerStyle={{}}>
+            {!gmailAccessStatus && <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} />}
+            <FlatList
+                showsVerticalScrollIndicator={false}
+                style={{ flex: 1 }}
+                contentContainerStyle={{ justifyContent: 'center' }}
+                key={(Math.random() * 10000).toString()}
+                data={flipkartOrders}
+                renderItem={renderOrderItem}
+            />
         </ScrollView>
     )
 })

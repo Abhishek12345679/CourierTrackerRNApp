@@ -11,6 +11,7 @@ import MyntraOrdersScreen from '../screens/MyntraOrdersScreen';
 import { Animated, Dimensions, Image, Pressable, SafeAreaView, Text, TouchableOpacity, TouchableOpacityBase, View } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
+import { ActionBar, Avatar } from 'react-native-ui-lib';
 
 
 enableScreens()
@@ -22,65 +23,52 @@ export const AuthNavigator = () => {
                 name="LoginScreen"
                 component={LoginScreen}
             />
-            <AuthStackNavigator.Screen
+            {/* <AuthStackNavigator.Screen
                 name="AuthUrlScreen"
                 component={AuthUrlScreen}
                 options={{ stackPresentation: 'modal' }}
-            />
+            /> */}
         </AuthStackNavigator.Navigator>
     );
 };
 
 
-const RootStackNavigator = createStackNavigator();
+const RootStackNavigator = createNativeStackNavigator();
 export const RootNavigator = () => {
 
     return (
-        <RootStackNavigator.Navigator screenOptions={{
-            headerTitleStyle: {
-                // fontWeight: 'bold',
-                borderBottomWidth: 0,
-                alignSelf: 'center',
-                color: "#FFF"
-            },
-            headerTintColor: "#000",
-            headerStyle: {
-                backgroundColor: "#000000",
-                height: 70
-            },
-            headerTitle: "Courier Tracker",
-            headerLeft: () => (
-                <SafeAreaView
-                    style={{
-                        width: Dimensions.get('window').width / 5,
-                        height: 70,
-                        backgroundColor: "#554f4f",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: 5
-                    }}>
-
-                    <Pressable
-                        style={({ pressed }) => [{
-                            backgroundColor: "#fff",
-                            width: 50,
-                            height: 50,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            borderRadius: 15,
-                            transform: [{ scale: pressed ? 0.8 : 1 }]
-                        }]}
-                        onPress={() => {
-                            console.log("clicked!")
-                        }}
-                    >
-                        <Image source={require("../Assets/Images/smartphone.png")} style={{ height: 40, width: 40 }} />
-                    </Pressable>
-
-                </SafeAreaView>
-            )
-        }}>
+        <RootStackNavigator.Navigator
+            screenOptions={{
+                headerTitleStyle: {
+                    // fontWeight: 'bold',
+                    // borderBottomWidth: 0,
+                    // alignSelf: 'center',
+                    color: "#FFF",
+                    fontWeight: 'bold',
+                    fontSize: 30
+                },
+                headerTintColor: "#000",
+                headerStyle: {
+                    backgroundColor: "#0c1a68",
+                    // height: 70
+                },
+                headerTitle: "W",
+                headerRight: () => (
+                    <TouchableOpacity style={{ marginEnd: 20 }}>
+                        <Avatar
+                            source={{ uri: "https://avatars.githubusercontent.com/u/24722640?v=4" }}
+                            animate
+                            imageStyle={{ borderColor: "#fff", borderWidth: 1 }} />
+                    </TouchableOpacity>
+                )
+            }}
+        >
             <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} />
+            <RootStackNavigator.Screen
+                name="AuthUrlScreen"
+                component={AuthUrlScreen}
+                options={{ stackPresentation: 'modal' }}
+            />
         </RootStackNavigator.Navigator>
     );
 };

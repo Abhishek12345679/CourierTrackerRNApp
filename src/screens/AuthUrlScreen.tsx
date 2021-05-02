@@ -16,8 +16,9 @@ const AuthUrlScreen = observer((props: any) => {
     const setCredentials = async (credentials: string) => {
         try {
             let tokens = JSON.parse(credentials.replace(quotesPattern, "\""))
+            console.log(tokens)
             const refresh_token = tokens.refresh_token as string
-            if (!!refresh_token) {
+            if (refresh_token !== "") {
                 await AsyncStorage.setItem('refresh_token', refresh_token)
                 await AsyncStorage.setItem('credentials', JSON.stringify(tokens))
                 store.setCredentials(tokens)
@@ -26,7 +27,6 @@ const AuthUrlScreen = observer((props: any) => {
                 console.log("rtoken: ", refresh_token)
                 tokens.refresh_token = refresh_token
                 await AsyncStorage.setItem('credentials', JSON.stringify(tokens))
-
                 store.setCredentials(tokens)
 
             }
@@ -37,12 +37,13 @@ const AuthUrlScreen = observer((props: any) => {
         console.log('Saved Refresh Token!')
     }
 
-    const onMessage = (data: any) => {
+    const onMessage = async (data: any) => {
 
         const authData = data.nativeEvent.data
-        console.log("from server: ", authData)
+        // console.log("from server: ", authData)
         try {
-            setCredentials(authData)
+            await setCredentials(authData)
+            props.navigation.pop()
         } catch (e) {
             console.log("Credentials not saved!: ", e)
         }

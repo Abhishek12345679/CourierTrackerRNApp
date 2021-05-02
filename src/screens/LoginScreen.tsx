@@ -1,9 +1,6 @@
 import React, { useState } from 'react'
 import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 
-import {
-    GoogleSigninButton,
-} from '@react-native-google-signin/google-signin';
 import { sensitiveData } from '../../constants/sen_data';
 import { useTheme } from '@react-navigation/native';
 import { observer } from 'mobx-react';
@@ -18,15 +15,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // TODO: add validation to textinput
 const LoginScreen: React.FC = observer((props: any) => {
-
-    // const signIn = async () => {
-    //     const response = await fetch(`${sensitiveData.baseUrl}/authorize`)
-    //     const data = await response.json()
-    //     // console.log("DATA: ", decodeURIComponent(data.url))
-    //     props.navigation.navigate('AuthUrlScreen', {
-    //         url: decodeURIComponent(data.url)
-    //     })
-    // }
 
     const saveCredentialsToAsyncStorage = async (email: string, uid: string, token: string) => {
         try {
@@ -81,11 +69,19 @@ const LoginScreen: React.FC = observer((props: any) => {
 
                 <Text style={{ ...styles.text, fontSize: 50, marginVertical: 10 }}>Login</Text>
                 <TextField
-                    containerStyle={{ height: 50, borderWidth: 2, borderColor: "#000", justifyContent: "center", borderRadius: 10, marginVertical: 15 }}
-                    fieldStyle={{ marginHorizontal: 20 }}
+                    style={{ fontSize: 17, fontWeight: 'bold' }}
+                    containerStyle={{ height: 70, borderWidth: 2, borderColor: "#000", justifyContent: "center", borderRadius: 10, marginVertical: 15 }}
+                    fieldStyle={{ marginHorizontal: 20, }}
                     placeholder="Email"
                     value={email}
                     onChangeText={setEmail}
+                    validateOnChange={true}
+                    enableErrors
+                    validationMessage={['Email is required', 'Email is invalid']}
+                    // validationMessageStyle={Typography.text90R}
+                    validationMessagePosition={TextField.validationMessagePositions.BOTTOM}
+                    validate={['required', 'email']}
+                    validationMessageStyle={{ marginTop: 5, marginStart: 20, fontSize: 12, fontWeight: 'bold' }}
                 />
                 <TextField
                     editable={email.length > 5}
@@ -100,7 +96,7 @@ const LoginScreen: React.FC = observer((props: any) => {
                             onPress={
                                 () => {
                                     console.log("clicked!")
-                                    // EmailPasswordSignIn()
+                                    EmailPasswordSignIn()
                                 }
                             }
 
@@ -110,31 +106,6 @@ const LoginScreen: React.FC = observer((props: any) => {
                     secureTextEntry
                     onChangeText={setPassword}
                 />
-
-                <View style={{ width: "100%", justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                    <GoogleSigninButton
-                        style={{ width: '100%', height: 60, marginStart: 5 }}
-
-                        size={GoogleSigninButton.Size.Wide}
-                        color={GoogleSigninButton.Color.Dark}
-                        onPress={() => { }}
-                    />
-                    <Text>or</Text>
-
-                    <Pressable
-                        style={{ ...styles.signInWithPhbutton, ...{ marginTop: 20, borderRadius: 5, marginStart: 5, width: '100%' } }}
-                        onPress={() => { }}
-                        android_ripple=
-                        {{
-                            color: '#fff',
-                            borderless: false,
-                            radius: 100
-                        }}>
-                        <Text style={{ ...styles.text, ...{ color: colors.text, fontSize: 17 } }}>
-                            Sign in with Apple
-                    </Text>
-                    </Pressable>
-                </View>
 
             </View>
         </ScrollView>
