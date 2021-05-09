@@ -49,7 +49,7 @@ export const RootNavigator = () => {
                 },
                 headerTintColor: "#000",
                 headerStyle: {
-                    backgroundColor: "#0c1a68",
+                    backgroundColor: "#600c91",
                     // height: 70
                 },
                 headerTitle: "W",
@@ -63,7 +63,7 @@ export const RootNavigator = () => {
                 )
             }}
         >
-            <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} />
+            <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
             <RootStackNavigator.Screen
                 name="AuthUrlScreen"
                 component={AuthUrlScreen}
