@@ -19,9 +19,10 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
                         <Text style={{ flexShrink: 1, color: '#fff', fontWeight: 'bold', fontSize: 15 }}>₹{item.productPrice.replace("b\x02(.", "")}</Text>
                     </View>
                     <Pressable android_ripple={{ color: '#ccc', radius: 250, borderless: false }}
-                        style={{ width: 150, height: 35, backgroundColor: "#fff", marginEnd: 30, elevation: 100, borderRadius: 5, alignItems: 'center', justifyContent: "center", marginStart: 20 }}
+                        style={{ flexDirection: 'row', width: 200, height: 35, backgroundColor: "#fff", marginEnd: 30, elevation: 100, borderRadius: 5, alignItems: 'center', justifyContent: "center", marginStart: 20 }}
                         onPress={() => { }}>
-                        <Text style={{ fontFamily: 'segoe-bold', fontSize: 15 }}>Add to Reminder</Text>
+                        <Image source={require('../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} />
+                        <Text style={{ fontFamily: 'segoe-bold', fontSize: 15 }}>Add to Calendar</Text>
                     </Pressable>
                 </View>
             </View>

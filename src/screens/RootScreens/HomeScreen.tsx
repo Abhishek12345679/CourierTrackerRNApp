@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { View, Button, Text, ScrollView, FlatList, ListRenderItem } from 'react-native'
 
-import store, { Credentials } from '../store/store';
-import { sensitiveData } from '../../constants/sen_data';
+import store, { Credentials } from '../../store/store';
+import { sensitiveData } from '../../../constants/sen_data';
 import { observer } from 'mobx-react';
-import GoogleSignInCard from '../components/GoogleSignInCard';
-import { Order, AmazonOrder } from '../../constants/Types/OrderTypes';
-import OrderItem from '../components/OrderItem';
-import OrderList from '../components/OrderList';
+import GoogleSignInCard from '../../components/GoogleSignInCard';
+import { Order, AmazonOrder } from '../../../constants/Types/OrderTypes';
+import OrderItem from '../../components/OrderItem';
+import OrderList from '../../components/OrderList';
+
+// TODO: Add Calendar
 
 const HomeScreen: React.FC = observer((props: any) => {
 
@@ -84,23 +86,21 @@ const HomeScreen: React.FC = observer((props: any) => {
         />
     )
 
+
     return (
-        <ScrollView style={{ backgroundColor: '#25172e' }}>
-            {!gmailAccessStatus && <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} />}
-            <FlatList
-                // ListHeaderComponent={
-                //     <View>
-                //         <Text style={{ fontFamily: "segoe-bold", fontSize: 40, marginTop: 10, marginStart: 10, color: "#fff" }}>Orders</Text>
-                //     </View>
-                // }
-                showsVerticalScrollIndicator={false}
-                style={{ flex: 1, marginTop: 20 }}
-                contentContainerStyle={{ justifyContent: 'center' }}
-                key={(Math.random() * 10000).toString()}
-                data={flipkartOrders}
-                renderItem={renderOrderItem}
-            />
-        </ScrollView>
+        <FlatList
+            ListHeaderComponent={
+                !gmailAccessStatus && <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} />
+            }
+            ListHeaderComponentStyle={{ justifyContent: 'center', alignItems: "center" }}
+            showsVerticalScrollIndicator={false}
+            style={{ flex: 1, backgroundColor: '#25172e' }}
+            contentContainerStyle={{ justifyContent: 'center' }}
+            key={(Math.random() * 10000).toString()}
+            data={flipkartOrders}
+            renderItem={renderOrderItem}
+        />
+
     )
 })
 

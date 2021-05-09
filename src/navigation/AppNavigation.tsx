@@ -1,7 +1,7 @@
 import React from 'react'
 
 import AuthUrlScreen from "../screens/AuthUrlScreen";
-import HomeScreen from "../screens/HomeScreen";
+import HomeScreen from "../screens/RootScreens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
 import { TouchableOpacity } from 'react-native';
 import { enableScreens } from 'react-native-screens';

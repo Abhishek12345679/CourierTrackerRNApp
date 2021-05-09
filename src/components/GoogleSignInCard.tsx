@@ -12,7 +12,7 @@ const GoogleSignInCard = (props: Props) => {
             width: '95%',
             height: 150,
             backgroundColor: "#787fa7",
-            marginTop: 10,
+            marginVertical: 20,
             borderRadius: 10,
             paddingHorizontal: 10,
             paddingVertical: 10,
