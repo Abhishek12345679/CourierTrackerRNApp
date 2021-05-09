@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { View, Button, Text, ScrollView, FlatList, ListRenderItem } from 'react-native'
 
-import { AmazonOrder } from './AmazonOrdersScreen';
 import store, { Credentials } from '../store/store';
 import { sensitiveData } from '../../constants/sen_data';
 import { observer } from 'mobx-react';
 import GoogleSignInCard from '../components/GoogleSignInCard';
-import { Order } from '../../constants/Types/OrderTypes';
+import { Order, AmazonOrder } from '../../constants/Types/OrderTypes';
 import OrderItem from '../components/OrderItem';
 import OrderList from '../components/OrderList';
 
@@ -89,11 +88,11 @@ const HomeScreen: React.FC = observer((props: any) => {
         <ScrollView style={{ backgroundColor: '#25172e' }}>
             {!gmailAccessStatus && <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} />}
             <FlatList
-                ListHeaderComponent={
-                    <View>
-                        <Text style={{ fontFamily: "segoe-bold", fontSize: 40, marginTop: 10, marginStart: 10, color: "#fff" }}>Orders</Text>
-                    </View>
-                }
+                // ListHeaderComponent={
+                //     <View>
+                //         <Text style={{ fontFamily: "segoe-bold", fontSize: 40, marginTop: 10, marginStart: 10, color: "#fff" }}>Orders</Text>
+                //     </View>
+                // }
                 showsVerticalScrollIndicator={false}
                 style={{ flex: 1, marginTop: 20 }}
                 contentContainerStyle={{ justifyContent: 'center' }}

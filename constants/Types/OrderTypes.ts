@@ -19,6 +19,14 @@ export type Order = {
   productLink?: string;
   totalPrice: string;
   from: string;
-
   //   totalDeliveryCharges?: string;
+};
+
+export type AmazonOrder = {
+  totalPrice: string;
+  orderNumber: string;
+  ETA: string;
+  delivery_address: string;
+  invoiceLink: string;
+  orderPreviewLink: string;
 };

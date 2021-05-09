@@ -1,17 +1,12 @@
 import React from 'react'
 
-import { createStackNavigator } from "@react-navigation/stack";
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import AuthUrlScreen from "../screens/AuthUrlScreen";
 import HomeScreen from "../screens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
-import AmazonOrdersScreen from '../screens/AmazonOrdersScreen';
-import FlipkartOrdersScreen from '../screens/FlipkartOrdersScreen';
-import MyntraOrdersScreen from '../screens/MyntraOrdersScreen';
-import { Animated, Dimensions, Image, Pressable, SafeAreaView, Text, TouchableOpacity, TouchableOpacityBase, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
-import { ActionBar, Avatar } from 'react-native-ui-lib';
+import { Avatar } from 'react-native-ui-lib';
 
 
 enableScreens()
@@ -23,11 +18,7 @@ export const AuthNavigator = () => {
                 name="LoginScreen"
                 component={LoginScreen}
             />
-            {/* <AuthStackNavigator.Screen
-                name="AuthUrlScreen"
-                component={AuthUrlScreen}
-                options={{ stackPresentation: 'modal' }}
-            /> */}
+            {/* add sign in screen and login screen separately */}
         </AuthStackNavigator.Navigator>
     );
 };
@@ -40,19 +31,17 @@ export const RootNavigator = () => {
         <RootStackNavigator.Navigator
             screenOptions={{
                 headerTitleStyle: {
-                    // fontWeight: 'bold',
-                    // borderBottomWidth: 0,
-                    // alignSelf: 'center',
                     color: "#FFF",
                     fontWeight: 'bold',
-                    fontSize: 30
+                    fontSize: 45,
+                    fontFamily: 'segoe-bold'
                 },
                 headerTintColor: "#000",
                 headerStyle: {
-                    backgroundColor: "#600c91",
+                    backgroundColor: "#25172e",
                     // height: 70
                 },
-                headerTitle: "W",
+                // headerTitle: "Orders",
                 headerRight: () => (
                     <TouchableOpacity style={{ marginEnd: 20 }}>
                         <Avatar
@@ -63,7 +52,7 @@ export const RootNavigator = () => {
                 )
             }}
         >
-            <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+            <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: true, headerTitle: "Orders" }} />
             <RootStackNavigator.Screen
                 name="AuthUrlScreen"
                 component={AuthUrlScreen}
@@ -73,60 +62,3 @@ export const RootNavigator = () => {
     );
 };
 
-const SitesTopTabNavigator = createMaterialTopTabNavigator()
-export const SitesNavigator = () => {
-    return (
-        <SitesTopTabNavigator.Navigator
-            tabBarPosition="bottom"
-            lazy={true}
-            tabBarOptions={{
-                scrollEnabled: true,
-                showIcon: true,
-                showLabel: false,
-                tabStyle: {
-                    width: 125
-                },
-            }}
-        // tabBar={() => (<View><Text>Courier Tracker</Text></View>)}
-        >
-
-            <SitesTopTabNavigator.Screen
-                name="Amazon"
-                component={AmazonOrdersScreen}
-                options={{
-                    tabBarIcon: ({ focused, color }) => (
-                        <Image source={require("../Assets/BrandLogos/amazon.png")} style={{ width: 30, height: 30 }} />
-                    )
-
-                }} />
-            <SitesTopTabNavigator.Screen
-                name="Flipkart"
-                component={FlipkartOrdersScreen}
-                options={{
-                    tabBarIcon: ({ focused, color }) => (
-                        <Image source={require("../Assets/BrandLogos/flipkart.png")} style={{ width: 30, height: 30 }} />
-                    )
-                }}
-            />
-            <SitesTopTabNavigator.Screen
-                name="Myntra"
-                component={MyntraOrdersScreen}
-                options={{
-                    tabBarIcon: ({ focused, color }) => (
-                        <Image source={require("../Assets/BrandLogos/myntra.png")} style={{ width: 30, height: 30 }} />
-                    )
-                }}
-            />
-            <SitesTopTabNavigator.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{
-                    tabBarIcon: ({ focused, color }) => (
-                        <Text style={{ width: 100 }}>Home</Text>
-
-                    ),
-                }}
-            />
-        </SitesTopTabNavigator.Navigator>
-    )
-}

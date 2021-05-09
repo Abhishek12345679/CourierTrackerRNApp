@@ -1,7 +1,6 @@
 import React from 'react'
 import { View, Text, Pressable, Linking, ListRenderItem } from 'react-native'
-import { Avatar, Image } from 'react-native-ui-lib'
-import { AmazonOrder } from '../screens/AmazonOrdersScreen'
+import { Image } from 'react-native-ui-lib'
 import { Order } from '../../constants/Types/OrderTypes'
 
 const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
@@ -9,10 +8,9 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
         <Pressable
             android_ripple={{ color: '#ccc', radius: 250, borderless: false }}
             style={{ flex: 1, flexDirection: 'row', height: 100, marginTop: 15, backgroundColor: '#745f81', borderRadius: 7, marginLeft: 10, marginRight: 10, justifyContent: 'space-between', alignItems: 'center' }}
-            onPress={() => Linking.openURL(``)}
+            onPress={() => { }}
             key={index}
         >
-            {/* <Avatar size={75} animate source={{ uri: item.productImage }} /> */}
             <Image source={{ uri: item.productImage }} style={{ height: 80, width: 80, marginStart: 8, borderRadius: 5, flex: 1 }} />
             <View style={{ flex: 4 }}>
                 <Text style={{ fontWeight: 'bold', marginBottom: 5, color: '#fff', marginEnd: 10, marginStart: 10 }}>{item.productName}</Text>
