@@ -5,8 +5,10 @@ import { Order } from '../../constants/Types/OrderTypes'
 
 import * as Calendar from 'expo-calendar';
 import { dateStringToMS } from '../screens/RootScreens/HomeScreen';
+import { useNavigation } from '@react-navigation/native';
 
 const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
+    const navigation = useNavigation()
 
     const [calendarId, setCalendarId] = useState('')
 
@@ -58,7 +60,9 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
         <Pressable
             android_ripple={{ color: '#ccc', radius: 250, borderless: false }}
             style={{ flex: 1, flexDirection: 'row', height: 100, marginTop: 15, backgroundColor: '#4d4a50', borderRadius: 7, marginLeft: 15, marginRight: 15, justifyContent: 'space-between', alignItems: 'center' }}
-            onPress={() => { }}
+            onPress={() => navigation.navigate('OrderDetailsScreen', {
+                item: item
+            })}
             key={index}
         >
             <Image source={{ uri: item.productImage }} style={{ height: 80, width: 80, marginStart: 8, borderRadius: 5, flex: 1 }} />

@@ -119,6 +119,7 @@ const HomeScreen: React.FC = observer((props: any) => {
             item={item}
             index={index}
             separators={separators}
+        // navigation={props.navigation}
         />
     )
 

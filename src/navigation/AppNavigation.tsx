@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from 'react-native-screens/native-stack';
 import { Avatar } from 'react-native-ui-lib';
 import { useNavigation } from '@react-navigation/native';
 import SettingsScreen from '../screens/RootScreens/SettingsScreen';
+import OrderDetailsScreen from '../screens/RootScreens/OrderDetailsScreen';
 
 
 enableScreens()
@@ -37,25 +38,25 @@ export const RootNavigator = () => {
                     fontSize: 45,
                     fontFamily: 'segoe-bold'
                 },
-                headerTintColor: "#000",
+                headerTintColor: "#fff",
                 headerStyle: {
                     backgroundColor: "#050505",
-                    // height: 70
                 },
-
-                // headerTitle: "Orders",
-                // headerRight: () => (
-                //     <TouchableOpacity style={{ marginEnd: 20 }} onPress={() => navigation.navigate('SettingsScreen')}
-                //     >
-                //         <Avatar
-                //             source={{ uri: "https://avatars.githubusercontent.com/u/24722640?v=4" }}
-                //             animate
-                //             imageStyle={{ borderColor: "#fff", borderWidth: 1 }} />
-                //     </TouchableOpacity>
-                // )
             })}
         >
             <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: true, headerTitle: "Orders" }} />
+            <RootStackNavigator.Screen
+                name="OrderDetailsScreen"
+                component={OrderDetailsScreen}
+                options={{
+                    headerShown: true,
+                    headerTitleStyle: {
+                        color: "#FFF",
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                        fontFamily: 'segoe-bold'
+                    },
+                }} />
             <RootStackNavigator.Screen name="Settings" component={SettingsNavigator} options={{ headerShown: false, headerTitle: "Settings" }} />
 
             <RootStackNavigator.Screen
