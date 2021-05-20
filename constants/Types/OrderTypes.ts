@@ -22,6 +22,12 @@ export type Order = {
   //   totalDeliveryCharges?: string;
 };
 
+export type OrderList = {
+  // [ETA: string]: Order;
+  EstimatedDeliveryTime: string;
+  orderItems: Order[];
+};
+
 export type AmazonOrder = {
   totalPrice: string;
   orderNumber: string;

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
-import { AuthNavigator, RootNavigator, SitesNavigator } from './AppNavigation';
+import { AuthNavigator, RootNavigator } from './AppNavigation';
 
 import { LightTheme } from '../../constants/Themes/LightTheme';
 import { DarkTheme } from '../../constants/Themes/DarkTheme';
@@ -32,7 +32,7 @@ const AppContainer = observer(() => {
 
     return (
         <NavigationContainer
-            theme={LightTheme}
+            theme={DarkTheme}
         >
             {isLoggedIn && <RootNavigator />}
             {!isLoggedIn && store.didTryAutoLogin && <AuthNavigator />}
