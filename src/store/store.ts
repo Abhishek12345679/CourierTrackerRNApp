@@ -1,4 +1,5 @@
 import {applySnapshot, onSnapshot, types} from 'mobx-state-tree';
+import {OrderList} from '../../constants/Types/OrderTypes';
 
 export type Credentials = {
   access_token: string;
@@ -29,14 +30,38 @@ const loginCredentials = types.model('loginCredentials', {
   token: types.optional(types.string, ''),
 });
 
+const order = types.model('Order', {
+  orderNumber: types.optional(types.string, ''),
+  productName: types.optional(types.string, ''),
+  productImage: types.optional(types.string, ''),
+  sellerName: types.optional(types.string, ''),
+  deliveryCharges: types.optional(types.string, ''),
+  ETA: types.optional(types.string, ''),
+  quantity: types.optional(types.string, ''),
+  deliveryDiscount: types.optional(types.string, ''),
+  productPrice: types.optional(types.string, ''),
+  productLink: types.optional(types.string, ''),
+  totalPrice: types.optional(types.string, ''),
+  from: types.optional(types.string, ''),
+});
+
+const orderList = types.model('OrderList', {
+  EstimatedDeliveryTime: types.optional(types.string, ''),
+  orderItems: types.optional(types.array(order), []),
+});
+
 // central Store
 const store = types
   .model('store', {
+    orders: types.optional(types.array(orderList), []),
     googleCredentials: types.optional(googleCredentials, {}),
     loginCredentials: types.optional(loginCredentials, {}),
     didTryAutoLogin: types.optional(types.boolean, false),
   })
   .actions((self) => ({
+    saveOrders(orderList: OrderList[]) {
+      (self as any).orders = orderList;
+    },
     setLoginCredentials(credentials: loginCredentialsType) {
       self.loginCredentials = credentials;
     },

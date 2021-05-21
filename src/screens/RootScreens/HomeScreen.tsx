@@ -81,18 +81,26 @@ const HomeScreen: React.FC = observer((props: any) => {
 
             const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
             const myntraOrders = await getMyntraOrders(store.googleCredentials)
-            const orders = await groupOrders(flipkartOrders, myntraOrders)
+            const groupedOrders = groupOrders(flipkartOrders, myntraOrders)
+            const sortedOrders = sortOrders(groupedOrders)
 
-            setOrders(orders)
-
+            // console.log("sorted orders: ", JSON.stringify(sortedOrders, null, 4))
+            setOrders(sortedOrders)
         }
 
         getOrders()
     }, [])
 
 
+    const sortOrders = (groupedOrders: OrderListType[]) => {
+        groupedOrders.sort((a: OrderListType, b: OrderListType) => {
+            return parseInt(a.EstimatedDeliveryTime) - parseInt(b.EstimatedDeliveryTime)
+        })
+        return groupedOrders
+    }
 
-    const groupOrders = async (flipkartOrders: Order[], myntraOrders: Order[]) => {
+
+    const groupOrders = (flipkartOrders: Order[], myntraOrders: Order[]) => {
         const superArray: Order[] = [...flipkartOrders, ...myntraOrders]
         const groups = superArray.reduce((acc: any, order: Order) => {
             if (order.from === 'flipkart') {

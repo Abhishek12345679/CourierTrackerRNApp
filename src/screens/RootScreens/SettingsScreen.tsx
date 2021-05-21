@@ -1,11 +1,14 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, ScrollView } from 'react-native'
+import { Switch } from 'react-native-ui-lib'
+import SwitchGroup from '../../components/SwitchGroup'
 
 const SettingsScreen = () => {
+
     return (
-        <View style={{ flex: 1, backgroundColor: "#000" }}>
-            <Text></Text>
-        </View>
+        <ScrollView style={{ flex: 1, backgroundColor: "#000", }}>
+            <SwitchGroup label={"show delivered items"} toggleStatus={true} />
+        </ScrollView>
     )
 }
 
