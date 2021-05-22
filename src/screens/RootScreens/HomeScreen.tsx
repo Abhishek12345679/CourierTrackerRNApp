@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, FlatList, ListRenderItem, TouchableOpacity } from 'react-native'
+import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl } from 'react-native'
 
 import store, { Credentials } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
@@ -7,7 +7,10 @@ import { observer } from 'mobx-react';
 import GoogleSignInCard from '../../components/GoogleSignInCard';
 import { Order, AmazonOrder, OrderList as OrderListType } from '../../../constants/Types/OrderTypes';
 import OrderList from '../../components/OrderList';
-import { Avatar } from 'react-native-ui-lib';
+import { Avatar, Incubator } from 'react-native-ui-lib';
+import { Ionicons } from '@expo/vector-icons';
+
+const { TextField } = Incubator
 
 export const dateStringToMS = (dateString: string) => {
     // const month_long = ["January", "February", "March", "April", "May", "June", "July",
@@ -27,37 +30,39 @@ export const dateStringToMS = (dateString: string) => {
 const HomeScreen: React.FC = observer((props: any) => {
 
     const [orders, setOrders] = useState<OrderListType[]>([])
-    const [amazonOrders, setAmazonOrders] = useState<AmazonOrder[]>([])
-    const [flipkartOrders, setFlipkartOrders] = useState<Order[]>([])
-    const [myntraOrders, setMyntraOrders] = useState<Order[]>([])
-    const [ajioOrders, setAjioOrders] = useState<Order[]>([])
     const [gmailAccessStatus, setGmailAccessStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
+    const onRefresh = React.useCallback(() => {
+        setRefreshing(true);
+        getOrders().then(() => {
+            setRefreshing(false)
+        })
+
+    }, []);
+
 
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}`)
         const AmazonOrders = await AZResponse.json()
-        setAmazonOrders(AmazonOrders)
     }
 
     const getFlipkartOrders = async (auth: Credentials) => {
         const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
         const FlipkartOrders = await FKResponse.json()
-        // console.log(JSON.stringify(FlipkartOrders, null, 2))
-        // setFlipkartOrders(FlipkartOrders.flipkartOrders)
         return FlipkartOrders.flipkartOrders
     }
     const getMyntraOrders = async (auth: Credentials) => {
         const MResponse = await fetch(`${sensitiveData.baseUrl}/getMyntraOrderDetails?tokens=${JSON.stringify(auth)}`)
         const MyntraOrders = await MResponse.json()
-        // setMyntraOrders(MyntraOrders)
         return MyntraOrders.myntraOrders
     }
 
     const getAjioOrders = async (auth: Credentials) => {
         const AResponse = await fetch(`${sensitiveData.baseUrl}/getAjioOrderDetails?tokens=${JSON.stringify(auth)}`)
         const AjioOrders = await AResponse.json()
-        setAjioOrders(AjioOrders)
     }
 
     const getGoogleAccess = async () => {
@@ -70,6 +75,17 @@ const HomeScreen: React.FC = observer((props: any) => {
         })
     }
 
+    const getOrders = async () => {
+
+        const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
+        const myntraOrders = await getMyntraOrders(store.googleCredentials)
+        const groupedOrders = groupOrders(flipkartOrders, myntraOrders)
+        const sortedOrders = sortOrders(groupedOrders)
+
+        // setOrders(sortedOrders)
+        store.saveOrders(sortedOrders)
+        console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
+    }
 
     useEffect(() => {
 
@@ -77,17 +93,6 @@ const HomeScreen: React.FC = observer((props: any) => {
             console.log(store.googleCredentials)
             setGmailAccessStatus(true)
         }
-        const getOrders = async () => {
-
-            const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
-            const myntraOrders = await getMyntraOrders(store.googleCredentials)
-            const groupedOrders = groupOrders(flipkartOrders, myntraOrders)
-            const sortedOrders = sortOrders(groupedOrders)
-
-            // console.log("sorted orders: ", JSON.stringify(sortedOrders, null, 4))
-            setOrders(sortedOrders)
-        }
-
         getOrders()
     }, [])
 
@@ -111,7 +116,7 @@ const HomeScreen: React.FC = observer((props: any) => {
             return acc
         }, {})
 
-        console.log(JSON.stringify(groups, null, 4))
+        // console.log(JSON.stringify(groups, null, 4))
 
         const newOrderList: OrderListType[] = Object.entries(groups).map(([k, v]) => ({
             EstimatedDeliveryTime: k,
@@ -143,25 +148,50 @@ const HomeScreen: React.FC = observer((props: any) => {
         })
     }, []);
 
+    if (store.orders.length === 0)
+        return (
+            <View style={{ flex: 1, backgroundColor: '#090c08', justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#fff" />
+            </View>
+        )
+
 
     return (
         <>
             {orders && <FlatList
+                // stickyHeaderIndices={[0]}
                 ListHeaderComponent={
-                    !gmailAccessStatus && <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} />
+                    !gmailAccessStatus ? <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /> :
+                        <View style={{ flexDirection: 'row', flex: 1, height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20 }}>
+                            <TextField
+                                style={{ fontSize: 17, fontWeight: 'bold', width: '90%', color: "#fff" }}
+                                containerStyle={{ height: 50, justifyContent: "center", borderRadius: 25, width: '85%', backgroundColor: "#fff" }}
+                                fieldStyle={{ marginHorizontal: 20 }}
+                                placeholderTextColor="#000"
+                                placeholder="Type something..."
+                                value={""}
+                                onChangeText={() => { }}
+                            />
+                            <TouchableOpacity
+                                style={{ width: 50, height: 50, borderRadius: 25, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' }}
+                                onPress={() => props.navigation.navigate('AddOrder')}>
+                                <Ionicons size={30} name="md-add" />
+                            </TouchableOpacity>
+                        </View>
                 }
                 ListHeaderComponentStyle={{ justifyContent: 'center', alignItems: "center" }}
                 showsVerticalScrollIndicator={false}
                 style={{ flex: 1, backgroundColor: '#090c08' }}
                 contentContainerStyle={{ justifyContent: 'center' }}
-                key={(Math.random() * 10000).toString()}
-                data={orders}
+                keyExtractor={item => item.EstimatedDeliveryTime}
+                data={store.orders}
                 renderItem={renderOrderItem}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
             />}
         </>
     )
 })
 
 export default HomeScreen
-
-

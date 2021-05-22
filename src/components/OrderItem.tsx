@@ -59,7 +59,7 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
     return (
         <Pressable
             android_ripple={{ color: '#ccc', radius: 250, borderless: false }}
-            style={{ flex: 1, flexDirection: 'row', height: 100, marginTop: 15, backgroundColor: '#4d4a50', borderRadius: 7, marginLeft: 15, marginRight: 15, justifyContent: 'space-between', alignItems: 'center' }}
+            style={{ flex: 1, flexDirection: 'row', height: 110, marginTop: 15, backgroundColor: '#4d4a50', borderRadius: 7, marginLeft: 15, marginRight: 15, justifyContent: 'space-between', alignItems: 'center' }}
             onPress={() => navigation.navigate('OrderDetailsScreen', {
                 item: item
             })}
