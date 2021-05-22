@@ -164,11 +164,12 @@ const HomeScreen: React.FC = observer((props: any) => {
                     !gmailAccessStatus ? <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /> :
                         <View style={{ flexDirection: 'row', flex: 1, height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20 }}>
                             <TextField
-                                style={{ fontSize: 17, fontWeight: 'bold', width: '90%', color: "#fff" }}
+                                style={{ fontSize: 17, fontFamily: 'segoe-normal', width: '90%', color: "#fff" }}
                                 containerStyle={{ height: 50, justifyContent: "center", borderRadius: 25, width: '85%', backgroundColor: "#fff" }}
                                 fieldStyle={{ marginHorizontal: 20 }}
-                                placeholderTextColor="#000"
+                                placeholderTextColor="#aaa"
                                 placeholder="Type something..."
+
                                 value={""}
                                 onChangeText={() => { }}
                             />

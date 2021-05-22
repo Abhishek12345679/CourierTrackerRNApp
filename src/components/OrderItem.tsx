@@ -6,6 +6,7 @@ import { Order } from '../../constants/Types/OrderTypes'
 import * as Calendar from 'expo-calendar';
 import { dateStringToMS } from '../screens/RootScreens/HomeScreen';
 import { useNavigation } from '@react-navigation/native';
+import store from '../store/store';
 
 const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
     const navigation = useNavigation()
@@ -54,7 +55,9 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
             startDate: new Date(dateStringToMS(item.ETA)),// invalid when start date is in the past
             endDate: new Date(dateStringToMS(item.ETA))
         })
+        store.setCalendarEventId(event, item.orderId, dateStringToMS(item.ETA).toString()) //fix for flipkart
         console.log(event)
+        // Calendar.openEventInCalendar(event)
     }
     return (
         <Pressable
@@ -69,14 +72,15 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
             <View style={{ flex: 4 }}>
                 <Text style={{ fontWeight: 'bold', marginBottom: 5, color: '#fff', marginEnd: 10, marginStart: 10 }}>{item.productName}</Text>
                 <View style={{ flexDirection: "row", alignItems: 'center' }}>
-                    <View style={{ width: 75, height: 35, marginBottom: 5, backgroundColor: 'black', justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginStart: 10, marginTop: 5 }}>
-                        <Text style={{ flexShrink: 1, color: '#fff', fontWeight: 'bold', fontSize: 15 }}>₹{item.productPrice.replace("b\x02(.", "")}</Text>
+                    <View style={{ width: 75, height: 35, marginBottom: 5, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginStart: 10, marginTop: 5 }}>
+                        <Text style={{ flexShrink: 1, color: '#fff', fontWeight: 'bold', fontSize: 17 }}>₹{item.productPrice.replace("b\x02(.", "").trim()}</Text>
                     </View>
                     <Pressable android_ripple={{ color: '#000', radius: 250, borderless: false }}
                         style={{ flexDirection: 'row', width: 200, height: 35, backgroundColor: "#fff", marginEnd: 30, elevation: 100, borderRadius: 5, alignItems: 'center', justifyContent: "center", marginStart: 20 }}
                         onPress={addEventToCalendar}>
                         <Image source={require('../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} />
                         <Text style={{ fontFamily: 'segoe-bold', fontSize: 15 }}>Add to Calendar</Text>
+
                     </Pressable>
                 </View>
             </View>

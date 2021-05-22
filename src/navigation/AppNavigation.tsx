@@ -50,7 +50,7 @@ export const RootNavigator = () => {
                 name="OrderDetailsScreen"
                 component={OrderDetailsScreen}
                 options={{
-                    headerShown: true,
+                    headerShown: false,
                     headerTitleStyle: {
                         color: "#FFF",
                         fontWeight: 'bold',

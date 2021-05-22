@@ -7,6 +7,7 @@ export type Credentials = {
 };
 
 export type Order = {
+  orderId: string;
   orderNumber: string;
   productName: string;
   productImage: string;
@@ -19,6 +20,7 @@ export type Order = {
   productLink?: string;
   totalPrice: string;
   from: string;
+  calendarEventId: string;
   //   totalDeliveryCharges?: string;
 };
 

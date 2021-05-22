@@ -13,6 +13,7 @@ const App = () => {
   const fetchFonts = () => {
     return Fonts.loadAsync({
       "segoe-bold": require("./constants/Fonts/Segoe_UI_Bold.ttf"),
+      "segoe-normal": require("./constants/Fonts/Segoe_UI.ttf"),
     });
   };
 

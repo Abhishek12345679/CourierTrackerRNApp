@@ -31,6 +31,7 @@ const loginCredentials = types.model('loginCredentials', {
 });
 
 const order = types.model('Order', {
+  orderId: types.optional(types.string, ''),
   orderNumber: types.optional(types.string, ''),
   productName: types.optional(types.string, ''),
   productImage: types.optional(types.string, ''),
@@ -43,6 +44,7 @@ const order = types.model('Order', {
   productLink: types.optional(types.string, ''),
   totalPrice: types.optional(types.string, ''),
   from: types.optional(types.string, ''),
+  calendarEventId: types.optional(types.string, ''),
 });
 
 const orderList = types.model('OrderList', {
@@ -61,6 +63,19 @@ const store = types
   .actions((self) => ({
     saveOrders(orderList: OrderList[]) {
       (self as any).orders = orderList;
+    },
+    setCalendarEventId(id: string, orderId: string, eta: string) {
+      console.log({id, orderId, eta});
+      self.orders.map((order, index) => {
+        if (order.EstimatedDeliveryTime === eta) {
+          order.orderItems.map((item, index) => {
+            if (item.orderId === orderId) {
+              item.calendarEventId = id;
+              console.log('added: ' + id);
+            }
+          });
+        }
+      });
     },
     setLoginCredentials(credentials: loginCredentialsType) {
       self.loginCredentials = credentials;
