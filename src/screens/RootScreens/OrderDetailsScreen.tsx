@@ -1,17 +1,38 @@
 import { Ionicons } from '@expo/vector-icons'
 import { HeaderBackButton } from '@react-navigation/stack'
+import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 import { View, Text, ScrollView, Pressable } from 'react-native'
 import Image from 'react-native-ui-lib/image'
 import { Order } from '../../../constants/Types/OrderTypes'
+import { createCalendar } from '../../components/OrderItem'
+import * as Calendar from 'expo-calendar'
+import { dateStringToMS } from './HomeScreen'
+import store from '../../store/store'
 
-const OrderDetailsScreen = (props: any) => {
+const OrderDetailsScreen = observer((props: any) => {
     const { item } = props.route.params
     useEffect(() => {
         props.navigation.setOptions({
             title: item.productName
         })
     }, []);
+
+    const addEventToCalendar = async () => {
+        const id = await createCalendar()
+        console.log("id: ", id)
+
+        const event = await Calendar.createEventAsync(id, {
+            title: item.productName,
+            startDate: new Date(dateStringToMS(item.ETA)),// invalid when start date is in the past
+            endDate: new Date(dateStringToMS(item.ETA))
+        })
+        store.setCalendarEventId(event, item.orderId, dateStringToMS(item.ETA).toString()) //fix for flipkart
+        console.log(event)
+        // Calendar.openEventInCalendar(event)
+    }
+
+    //FIXME: add to calendar not workin
 
     return (
         <ScrollView style={{ flex: 1 }}>
@@ -46,8 +67,45 @@ const OrderDetailsScreen = (props: any) => {
                     <Text style={{ color: "#fff", marginStart: 10 }}>{item.ETA}</Text>
                 </View>
             </View>
+            <View style={{ width: '100%', marginTop: 40, height: 100, paddingHorizontal: 10 }}>
+                <View style={{ width: '100%', backgroundColor: '#fff', height: 100, borderRadius: 20, justifyContent: "space-between", flexDirection: 'row', alignItems: "center", paddingStart: 10 }}>
+                    <View>
+                        <Text style={{ color: "#000", marginStart: 10, fontFamily: 'segoe-normal', fontSize: 20 }}>Price</Text>
+                        <Text style={{ color: "#000", marginStart: 10, fontFamily: 'segoe-bold', fontSize: 40 }}>₹{item.productPrice.replace("b\x02(.", "").slice(0, item.productPrice.indexOf('+')).trim()}</Text>
+                    </View>
+                    <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
+                        style={{ flexDirection: 'row', width: 200, height: 70, backgroundColor: "#000", marginEnd: 30, elevation: 100, borderRadius: 20, alignItems: 'center', justifyContent: "center", marginStart: 20 }}
+                        onPress={addEventToCalendar}>
+                        {item.calendarEventId.length === 0 ? <View style={{ flexDirection: 'row', width: 200, height: 70, backgroundColor: "#000", marginEnd: 30, elevation: 100, borderRadius: 20, alignItems: 'center', justifyContent: "center", marginStart: 20 }}>
+                            <Image source={require('../../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} />
+                            <Text style={{ fontFamily: 'segoe-bold', fontSize: 15, color: '#fff' }}>Add to Calendar</Text>
+                        </View> :
+                            <View>
+                                <Text style={{ color: "#fff" }}>Added to Calendar</Text>
+                            </View>
+                        }
+                    </Pressable>
+                </View>
+            </View>
+            <Text style={{ color: "#fff", marginStart: 30, fontFamily: 'segoe-bold', fontSize: 20, marginTop: 20 }}>Order Breakdown</Text>
+
+            <View style={{ justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 20 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+                    <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>Product Price</Text>
+                    <Text style={{ color: '#fff' }}>{item.productPrice.slice(0, item.productPrice.indexOf('+')).trim()}</Text>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>Delivery Charges</Text>
+                    <Text style={{ color: '#fff' }}>-{item.deliveryCharges.trim()}</Text>
+                </View>
+                <View style={{ height: 1, width: '100%', backgroundColor: '#fff', marginVertical: 10 }}></View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>Total Price</Text>
+                    <Text style={{ color: '#fff' }}>{item.totalPrice.trim()}</Text>
+                </View>
+            </View>
         </ScrollView>
     )
-}
+})
 
 export default OrderDetailsScreen

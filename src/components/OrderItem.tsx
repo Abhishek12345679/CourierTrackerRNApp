@@ -7,8 +7,35 @@ import * as Calendar from 'expo-calendar';
 import { dateStringToMS } from '../screens/RootScreens/HomeScreen';
 import { useNavigation } from '@react-navigation/native';
 import store from '../store/store';
+import { observer } from 'mobx-react';
 
-const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
+export const getDefaultCalendarSource = async () => {
+    const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+    const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
+    return defaultCalendars[0].source;
+}
+
+export const createCalendar = async () => {
+    const defaultCalendarSource =
+        Platform.OS === 'ios'
+            ? await getDefaultCalendarSource()
+            : { isLocalAccount: true, name: 'Woosh' };
+    const newCalendarID = await Calendar.createCalendarAsync({
+        title: 'Expo Calendar',
+        color: 'blue',
+        entityType: Calendar.EntityTypes.EVENT,
+        sourceId: defaultCalendarSource.id,
+        source: defaultCalendarSource,
+        name: 'internalCalendarName',
+        ownerAccount: 'personal',
+        accessLevel: Calendar.CalendarAccessLevel.OWNER,
+    });
+    return newCalendarID
+}
+
+
+
+const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
     const navigation = useNavigation()
 
     const [calendarId, setCalendarId] = useState('')
@@ -20,31 +47,6 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
             }
         })();
     }, []);
-
-
-    const getDefaultCalendarSource = async () => {
-        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-        const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
-        return defaultCalendars[0].source;
-    }
-
-    const createCalendar = async () => {
-        const defaultCalendarSource =
-            Platform.OS === 'ios'
-                ? await getDefaultCalendarSource()
-                : { isLocalAccount: true, name: 'Woosh' };
-        const newCalendarID = await Calendar.createCalendarAsync({
-            title: 'Expo Calendar',
-            color: 'blue',
-            entityType: Calendar.EntityTypes.EVENT,
-            sourceId: defaultCalendarSource.id,
-            source: defaultCalendarSource,
-            name: 'internalCalendarName',
-            ownerAccount: 'personal',
-            accessLevel: Calendar.CalendarAccessLevel.OWNER,
-        });
-        return newCalendarID
-    }
 
     const addEventToCalendar = async () => {
         const id = await createCalendar()
@@ -59,6 +61,7 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
         console.log(event)
         // Calendar.openEventInCalendar(event)
     }
+
     return (
         <Pressable
             android_ripple={{ color: '#ccc', radius: 250, borderless: false }}
@@ -73,7 +76,7 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
                 <Text style={{ fontWeight: 'bold', marginBottom: 5, color: '#fff', marginEnd: 10, marginStart: 10 }}>{item.productName}</Text>
                 <View style={{ flexDirection: "row", alignItems: 'center' }}>
                     <View style={{ width: 75, height: 35, marginBottom: 5, backgroundColor: 'transparent', justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginStart: 10, marginTop: 5 }}>
-                        <Text style={{ flexShrink: 1, color: '#fff', fontWeight: 'bold', fontSize: 17 }}>₹{item.productPrice.replace("b\x02(.", "").trim()}</Text>
+                        <Text style={{ flexShrink: 1, color: '#fff', fontWeight: 'bold', fontSize: 17 }}>₹{item.productPrice.replace("b\x02(.", "").slice(0, item.productPrice.indexOf('+')).trim()}</Text>
                     </View>
                     <Pressable android_ripple={{ color: '#000', radius: 250, borderless: false }}
                         style={{ flexDirection: 'row', width: 200, height: 35, backgroundColor: "#fff", marginEnd: 30, elevation: 100, borderRadius: 5, alignItems: 'center', justifyContent: "center", marginStart: 20 }}
@@ -88,6 +91,6 @@ const OrderItem: ListRenderItem<Order> = ({ item, index }) => {
         </Pressable>
 
     )
-}
+})
 
 export default OrderItem
