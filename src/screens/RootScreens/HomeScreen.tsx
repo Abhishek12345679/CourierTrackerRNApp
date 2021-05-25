@@ -12,20 +12,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 const { TextField } = Incubator
 
-export const dateStringToMS = (dateString: string) => {
-    // const month_long = ["January", "February", "March", "April", "May", "June", "July",
-    //     "August", "September", "October", "November", "December"];
-    const month_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-    const date = parseInt(dateString.substring(dateString.indexOf(',') + 2, dateString.indexOf('th')))
-
-    const month = dateString.substring(dateString.indexOf('th') + 3, dateString.lastIndexOf(',')).trim()
-    const month_index = month_short.findIndex((mon) => mon === month)
-
-    const year = parseInt(dateString.substring(dateString.lastIndexOf(',') + 1))
-
-    return new Date(year, month_index, date, 0, 0, 0, 0).getTime()
-}
 
 const HomeScreen: React.FC = observer((props: any) => {
 
@@ -108,11 +94,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     const groupOrders = (flipkartOrders: Order[], myntraOrders: Order[]) => {
         const superArray: Order[] = [...flipkartOrders, ...myntraOrders]
         const groups = superArray.reduce((acc: any, order: Order) => {
-            if (order.from === 'flipkart') {
-                acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
-            } else if (order.from === 'Myntra') {
-                acc[dateStringToMS(order.ETA)] = acc[dateStringToMS(order.ETA)] ? acc[dateStringToMS(order.ETA)].concat(order) : [order]
-            }
+            acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
             return acc
         }, {})
 

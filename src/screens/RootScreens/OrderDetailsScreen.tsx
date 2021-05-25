@@ -7,7 +7,6 @@ import Image from 'react-native-ui-lib/image'
 import { Order } from '../../../constants/Types/OrderTypes'
 import { createCalendar } from '../../components/OrderItem'
 import * as Calendar from 'expo-calendar'
-import { dateStringToMS } from './HomeScreen'
 import store from '../../store/store'
 
 const OrderDetailsScreen = observer((props: any) => {
@@ -22,17 +21,17 @@ const OrderDetailsScreen = observer((props: any) => {
         const id = await createCalendar()
         console.log("id: ", id)
 
+        //FIXME: add to calendar not working
         const event = await Calendar.createEventAsync(id, {
             title: item.productName,
-            startDate: new Date(dateStringToMS(item.ETA)),// invalid when start date is in the past
-            endDate: new Date(dateStringToMS(item.ETA))
+            startDate: new Date(item.ETA),
+            endDate: new Date(item.ETA)
         })
-        store.setCalendarEventId(event, item.orderId, dateStringToMS(item.ETA).toString()) //fix for flipkart
+        store.setCalendarEventId(event, item.orderId, item.ETA) //fix for flipkart
         console.log(event)
         // Calendar.openEventInCalendar(event)
     }
 
-    //FIXME: add to calendar not workin
 
     return (
         <ScrollView style={{ flex: 1 }}>
@@ -71,7 +70,7 @@ const OrderDetailsScreen = observer((props: any) => {
                 <View style={{ width: '100%', backgroundColor: '#fff', height: 100, borderRadius: 20, justifyContent: "space-between", flexDirection: 'row', alignItems: "center", paddingStart: 10 }}>
                     <View>
                         <Text style={{ color: "#000", marginStart: 10, fontFamily: 'segoe-normal', fontSize: 20 }}>Price</Text>
-                        <Text style={{ color: "#000", marginStart: 10, fontFamily: 'segoe-bold', fontSize: 40 }}>₹{item.productPrice.replace("b\x02(.", "").slice(0, item.productPrice.indexOf('+')).trim()}</Text>
+                        <Text style={{ color: "#000", marginStart: 10, fontFamily: 'segoe-bold', fontSize: 40 }}>₹{Math.trunc(parseInt(item.productPrice.trim())).toString()}</Text>
                     </View>
                     <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
                         style={{ flexDirection: 'row', width: 200, height: 70, backgroundColor: "#000", marginEnd: 30, elevation: 100, borderRadius: 20, alignItems: 'center', justifyContent: "center", marginStart: 20 }}

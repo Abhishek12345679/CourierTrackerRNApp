@@ -8,6 +8,8 @@ import AppContainer from './src/navigation/RootNavigation';
 
 declare const global: { HermesInternal: null | {} };
 
+//TODO:  add loading up orders here 
+
 const App = () => {
   const [fontLoaded, setFontLoaded] = useState<boolean>();
   const fetchFonts = () => {
