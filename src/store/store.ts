@@ -77,6 +77,17 @@ const store = types
         }
       });
     },
+    getCalendarEventId(id: string, orderId: string, eta: string) {
+      self.orders.map((order, index) => {
+        if (order.EstimatedDeliveryTime === eta) {
+          order.orderItems.map((item, index) => {
+            if (item.orderId === orderId) {
+              return item.calendarEventId;
+            }
+          });
+        }
+      });
+    },
     setLoginCredentials(credentials: loginCredentialsType) {
       self.loginCredentials = credentials;
     },

@@ -19,16 +19,14 @@ const OrderDetailsScreen = observer((props: any) => {
 
     const addEventToCalendar = async () => {
         const id = await createCalendar()
-        console.log("id: ", id)
-
-        //FIXME: add to calendar not working
+        // console.log("id: ", id)
         const event = await Calendar.createEventAsync(id, {
             title: item.productName,
             startDate: new Date(item.ETA),
             endDate: new Date(item.ETA)
         })
-        store.setCalendarEventId(event, item.orderId, item.ETA) //fix for flipkart
-        console.log(event)
+        store.setCalendarEventId(event, item.orderId, Date.parse(item.ETA).toString())
+        // console.log(event)
         // Calendar.openEventInCalendar(event)
     }
 

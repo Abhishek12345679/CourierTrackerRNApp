@@ -50,13 +50,14 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
     const addEventToCalendar = async () => {
         const id = await createCalendar()
         console.log("id: ", id)
+        console.log('Date:', new Date(item.ETA))
 
         const event = await Calendar.createEventAsync(id, {
             title: item.productName,
             startDate: new Date((item.ETA)),
             endDate: new Date((item.ETA))
         })
-        store.setCalendarEventId(event, item.orderId, item.ETA) //fix for flipkart
+        store.setCalendarEventId(event, item.orderId, Date.parse(item.ETA).toString())
         console.log(event)
         // Calendar.openEventInCalendar(event)
     }
@@ -80,8 +81,10 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                     <Pressable android_ripple={{ color: '#000', radius: 250, borderless: false }}
                         style={{ flexDirection: 'row', width: 200, height: 35, backgroundColor: "#fff", marginEnd: 30, elevation: 100, borderRadius: 5, alignItems: 'center', justifyContent: "center", marginStart: 20 }}
                         onPress={addEventToCalendar}>
-                        <Image source={require('../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} />
-                        <Text style={{ fontFamily: 'segoe-bold', fontSize: 15 }}>Add to Calendar</Text>
+                        {item.calendarEventId.length === 0 ? <View style={{ flexDirection: "row", alignItems: "center" }}>
+                            <Image source={require('../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} />
+                            <Text style={{ fontFamily: 'segoe-bold', fontSize: 15 }}>Add to Calendar</Text>
+                        </View> : <Text>Added to Calendar</Text>}
 
                     </Pressable>
                 </View>
