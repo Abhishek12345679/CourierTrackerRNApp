@@ -84,9 +84,9 @@ const OrderDetailsScreen = observer((props: any) => {
                     </Pressable>
                 </View>
             </View>
-            <Text style={{ color: "#fff", marginStart: 30, fontFamily: 'segoe-bold', fontSize: 20, marginTop: 20 }}>Order Breakdown</Text>
+            {/* <Text style={{ color: "#fff", marginStart: 30, fontFamily: 'segoe-bold', fontSize: 20, marginTop: 20 }}>Order Breakdown</Text> */}
 
-            <View style={{ justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 20 }}>
+            {/* <View style={{ justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 20 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
                     <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>Product Price</Text>
                     <Text style={{ color: '#fff' }}>{item.productPrice.slice(0, item.productPrice.indexOf('+')).trim()}</Text>
@@ -97,9 +97,13 @@ const OrderDetailsScreen = observer((props: any) => {
                 </View>
                 <View style={{ height: 1, width: '100%', backgroundColor: '#fff', marginVertical: 10 }}></View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>Total Price</Text>
+                     <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>Total Price</Text>
                     <Text style={{ color: '#fff' }}>{item.totalPrice.trim()}</Text>
                 </View>
+            </View> */}
+            <View style={{ justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 20 }}>
+                <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>This Product was ordered by you on {item.from} </Text>
+                <Image source={require(`../../Assets/BrandLogos/flipkart.png`)} style={{ width: 100, height: 100 }} />
             </View>
         </ScrollView>
     )
