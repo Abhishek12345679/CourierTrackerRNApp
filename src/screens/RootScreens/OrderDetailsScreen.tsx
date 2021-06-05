@@ -1,21 +1,68 @@
-import { Ionicons } from '@expo/vector-icons'
-import { HeaderBackButton } from '@react-navigation/stack'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { observer } from 'mobx-react'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Pressable } from 'react-native'
 import Image from 'react-native-ui-lib/image'
 import { Order } from '../../../constants/Types/OrderTypes'
 import { createCalendar } from '../../components/OrderItem'
 import * as Calendar from 'expo-calendar'
 import store from '../../store/store'
+import { sensitiveData } from '../../../constants/sen_data'
+
+import ImageColors from 'react-native-image-colors'
 
 const OrderDetailsScreen = observer((props: any) => {
     const { item } = props.route.params
-    useEffect(() => {
-        props.navigation.setOptions({
-            title: item.productName
+    const [primaryColor, setPrimaryColor] = useState('#000000')
+    const [secondaryColor, setSecondaryColor] = useState('')
+
+
+    const extractColorsFromImage = async () => {
+
+        const colors = await ImageColors.getColors(item.productImage, {
+            fallback: '#000000',
+            cache: false,
+            key: 'unique_key',
         })
-    }, []);
+
+        if (colors.platform === 'android') {
+            setPrimaryColor(colors.darkMuted!)
+            console.log(colors.darkMuted!)
+        } else {
+            // test
+            console.log(colors)
+        }
+    }
+
+
+    const checkFlipkartDeliveryStatus = async (productName: string) => {
+
+
+        const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkFlipkartDeliveryStatus`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
+        })
+        const delStat = await statusResponse.json()
+        console.log(delStat)
+    }
+
+
+    // useEffect(() => {
+    //     props.navigation.setOptions({
+    //         title: item.productName
+    //     })
+    // }, []);
+
+    useEffect(() => {
+        extractColorsFromImage()
+        if (item.from === "flipkart") {
+            console.log(item.productName)
+            checkFlipkartDeliveryStatus(item.productName)
+        }
+    }, [item])
 
     const addEventToCalendar = async () => {
         const id = await createCalendar()
@@ -32,11 +79,11 @@ const OrderDetailsScreen = observer((props: any) => {
 
 
     return (
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1, backgroundColor: "#121212" }}>
             <View style={{ width: '100%', height: 400, position: "relative" }}>
                 <Image
                     source={{ uri: item.productImage }}
-                    style={{ width: '100%', height: 400, resizeMode: 'cover', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, marginTop: 0, }}
+                    style={{ width: '100%', height: 400, resizeMode: 'cover', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, marginTop: 0, backgroundColor: "#121212" }}
                 />
 
                 <View style={{ backgroundColor: '#000', opacity: 0.5, width: '100%', height: 400, position: 'absolute' }}></View>
@@ -68,13 +115,14 @@ const OrderDetailsScreen = observer((props: any) => {
                 <View style={{ width: '100%', backgroundColor: '#fff', height: 100, borderRadius: 20, justifyContent: "space-between", flexDirection: 'row', alignItems: "center", paddingStart: 10 }}>
                     <View>
                         <Text style={{ color: "#000", marginStart: 10, fontFamily: 'segoe-normal', fontSize: 20 }}>Price</Text>
-                        <Text style={{ color: "#000", marginStart: 10, fontFamily: 'segoe-bold', fontSize: 40 }}>₹{Math.trunc(parseInt(item.productPrice.trim())).toString()}</Text>
+                        <Text style={{ color: "#000", marginStart: 10, fontFamily: 'segoe-bold', fontSize: 40 }}>₹{Math.trunc(parseInt(item.productPrice.trim())).toString()}.00</Text>
                     </View>
                     <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
-                        style={{ flexDirection: 'row', width: 200, height: 70, backgroundColor: "#000", marginEnd: 30, elevation: 100, borderRadius: 20, alignItems: 'center', justifyContent: "center", marginStart: 20 }}
+                        style={{ flexDirection: 'row', width: 200, height: 70, backgroundColor: '#fff', marginEnd: 30, elevation: 100, borderRadius: 20, alignItems: 'center', justifyContent: "center", marginStart: 20 }}
                         onPress={addEventToCalendar}>
-                        {item.calendarEventId.length === 0 ? <View style={{ flexDirection: 'row', width: 200, height: 70, backgroundColor: "#000", marginEnd: 30, elevation: 100, borderRadius: 20, alignItems: 'center', justifyContent: "center", marginStart: 20 }}>
-                            <Image source={require('../../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} />
+                        {item.calendarEventId.length === 0 ? <View style={{ flexDirection: 'row', width: 200, height: 70, backgroundColor: primaryColor, marginEnd: 30, elevation: 100, borderRadius: 20, alignItems: 'center', justifyContent: "center", marginStart: 20 }}>
+                            {/* <Image source={require('../../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} /> */}
+                            <MaterialCommunityIcons name="bell-ring" size={24} color="#fff" style={{ marginEnd: 10 }} />
                             <Text style={{ fontFamily: 'segoe-bold', fontSize: 15, color: '#fff' }}>Add to Calendar</Text>
                         </View> :
                             <View>
@@ -101,10 +149,10 @@ const OrderDetailsScreen = observer((props: any) => {
                     <Text style={{ color: '#fff' }}>{item.totalPrice.trim()}</Text>
                 </View>
             </View> */}
-            <View style={{ justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 20 }}>
+            {/* <View style={{ justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 20 }}>
                 <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>This Product was ordered by you on {item.from} </Text>
                 <Image source={require(`../../Assets/BrandLogos/flipkart.png`)} style={{ width: 100, height: 100 }} />
-            </View>
+            </View> */}
         </ScrollView>
     )
 })

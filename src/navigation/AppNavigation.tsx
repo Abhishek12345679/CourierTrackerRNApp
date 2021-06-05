@@ -35,17 +35,23 @@ export const RootNavigator = () => {
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
                     color: "#FFF",
-                    fontWeight: 'bold',
                     fontSize: 45,
-                    fontFamily: 'segoe-bold'
+                    fontFamily: 'gotham-black'
                 },
                 headerTintColor: "#fff",
                 headerStyle: {
-                    backgroundColor: "#050505",
+                    backgroundColor: "#121212",
                 },
             })}
         >
-            <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: true, headerTitle: "Orders" }} />
+            <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{
+                headerShown: true, headerTitle: "AIO",
+                headerTitleStyle: {
+                    color: "#d8d6d6",
+                    fontSize: 35,
+                    fontFamily: 'gotham-black'
+                },
+            }} />
             <RootStackNavigator.Screen
                 name="OrderDetailsScreen"
                 component={OrderDetailsScreen}
