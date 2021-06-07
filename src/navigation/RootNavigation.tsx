@@ -35,10 +35,10 @@ const AppContainer = observer(() => {
         <NavigationContainer
             theme={LightTheme}
         >
-            <SplashScreen />
-            {/* {isLoggedIn && <RootNavigator />}
+            {/* <SplashScreen /> */}
+            {isLoggedIn && <RootNavigator />}
             {!isLoggedIn && store.didTryAutoLogin && <AuthNavigator />}
-            {!isLoggedIn && !store.didTryAutoLogin && <SplashScreen />} */}
+            {!isLoggedIn && !store.didTryAutoLogin && <SplashScreen />}
 
         </NavigationContainer>
     );

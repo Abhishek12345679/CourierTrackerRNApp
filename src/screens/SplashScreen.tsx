@@ -1,10 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { observer } from 'mobx-react'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, Image } from 'react-native'
+import { sensitiveData } from '../../constants/sen_data'
+import { Credentials, Order, OrderList as OrderListType } from '../../constants/Types/OrderTypes'
 import store from '../store/store'
 
 const SplashScreen = observer(() => {
+
     // fetch credentials from the Local Storage of the device
     const getCredentials = async () => {
         console.log('splash screen')

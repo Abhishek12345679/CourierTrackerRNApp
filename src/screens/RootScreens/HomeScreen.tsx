@@ -14,8 +14,23 @@ import { Modal, Card, Button, Datepicker } from '@ui-kitten/components'
 
 const { TextField } = Incubator
 
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const HomeScreen: React.FC = observer((props: any) => {
+
+    // TODO: add loading spinner while the orders are being fetched
+    useFocusEffect(
+        React.useCallback(() => {
+            if (store.googleCredentials.refresh_token !== "") {
+                console.log("logged in via google")
+                // console.log("google Creds: ",store.googleCredentials)
+                setGmailAccessStatus(true)
+                getOrders()
+            }
+            //   return () => unsubscribe();
+        }, [store.googleCredentials])
+    );
 
     console.log(store.googleCredentials)
     const [orders, setOrders] = useState<OrderListType[]>([])
@@ -90,15 +105,15 @@ const HomeScreen: React.FC = observer((props: any) => {
         console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
     }
 
-    useEffect(() => {
-        console.log("reftoken: ", store.googleCredentials)
-        if (store.googleCredentials.refresh_token !== "") {
-            console.log("logged in via google")
-            // console.log("google Creds: ",store.googleCredentials)
-            setGmailAccessStatus(true)
-            getOrders()
-        }
-    }, [])
+    // useEffect(() => {
+    //     // console.log("reftoken: ", store.googleCredentials)
+    //     if (store.googleCredentials.refresh_token !== "") {
+    //         console.log("logged in via google")
+    //         // console.log("google Creds: ",store.googleCredentials)
+    //         setGmailAccessStatus(true)
+    //         getOrders()
+    //     }
+    // }, [])
 
 
     const sortOrders = (groupedOrders: OrderListType[]) => {
