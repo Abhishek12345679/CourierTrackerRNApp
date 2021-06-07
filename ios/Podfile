@@ -5,17 +5,16 @@ require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 platform :ios, '11.0'
 
 target 'CourierTracker' do
-  pod 'RNFS', :path => '../node_modules/react-native-fs'
   use_unimodules!
   config = use_native_modules!
 
   use_react_native!(:path => config["reactNativePath"])
   
 
-  target 'CourierTrackerTests' do
-    inherit! :complete
-    # Pods for testing
-  end
+  # target 'CourierTrackerTests' do
+  #   inherit! :complete
+  #   # Pods for testing
+  # end
 
   # Enables Flipper.
   #
@@ -29,14 +28,5 @@ target 'CourierTracker' do
           config.build_settings['OTHER_CPLUSPLUSFLAGS'] = '-DDONT_AUTOINSTALL_REANIMATED'
       end
   end
-  end
-end
-
-target 'CourierTracker-tvOS' do
-  # Pods for CourierTracker-tvOS
-
-  target 'CourierTracker-tvOSTests' do
-    inherit! :search_paths
-    # Pods for testing
   end
 end

@@ -19,6 +19,7 @@ const AppContainer = observer(() => {
     let isLoggedIn = false
 
     loginCredsKeysLength.forEach((value, index) => {
+        console.log()
         if (value !== "") {
             isLoggedIn = true
         } else {
@@ -32,11 +33,12 @@ const AppContainer = observer(() => {
 
     return (
         <NavigationContainer
-            theme={DarkTheme}
+            theme={LightTheme}
         >
-            {isLoggedIn && <RootNavigator />}
+            <SplashScreen />
+            {/* {isLoggedIn && <RootNavigator />}
             {!isLoggedIn && store.didTryAutoLogin && <AuthNavigator />}
-            {!isLoggedIn && !store.didTryAutoLogin && <SplashScreen />}
+            {!isLoggedIn && !store.didTryAutoLogin && <SplashScreen />} */}
 
         </NavigationContainer>
     );

@@ -64,6 +64,9 @@ const store = types
     saveOrders(orderList: OrderList[]) {
       (self as any).orders = orderList;
     },
+    removeOrders() {
+      applySnapshot(self.orders, []);
+    },
     setCalendarEventId(id: string, orderId: string, eta: string) {
       console.log({id, orderId, eta});
       self.orders.map((order, index) => {

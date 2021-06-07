@@ -35,8 +35,8 @@ export const RootNavigator = () => {
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
                     color: "#FFF",
-                    fontSize: 45,
-                    fontFamily: 'gotham-black'
+                    // fontSize: 45,
+                    // fontFamily: 'gotham-black'
                 },
                 headerTintColor: "#fff",
                 headerStyle: {
@@ -45,7 +45,8 @@ export const RootNavigator = () => {
             })}
         >
             <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{
-                headerShown: true, headerTitle: "AIO",
+                headerShown: true,
+                headerTitle: "AIO",
                 headerTitleStyle: {
                     color: "#d8d6d6",
                     fontSize: 35,

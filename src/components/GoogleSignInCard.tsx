@@ -9,7 +9,7 @@ type Props = {
 const GoogleSignInCard = (props: Props) => {
     return (
         <View style={{
-            width: '95%',
+            width: '90%',
             height: 150,
             backgroundColor: "#787fa7",
             marginVertical: 20,

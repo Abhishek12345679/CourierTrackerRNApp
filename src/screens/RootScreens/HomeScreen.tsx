@@ -17,9 +17,11 @@ const { TextField } = Incubator
 
 const HomeScreen: React.FC = observer((props: any) => {
 
+    console.log(store.googleCredentials)
     const [orders, setOrders] = useState<OrderListType[]>([])
     const [gmailAccessStatus, setGmailAccessStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [fetchingOrders, setFetchingOrders] = useState(false)
 
     const [visible, setVisible] = useState(false)
     const [date, setDate] = useState(new Date());
@@ -59,17 +61,22 @@ const HomeScreen: React.FC = observer((props: any) => {
     }
 
     const getGoogleAccess = async () => {
-        setIsLoading(true)
-        const response = await fetch(`${sensitiveData.baseUrl}/authorize`)
-        const data = await response.json()
-        setIsLoading(false)
-        props.navigation.navigate('AuthUrlScreen', {
-            url: decodeURIComponent(data.url)
-        })
+        try {
+            setIsLoading(true)
+            const response = await fetch(`${sensitiveData.baseUrl}/authorize`)
+            const data = await response.json()
+            setIsLoading(false)
+            props.navigation.navigate('AuthUrlScreen', {
+                url: decodeURIComponent(data.url)
+            })
+        } catch (err) {
+            console.error(err)
+            setIsLoading(false)
+        }
     }
 
     const getOrders = async () => {
-
+        setFetchingOrders(true)
         const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
         const myntraOrders = await getMyntraOrders(store.googleCredentials)
         const ajioOrders = await getAjioOrders(store.googleCredentials)
@@ -78,16 +85,19 @@ const HomeScreen: React.FC = observer((props: any) => {
 
         // setOrders(sortedOrders)
         store.saveOrders(sortedOrders)
+        setFetchingOrders(false)
+
         console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
     }
 
     useEffect(() => {
-
+        console.log("reftoken: ", store.googleCredentials)
         if (store.googleCredentials.refresh_token !== "") {
-            console.log(store.googleCredentials)
+            console.log("logged in via google")
+            // console.log("google Creds: ",store.googleCredentials)
             setGmailAccessStatus(true)
+            getOrders()
         }
-        getOrders()
     }, [])
 
 
@@ -151,45 +161,47 @@ const HomeScreen: React.FC = observer((props: any) => {
         })
     }, []);
 
-    if (store.orders.length === 0)
-        return (
-            <View style={{ flex: 1, backgroundColor: '#090c08', justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#fff" />
-            </View>
-        )
+    // if (store.orders.length === 0)
+    //     return (
+    //         <View style={{ flex: 1, backgroundColor: '#090c08', justifyContent: 'center', alignItems: 'center' }}>
+    //             {/* <ActivityIndicator size="large" color="#fff" /> */}
+    //             <Text style={{ color: "#fff" }}>No Orders</Text>
+    //         </View>
+    //     )
 
 
     return (
-        <View style={{ backgroundColor: '#121212', justifyContent: 'center' }}>
-            {
-                !gmailAccessStatus ? <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /> :
-                    <View style={{ flexDirection: 'row', height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20, backgroundColor: '#121212' }}>
-                        <TextField
-                            style={{ fontSize: 17, fontFamily: 'segoe-normal', width: '100%', color: "#fff" }}
-                            containerStyle={{
-                                height: 45,
-                                justifyContent: "center",
-                                borderRadius: 10,
-                                width: '75%',
-                                backgroundColor: "#faf4f45c",
-                                marginStart: 25,
-                                elevation: 1
-                            }}
-                            fieldStyle={{ marginHorizontal: 20 }}
-                            placeholderTextColor="#aaa"
-                            placeholder="Type something..."
+        <View style={{ flex: 1, backgroundColor: '#121212' }}>
 
-                            value={""}
-                            onChangeText={() => { }}
-                        />
-                        <TouchableOpacity
-                            style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#e2e2e2', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
-                            onPress={() => { }}>
-                            <MaterialIcons name="search" size={24} />
-                        </TouchableOpacity>
-                    </View>
+            <View style={{ flexDirection: 'row', height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20, backgroundColor: '#121212' }}>
+                <TextField
+                    style={{ fontSize: 17, fontFamily: 'segoe-normal', width: '100%', color: "#fff" }}
+                    containerStyle={{
+                        height: 45,
+                        justifyContent: "center",
+                        borderRadius: 10,
+                        width: '75%',
+                        backgroundColor: "#faf4f45c",
+                        marginStart: 25,
+                        elevation: 1
+                    }}
+                    fieldStyle={{ marginHorizontal: 20 }}
+                    placeholderTextColor="#aaa"
+                    placeholder="Type something..."
+
+                    value={""}
+                    onChangeText={() => { }}
+                />
+                <TouchableOpacity
+                    style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#e2e2e2', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
+                    onPress={() => { }}>
+                    <MaterialIcons name="search" size={24} />
+                </TouchableOpacity>
+            </View>
+            {
+                !gmailAccessStatus && <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} />
             }
-            {orders &&
+            {store.orders.length > 0 ?
                 <FlatList
                     showsVerticalScrollIndicator={false}
                     style={{ backgroundColor: '#121212' }}
@@ -200,7 +212,12 @@ const HomeScreen: React.FC = observer((props: any) => {
                     refreshControl={
                         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                     }
-                />}
+                /> :
+                <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
+                    {/* <ActivityIndicator size="large" color="#fff" /> */}
+                    <Text style={{ color: "#888787", fontFamily: 'gotham-black', fontSize: 20 }}>No Orders</Text>
+                </View>
+            }
             <Modal
                 visible={visible}
                 backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', }}

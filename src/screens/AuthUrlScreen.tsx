@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import store from '../store/store';
 import { observer } from 'mobx-react';
 
+import database from '@react-native-firebase/database';
+
 const AuthUrlScreen = observer((props: any) => {
     const url = props.route.params.url
     const webviewRef = useRef(null);
@@ -18,17 +20,35 @@ const AuthUrlScreen = observer((props: any) => {
             let tokens = JSON.parse(credentials.replace(quotesPattern, "\""))
             console.log(tokens)
             const refresh_token = tokens.refresh_token as string
-            if (refresh_token !== "") {
-                await AsyncStorage.setItem('refresh_token', refresh_token)
+            console.log("refresh token // from google servers", refresh_token)
+            if (refresh_token !== undefined) {
+                /** This block of code executes during the first ever login via google only 
+                 *  and thus contains the refresh_token.
+                */
+                console.log("refresh token present")
+                await database()
+                    .ref(`/users/${store.loginCredentials.uid}`)
+                    .set({ refresh_token: refresh_token })
+                console.log('Data set.');
+
                 await AsyncStorage.setItem('credentials', JSON.stringify(tokens))
                 store.setCredentials(tokens)
             } else {
-                const refresh_token = await AsyncStorage.getItem('refresh_token')
+                /** This block of code executes during the subsequent logins via google  
+                *  and thus does not contains the refresh_token.
+               */
+                console.log("refresh token not present")
+
+                const userData = await database()
+                    .ref(`/users/${store.loginCredentials.uid}`)
+                    .once('value')
+
+                const { refresh_token } = userData.val()
+
                 console.log("rtoken: ", refresh_token)
                 tokens.refresh_token = refresh_token
                 await AsyncStorage.setItem('credentials', JSON.stringify(tokens))
                 store.setCredentials(tokens)
-
             }
 
         } catch (e) {
@@ -44,6 +64,7 @@ const AuthUrlScreen = observer((props: any) => {
         try {
             await setCredentials(authData)
             props.navigation.pop()
+            // FIXME: When going back to the homescreen make it rerender
         } catch (e) {
             console.log("Credentials not saved!: ", e)
         }

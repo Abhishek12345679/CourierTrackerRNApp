@@ -7,7 +7,8 @@ import AppLoading from "expo-app-loading";
 import AppContainer from './src/navigation/RootNavigation';
 
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider } from '@ui-kitten/components';
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 declare const global: { HermesInternal: null | {} };
 
@@ -37,9 +38,12 @@ const App = () => {
   }
 
   return (
-    <ApplicationProvider {...eva} theme={eva.dark}>
-      <AppContainer />
-    </ApplicationProvider>
+    <>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={eva.light}>
+        <AppContainer />
+      </ApplicationProvider>
+    </>
   )
 };
 

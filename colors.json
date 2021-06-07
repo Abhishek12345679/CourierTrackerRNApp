@@ -1,28 +1,4 @@
 {
-    "average": "#D9DAD6",
-    "darkMuted": "#505038",
-    "darkVibrant": "#000000",
-    "dominant": "#F0F0F0",
-    "lightMuted": "#F0F0F0",
-    "lightVibrant": "#000000",
-    "muted": "#888870",
-    "platform": "android",
-    "vibrant": "#000000"
-}
-
-{
-    "average": "#D9DAD6",
-    "darkMuted": "#505038",
-    "darkVibrant": "#000000",
-    "dominant": "#F0F0F0",
-    "lightMuted": "#F0F0F0",
-    "lightVibrant": "#000000",
-    "muted": "#888870",
-    "platform": "android",
-    "vibrant": "#000000"
-}
-
-{
     "average": "#B4C5CB",
     "darkMuted": "#284048",
     "darkVibrant": "#306880",

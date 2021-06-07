@@ -10,6 +10,11 @@ import { observer } from 'mobx-react';
 import { sensitiveData } from '../../constants/sen_data';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
+import { Button, Icon } from '@ui-kitten/components';
+
+import database from '@react-native-firebase/database';
+
+
 export const getDefaultCalendarSource = async () => {
     const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
     const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
@@ -36,12 +41,28 @@ export const createCalendar = async () => {
 
 
 
-
 const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDialog }) => {
     const navigation = useNavigation()
 
     const [calendarId, setCalendarId] = useState('')
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
+
+    const shakeIconRef = React.useRef();
+    const renderShakeIcon = () => (
+        <Icon
+
+            ref={shakeIconRef}
+            animation='shake'
+            name='shake'
+
+        />
+    );
+
+
+    const formattedPrice = new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR'
+    }).format(parseInt(item.productPrice))
 
     useEffect(() => {
         (async () => {
@@ -83,14 +104,24 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
             startDate: new Date((item.ETA)),
             endDate: new Date((item.ETA))
         })
+
+        database()
+            .ref(`/users/${store.loginCredentials.uid}/calendar_event_ids`)
+            .set({
+
+            })
+            .then(() => console.log('Data set.'));
+
         store.setCalendarEventId(event, item.orderId, Date.parse(item.ETA).toString())
         console.log(event)
         // Calendar.openEventInCalendar(event)
     }
 
+
+
     return (
         <Pressable
-            android_ripple={{ color: '#ccc', radius: 250, borderless: false }}
+            android_ripple={{ color: '#8b8a8a2c', radius: 250, borderless: false }}
             style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -125,9 +156,9 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                 <View style={{ flexDirection: 'row', width: '100%', marginTop: 10 }}>
                     <Text style={{
                         // fontWeight: 'bold',
-                        fontFamily: 'gotham-normal',
+                        fontFamily: 'gotham-bold',
                         marginBottom: 5,
-                        color: '#fff',
+                        color: '#cecece',
                         marginEnd: 10,
                         marginStart: 10,
                         fontSize: 17,
@@ -158,10 +189,10 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                         {item.calendarEventId.length === 0 ?
                             (
                                 <View
-                                    style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', }}
-                                >
+                                    style={{ width: 56, height: 40, borderRadius: 12, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', }}>
                                     <MaterialCommunityIcons name="bell-ring-outline" size={24} />
                                 </View>
+
                             ) :
                             (
                                 <View
@@ -181,9 +212,10 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                         paddingHorizontal: 10,
                         marginTop: 5
                     }}>
-                    <View style={{ width: 75, height: 35, marginBottom: 5, justifyContent: 'center', alignItems: 'flex-start', borderRadius: 5, marginTop: 5, marginStart: 5 }}>
-                        <Text style={{ flexShrink: 1, color: '#d6d3d3', fontFamily: 'gotham-black', fontSize: 15 }}>
-                            ₹{Math.trunc(parseInt(item.productPrice.trim())).toString()}.00
+                    <View style={{ height: 35, marginBottom: 5, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, marginStart: 5, flexDirection: 'row' }}>
+                        {/* <Image source={require('../Assets/Icons/cash.png')} style={{ width: 40, height: 20, transform: [{ rotate: '0deg' }] }} /> */}
+                        <Text style={{ flexShrink: 1, color: '#bfc4c1', fontFamily: 'gotham-black', fontSize: 20 }}>
+                            {formattedPrice}
                         </Text>
                     </View>
 
@@ -221,7 +253,7 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                 </View>
             </View>
 
-        </Pressable>
+        </Pressable >
 
     )
 })

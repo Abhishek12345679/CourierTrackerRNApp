@@ -62,3 +62,4 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 constants/sen_data.ts
+colors.json

@@ -8,17 +8,28 @@ const SplashScreen = observer(() => {
     // fetch credentials from the Local Storage of the device
     const getCredentials = async () => {
         console.log('splash screen')
+        store.setTryAutoLogin()
+
         const credentials = await AsyncStorage.getItem('loginCredentials')
         const googleCredentials = await AsyncStorage.getItem('credentials')
-        const refToken = await AsyncStorage.getItem('refresh_token')
 
-        let newCreds = JSON.parse(googleCredentials!)
-        newCreds.refresh_token = refToken
+        if (credentials) {
+            store.setLoginCredentials(JSON.parse(credentials!))
+            if (googleCredentials) {
+                if (JSON.parse(googleCredentials).refresh_token !== "" || JSON.parse(googleCredentials).refresh_token !== undefined) {
+                    console.log('Credentials: ', JSON.stringify(credentials, null, 4))
+                    store.setCredentials(JSON.parse(googleCredentials))
+                } else {
+                    const refToken = await AsyncStorage.getItem('refresh_token')
+                    console.log("ref: ", refToken)
+                    let newCreds = JSON.parse(googleCredentials!)
+                    newCreds.refresh_token = refToken
 
-        store.setCredentials(newCreds)
-        store.setLoginCredentials(JSON.parse(credentials!))
-        store.setTryAutoLogin()
-        console.log('Credentials: ', credentials)
+                    store.setCredentials(newCreds)
+                    console.log('Credentials: ', credentials)
+                }
+            }
+        }
     }
 
     useEffect(() => {
@@ -26,9 +37,12 @@ const SplashScreen = observer(() => {
     }, [])
 
     return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Image source={require('../../src/Assets/Images/smartphone.png')} style={{ width: 200, height: 200, marginVertical: 20 }} />
-            <Text style={{ fontSize: 20, fontWeight: "bold" }}>Wooosh</Text>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#121212" }}>
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <Text style={{ fontSize: 80, color: '#a5a2a2', fontFamily: 'gotham-black' }}>AIO</Text>
+                <Text style={{ fontSize: 15, color: '#8b8888', fontFamily: 'gotham-normal' }}>All in One </Text>
+            </View>
+            <Text style={{ fontSize: 15, color: '#a39e9e', fontFamily: 'gotham-normal', marginBottom: 10 }}>Made with Love in 🇳🇪 </Text>
         </View>
     )
 })
