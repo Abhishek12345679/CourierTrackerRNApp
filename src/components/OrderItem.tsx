@@ -156,7 +156,7 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                 <View style={{ flexDirection: 'row', width: '100%', marginTop: 10 }}>
                     <Text style={{
                         // fontWeight: 'bold',
-                        fontFamily: 'gotham-bold',
+                        // fontFamily: 'gotham-normal',
                         marginBottom: 5,
                         color: '#cecece',
                         marginEnd: 10,
@@ -176,27 +176,25 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                             flexDirection: 'row',
                             width: 35,
                             height: 35,
-                            backgroundColor: "#d8d6d6",
-                            marginEnd: 0,
+                            // backgroundColor: "#d8d6d6",
                             elevation: 1,
                             borderRadius: 18,
                             alignItems: 'center',
                             justifyContent: "center",
-                            marginStart: 0
                         }}
                         onPress={addEventToCalendar}
                     >
                         {item.calendarEventId.length === 0 ?
                             (
                                 <View
-                                    style={{ width: 56, height: 40, borderRadius: 12, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', }}>
+                                    style={{ width: 56, height: 40, borderRadius: 12, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginRight: 10, marginTop: 20 }}>
                                     <MaterialCommunityIcons name="bell-ring-outline" size={24} />
                                 </View>
 
                             ) :
                             (
                                 <View
-                                    style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', }}
+                                    style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginRight: 10, marginTop: 20 }}
                                 >
                                     <MaterialCommunityIcons name="bell-ring" size={24} />
                                 </View>
@@ -213,43 +211,10 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                         marginTop: 5
                     }}>
                     <View style={{ height: 35, marginBottom: 5, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, marginStart: 5, flexDirection: 'row' }}>
-                        {/* <Image source={require('../Assets/Icons/cash.png')} style={{ width: 40, height: 20, transform: [{ rotate: '0deg' }] }} /> */}
                         <Text style={{ flexShrink: 1, color: '#bfc4c1', fontFamily: 'gotham-black', fontSize: 20 }}>
                             {formattedPrice}
                         </Text>
                     </View>
-
-                    {/* <Pressable
-                        android_ripple={{
-                            color: '#000',
-                            radius: 250,
-                            borderless: false
-                        }}
-                        style={{
-                            flexDirection: 'row',
-                            width: 175,
-                            height: 35,
-                            backgroundColor: "#fff",
-                            marginEnd: 0,
-                            elevation: 1,
-                            borderRadius: 5,
-                            alignItems: 'center',
-                            justifyContent: "space-around",
-                            marginStart: 0
-                        }}
-                        onPress={openCalendarDialog}>
-                        {item.calendarEventId.length === 0 ? (
-                            <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                <Image source={require('../Assets/Icons/calendar.png')} style={{ width: 25, height: 25, marginEnd: 10 }} />
-                                <Text style={{ fontFamily: 'segoe-bold', fontSize: 15 }}>Add to Calendar</Text>
-                            </View>
-                        ) : (
-                            <Text>
-                                Added to Calendar
-                            </Text>
-                        )}
-
-                    </Pressable> */}
                 </View>
             </View>
 

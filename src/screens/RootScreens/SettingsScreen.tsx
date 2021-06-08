@@ -16,7 +16,7 @@ const SettingsScreen = () => {
     }
 
     return (
-        <ScrollView style={{ flex: 1, backgroundColor: "#000", }}>
+        <ScrollView style={{ flex: 1, backgroundColor: "#121212", }}>
             <SwitchGroup label={"show delivered items"} toggleStatus={true} />
             <Button title="Logout" onPress={logout} />
         </ScrollView>

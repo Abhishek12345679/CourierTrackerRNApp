@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl } from 'react-native'
+import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image } from 'react-native'
 
-import store, { Credentials } from '../../store/store';
+import store, { Credentials, userInfoType } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
 import { observer } from 'mobx-react';
 import GoogleSignInCard from '../../components/GoogleSignInCard';
@@ -14,23 +14,34 @@ import { Modal, Card, Button, Datepicker } from '@ui-kitten/components'
 
 const { TextField } = Incubator
 
-import { useFocusEffect } from '@react-navigation/native';
+// import { useFocusEffect } from '@react-navigation/native';
 
 
 const HomeScreen: React.FC = observer((props: any) => {
 
     // TODO: add loading spinner while the orders are being fetched
-    useFocusEffect(
-        React.useCallback(() => {
-            if (store.googleCredentials.refresh_token !== "") {
-                console.log("logged in via google")
-                // console.log("google Creds: ",store.googleCredentials)
-                setGmailAccessStatus(true)
-                getOrders()
-            }
-            //   return () => unsubscribe();
-        }, [store.googleCredentials])
-    );
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         if (store.googleCredentials.refresh_token !== "") {
+    //             console.log("logged in via google")
+    //             // console.log("google Creds: ",store.googleCredentials)
+    //             setGmailAccessStatus(true)
+    //             getOrders()
+    //         }
+    //         //   return () => unsubscribe();
+    //     }, [store.googleCredentials])
+    // );
+
+    useEffect(() => {
+        if (store.googleCredentials.refresh_token !== "") {
+            console.log("logged in via google")
+            // console.log("google Creds: ",store.googleCredentials)
+            setGmailAccessStatus(true)
+            getOrders()
+        }
+    }, [])
+
+    useEffect(() => { fetchUserInfo() }, [store.userInfo,])
 
     console.log(store.googleCredentials)
     const [orders, setOrders] = useState<OrderListType[]>([])
@@ -41,16 +52,22 @@ const HomeScreen: React.FC = observer((props: any) => {
     const [visible, setVisible] = useState(false)
     const [date, setDate] = useState(new Date());
 
+    const isAndroid = (Platform.OS === "android")
+    const [pfp, setPfp] = useState(store.userInfo.profilePicture)
+    const [name, setName] = useState(store.userInfo.name)
+
 
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const onRefresh = React.useCallback(() => {
-        setRefreshing(true);
-        getOrders().then(() => {
-            setRefreshing(false)
-        })
+        // setRefreshing(true);
+        // getOrders().then(() => {
+        //     setRefreshing(false)
+        // })
 
     }, []);
+
+
 
 
     const getAmazonOrders = async (auth: Credentials) => {
@@ -90,8 +107,17 @@ const HomeScreen: React.FC = observer((props: any) => {
         }
     }
 
+    const fetchUserInfo = async () => {
+        const userInfo = await store.fetchUserInfo()
+        if (userInfo !== undefined) {
+            setPfp(userInfo.profilePicture)
+            setName(userInfo.name)
+        }
+    }
+
     const getOrders = async () => {
-        setFetchingOrders(true)
+
+
         const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
         const myntraOrders = await getMyntraOrders(store.googleCredentials)
         const ajioOrders = await getAjioOrders(store.googleCredentials)
@@ -104,16 +130,6 @@ const HomeScreen: React.FC = observer((props: any) => {
 
         console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
     }
-
-    // useEffect(() => {
-    //     // console.log("reftoken: ", store.googleCredentials)
-    //     if (store.googleCredentials.refresh_token !== "") {
-    //         console.log("logged in via google")
-    //         // console.log("google Creds: ",store.googleCredentials)
-    //         setGmailAccessStatus(true)
-    //         getOrders()
-    //     }
-    // }, [])
 
 
     const sortOrders = (groupedOrders: OrderListType[]) => {
@@ -156,25 +172,33 @@ const HomeScreen: React.FC = observer((props: any) => {
         props.navigation.setOptions({
             headerRight: () => (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-                    <TouchableOpacity
+                    {isAndroid && <TouchableOpacity
                         style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                         onPress={() => props.navigation.navigate('AddOrder')}>
                         {/* <Text>Add</Text> */}
                         <MaterialIcons name="add" size={24} />
-                    </TouchableOpacity>
+                    </TouchableOpacity>}
                     <TouchableOpacity style={{ marginEnd: 20 }} onPress={() => props.navigation.navigate('Settings')}>
                         <Avatar
-                            size={50}
-                            source={{ uri: "https://avatars.githubusercontent.com/u/24722640?v=4" }}
+                            size={isAndroid ? 50 : 40}
+                            source={{ uri: store.userInfo.profilePicture }}
                             animate
                             imageStyle={{ shadowColor: '#fff', shadowOffset: { width: 10, height: 10 }, shadowOpacity: 0.9, shadowRadius: 50 }}
-                        // imageStyle={{ borderColor: "#fff", borderWidth: 1 }}
                         />
                     </TouchableOpacity>
                 </View>
-            )
+            ),
+            headerLeft: () => (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                    {!isAndroid && <TouchableOpacity
+                        style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
+                        onPress={() => props.navigation.navigate('AddOrder')}>
+                        <MaterialIcons name="add" size={24} />
+                    </TouchableOpacity>}
+                </View>
+            ),
         })
-    }, []);
+    }, [store.userInfo, name, pfp]);
 
     // if (store.orders.length === 0)
     //     return (
@@ -214,7 +238,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                 </TouchableOpacity>
             </View>
             {
-                !gmailAccessStatus && <GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} />
+                !gmailAccessStatus && (<View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}><GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /></View>)
             }
             {store.orders.length > 0 ?
                 <FlatList
@@ -224,8 +248,8 @@ const HomeScreen: React.FC = observer((props: any) => {
                     keyExtractor={item => item.EstimatedDeliveryTime}
                     data={store.orders}
                     renderItem={renderOrderItem}
-                    refreshControl={
-                        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    refreshing={refreshing}
+                    onRefresh={() => { onRefresh }
                     }
                 /> :
                 <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>

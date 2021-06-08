@@ -1,4 +1,5 @@
-import {applySnapshot, onSnapshot, types} from 'mobx-state-tree';
+import {applySnapshot, flow, onSnapshot, types} from 'mobx-state-tree';
+import {sensitiveData} from '../../constants/sen_data';
 import {OrderList} from '../../constants/Types/OrderTypes';
 
 export type Credentials = {
@@ -15,6 +16,11 @@ export type loginCredentialsType = {
   token: string;
 };
 
+export type userInfoType = {
+  name: string;
+  profilePicture: string;
+};
+
 // TODO: Add firebase to store refresh_token for future logins (if uninstalled)
 const googleCredentials = types.model('googleCredentials', {
   access_token: types.optional(types.string, ''),
@@ -28,6 +34,11 @@ const loginCredentials = types.model('loginCredentials', {
   email: types.optional(types.string, ''),
   uid: types.optional(types.string, ''),
   token: types.optional(types.string, ''),
+});
+
+const userInfo = types.model('userInfo', {
+  name: types.optional(types.string, ''),
+  profilePicture: types.optional(types.string, ''),
 });
 
 const order = types.model('Order', {
@@ -52,15 +63,41 @@ const orderList = types.model('OrderList', {
   orderItems: types.optional(types.array(order), []),
 });
 
+const getUserInfo = async (auth: Credentials): Promise<userInfoType> => {
+  const UIResponse = await fetch(
+    `${sensitiveData.baseUrl}/getUserInfo?tokens=${JSON.stringify(auth)}`,
+  );
+  const userInfo = await UIResponse.json();
+
+  return userInfo;
+  // console.log("user info: ", userInfo)
+};
+
 // central Store
 const store = types
   .model('store', {
+    userInfo: types.optional(userInfo, {}),
     orders: types.optional(types.array(orderList), []),
     googleCredentials: types.optional(googleCredentials, {}),
     loginCredentials: types.optional(loginCredentials, {}),
     didTryAutoLogin: types.optional(types.boolean, false),
   })
   .actions((self) => ({
+    fetchUserInfo: flow(function* fetchProjects() {
+      try {
+        const userInfo: userInfoType = yield getUserInfo(
+          self.googleCredentials,
+        );
+        console.log('userInfo: ', userInfo);
+        self.userInfo = userInfo;
+        return userInfo;
+      } catch (error) {
+        console.error('Failed to fetch projects', error);
+      }
+    }),
+    // setUserInfo(userInfo: userInfoType) {
+    //   self.userInfo = userInfo;
+    // },
     saveOrders(orderList: OrderList[]) {
       (self as any).orders = orderList;
     },

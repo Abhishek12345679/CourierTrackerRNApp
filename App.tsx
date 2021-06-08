@@ -1,6 +1,8 @@
 import 'react-native-gesture-handler';
 import React, { useState } from 'react'
 
+import { StatusBar } from 'react-native'
+
 import * as Fonts from "expo-font";
 import AppLoading from "expo-app-loading";
 
@@ -39,6 +41,7 @@ const App = () => {
 
   return (
     <>
+      <StatusBar barStyle="dark-content" />
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={eva.light}>
         <AppContainer />

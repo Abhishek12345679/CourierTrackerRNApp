@@ -35,13 +35,14 @@ export const RootNavigator = () => {
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
                     color: "#FFF",
-                    // fontSize: 45,
-                    // fontFamily: 'gotham-black'
+                    fontSize: 45,
+                    fontFamily: 'gotham-black',
                 },
                 headerTintColor: "#fff",
                 headerStyle: {
                     backgroundColor: "#121212",
-                },
+
+                }, stackPresentation: 'modal',
             })}
         >
             <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{
@@ -83,16 +84,17 @@ export const SettingsNavigator = () => {
         <SettingsStackNavigator.Navigator
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
-                    fontWeight: 'bold',
-                    fontSize: 30,
-                    fontFamily: 'segoe-bold',
+                    color: "#cec3c3",
+                    // fontSize: 45,
+                    // fontFamily: 'gotham-',
                 },
                 headerTintColor: "#fff",
                 headerStyle: {
-                    backgroundColor: "#050505",
-                    // height: 70,
+                    backgroundColor: "#121212",
+
                 },
-                headerBackTitleVisible: true,
+                stackPresentation: 'modal',
+                headerTitle: 'Settings'
             })}
         >
             <SettingsStackNavigator.Screen name="SettingsScreen" component={SettingsScreen} />
@@ -106,17 +108,14 @@ export const AddOrderNavigator = () => {
         <AddOrderStackNavigator.Navigator
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
-                    fontWeight: 'bold',
-                    fontSize: 30,
-                    fontFamily: 'segoe-bold',
+                    color: "#c2c2c2",
+
                 },
                 headerTintColor: "#fff",
                 headerStyle: {
-                    backgroundColor: "#050505",
-                    // height: 70,
-                },
-                headerBackTitleVisible: true,
-                stackPresentation: 'fullScreenModal'
+                    backgroundColor: "#121212",
+
+                }, stackPresentation: 'modal',
             })}
         >
             <AddOrderStackNavigator.Screen name="AddOrderScreen" component={AddOrderScreen} options={{ headerTitle: "Add Order Manually" }} />

@@ -77,6 +77,8 @@ const LoginScreen: React.FC = observer((props: any) => {
             <Text style={styles.text}>{`Welcome \nHooman <3 `}</Text>
             <View style={styles.form}>
                 <Input
+                    autoCorrect={false}
+                    autoCapitalize="none"
                     autoCompleteType="email"
                     label="Email"
                     size="large"

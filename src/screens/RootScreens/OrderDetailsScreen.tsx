@@ -1,7 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { observer } from 'mobx-react'
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Pressable } from 'react-native'
+import { View, Text, ScrollView, Pressable, StatusBar } from 'react-native'
 import Image from 'react-native-ui-lib/image'
 import { Order } from '../../../constants/Types/OrderTypes'
 import { createCalendar } from '../../components/OrderItem'
@@ -85,6 +85,7 @@ const OrderDetailsScreen = observer((props: any) => {
 
     return (
         <View style={{ flex: 1 }}>
+            <StatusBar barStyle="light-content" />
             <ScrollView style={{ flex: 1, backgroundColor: "#121212" }}>
                 <View style={{ width: '100%', height: 400, position: "relative" }}>
                     <Image
@@ -101,7 +102,7 @@ const OrderDetailsScreen = observer((props: any) => {
                     android_ripple={{ color: "#fff", radius: 25, }}
 
                 >
-                    <Ionicons name="arrow-back" size={24} color="#000" />
+                    <Ionicons name="arrow-back" size={24} color="#000" style={{ transform: [{ rotate: '-90deg' }] }} />
                 </Pressable>
                 <View style={{ flexDirection: 'row', marginTop: 20, width: '100%', justifyContent: "space-between", paddingHorizontal: 10 }}>
                     <View>
@@ -150,7 +151,7 @@ const OrderDetailsScreen = observer((props: any) => {
                     }
                 </Pressable>
             </View>
-        </View>
+        </View >
     )
 })
 
