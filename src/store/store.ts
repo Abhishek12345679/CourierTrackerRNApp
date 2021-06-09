@@ -21,6 +21,22 @@ export type userInfoType = {
   profilePicture: string;
 };
 
+export type settingsType = {
+  orders_newer_than: string;
+  show_delivered_items: boolean;
+  allow_fetching_new_orders: boolean;
+  dark_mode: boolean;
+  show_archived_items: boolean;
+};
+
+const settings = types.model('settings', {
+  orders_newer_than: types.optional(types.string, '7'),
+  show_delivered_items: types.optional(types.boolean, false),
+  allow_fetching_new_orders: types.optional(types.boolean, false),
+  dark_mode: types.optional(types.boolean, true),
+  show_archived_items: types.optional(types.boolean, false),
+});
+
 // TODO: Add firebase to store refresh_token for future logins (if uninstalled)
 const googleCredentials = types.model('googleCredentials', {
   access_token: types.optional(types.string, ''),
@@ -77,6 +93,7 @@ const getUserInfo = async (auth: Credentials): Promise<userInfoType> => {
 const store = types
   .model('store', {
     userInfo: types.optional(userInfo, {}),
+    settings: types.optional(settings, {}),
     orders: types.optional(types.array(orderList), []),
     googleCredentials: types.optional(googleCredentials, {}),
     loginCredentials: types.optional(loginCredentials, {}),
@@ -95,9 +112,9 @@ const store = types
         console.error('Failed to fetch projects', error);
       }
     }),
-    // setUserInfo(userInfo: userInfoType) {
-    //   self.userInfo = userInfo;
-    // },
+    updateSettings(values: settingsType) {
+      self.settings = values;
+    },
     saveOrders(orderList: OrderList[]) {
       (self as any).orders = orderList;
     },

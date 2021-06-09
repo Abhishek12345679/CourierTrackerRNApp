@@ -1,11 +1,11 @@
 import React from 'react'
-import { View, Text } from 'react-native'
-import { Switch } from 'react-native-ui-lib'
+import { View, Text, Switch } from 'react-native'
 
 
-interface switchGroupProps {
+export interface switchGroupProps {
     label: string;
-    toggleStatus: boolean
+    toggleStatus: boolean,
+    onValueChange: (value: boolean) => void
 }
 
 const SwitchGroup = (props: switchGroupProps) => {
@@ -14,7 +14,7 @@ const SwitchGroup = (props: switchGroupProps) => {
         <View
             style={{ flexDirection: 'row', width: '100%', height: 100, justifyContent: 'space-between', alignItems: 'center', paddingStart: 30, paddingEnd: 30 }}>
             <Text style={{ color: '#fff', fontSize: 18, }}>{props.label}</Text>
-            <Switch value={props.toggleStatus} onValueChange={() => { }} />
+            <Switch value={props.toggleStatus} onValueChange={props.onValueChange} />
         </View>
     )
 }

@@ -25,6 +25,7 @@
         "expo-app-loading": "^1.0.1",
         "expo-calendar": "^9.1.2",
         "expo-font": "^9.0.0",
+        "formik": "^2.2.9",
         "mobx": "^6.1.8",
         "mobx-react": "^7.1.0",
         "mobx-state-tree": "^5.0.1",
