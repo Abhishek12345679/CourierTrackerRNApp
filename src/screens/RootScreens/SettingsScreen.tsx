@@ -110,6 +110,7 @@ const SettingsScreen = ({ navigation }: any) => {
                                                     }
                                                 }
                                             }}
+
                                             textStyle={{ width: 35, height: 20, color: "#fff", fontSize: 18 }}
                                             style={{ marginLeft: 20, backgroundColor: "#4d4b4b", borderRadius: 10, borderWidth: 0, }}
                                             accessoryRight={() => (
