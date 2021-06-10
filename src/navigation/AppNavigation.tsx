@@ -35,21 +35,22 @@ export const RootNavigator = () => {
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
                     color: "#FFF",
-                    fontSize: 45,
+                    fontSize: 20,
                     fontFamily: 'gotham-black',
                 },
-                headerTintColor: "#fff",
+                // headerTintColor: "#fff",
                 headerStyle: {
                     backgroundColor: "#121212",
 
-                }, stackPresentation: 'modal',
+                },
+                stackPresentation: 'modal',
             })}
         >
             <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{
                 headerShown: true,
                 headerTitle: "AIO",
                 headerTitleStyle: {
-                    color: "#d8d6d6",
+                    color: "#ffffff",
                     fontSize: 35,
                     fontFamily: 'gotham-black'
                 },
@@ -63,7 +64,7 @@ export const RootNavigator = () => {
                         color: "#FFF",
                         fontWeight: 'bold',
                         fontSize: 20,
-                        fontFamily: 'segoe-bold'
+                        // fontFamily: 'segoe-bold'
                     },
                 }} />
             <RootStackNavigator.Screen name="Settings" component={SettingsNavigator} options={{ headerShown: false, headerTitle: "Settings" }} />

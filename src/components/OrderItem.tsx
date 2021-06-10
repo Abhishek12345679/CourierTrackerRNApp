@@ -142,8 +142,8 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
             <Image
                 source={{ uri: item.productImage }}
                 style={{
-                    height: 90,
-                    width: 90,
+                    height: 80,
+                    width: 80,
                     marginStart: 8,
                     borderRadius: 5,
                     // flex: 1,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image } from 'react-native'
+import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image, StatusBar } from 'react-native'
 
 import store, { Credentials, userInfoType } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
@@ -11,6 +11,7 @@ import { Avatar, Incubator } from 'react-native-ui-lib';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import { Modal, Card, Button, Datepicker } from '@ui-kitten/components'
+import { HeaderTitle } from '@react-navigation/stack';
 
 const { TextField } = Incubator
 
@@ -190,11 +191,11 @@ const HomeScreen: React.FC = observer((props: any) => {
             ),
             headerLeft: () => (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
-                    {!isAndroid && <TouchableOpacity
+                    {!isAndroid ? <TouchableOpacity
                         style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                         onPress={() => props.navigation.navigate('AddOrder')}>
                         <MaterialIcons name="add" size={24} />
-                    </TouchableOpacity>}
+                    </TouchableOpacity> : <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 35 }}>AIO</HeaderTitle>}
                 </View>
             ),
         })
@@ -211,7 +212,7 @@ const HomeScreen: React.FC = observer((props: any) => {
 
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
-
+            <StatusBar barStyle="light-content" />
             <View style={{ flexDirection: 'row', height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20, backgroundColor: '#121212' }}>
                 <TextField
                     style={{ fontSize: 17, fontFamily: 'segoe-normal', width: '100%', color: "#fff" }}
