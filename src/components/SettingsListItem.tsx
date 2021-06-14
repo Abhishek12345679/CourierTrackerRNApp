@@ -20,7 +20,13 @@ const SettingsListItem = (props: switchGroupProps) => {
             padding: 5,
             width: "100%"
         }}>
-            <SwitchGroup label={props.label} toggleStatus={props.toggleStatus} onValueChange={props.onValueChange} />
+            <SwitchGroup
+                label={props.label}
+                toggleStatus={props.toggleStatus}
+                onValueChange={props.onValueChange}
+                bgColor="#ffffff00"
+                height={100}
+            />
         </View>
     )
 }

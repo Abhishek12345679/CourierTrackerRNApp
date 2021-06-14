@@ -13,6 +13,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Button, Icon } from '@ui-kitten/components';
 
 import database from '@react-native-firebase/database';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export const getDefaultCalendarSource = async () => {
@@ -47,22 +48,22 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
     const [calendarId, setCalendarId] = useState('')
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
 
-    const shakeIconRef = React.useRef();
-    const renderShakeIcon = () => (
-        <Icon
+    // const shakeIconRef = React.useRef();
+    // const renderShakeIcon = () => (
+    //     <Icon
+    //         ref={shakeIconRef}
+    //         animation='shake'
+    //         name='shake'
 
-            ref={shakeIconRef}
-            animation='shake'
-            name='shake'
-
-        />
-    );
+    //     />
+    // );
 
 
     const formattedPrice = new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR'
     }).format(parseInt(item.productPrice))
+
 
     useEffect(() => {
         (async () => {
@@ -89,7 +90,6 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
     // useEffect(() => {
     //     const capitalize = (s: string): string => s && s[0].toUpperCase() + s.slice(1)
     //     item && checkFkAndMyntraDeliveryStatus(item.productName, capitalize(item.from))
-
     // }, [item])
 
 
@@ -105,15 +105,16 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
             endDate: new Date((item.ETA))
         })
 
-        database()
-            .ref(`/users/${store.loginCredentials.uid}/calendar_event_ids`)
-            .set({
+        // database()
+        //     .ref(`/users/${store.loginCredentials.uid}/calendar_event_ids`)
+        //     .set({
 
-            })
-            .then(() => console.log('Data set.'));
+        //     })
+        //     .then(() => console.log('Data set.'));
 
         store.setCalendarEventId(event, item.orderId, Date.parse(item.ETA).toString())
-        console.log(event)
+        // await AsyncStorage.setItem('orders', JSON.stringify(store.orders))
+        // console.log(event)
         // Calendar.openEventInCalendar(event)
     }
 
@@ -132,7 +133,15 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                 marginLeft: 15,
                 marginRight: 15,
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                // shadowRadius: 20,
+                // shadowColor: "#fff",
+                // shadowOpacity: 0.25,
+                // shadowOffset: {
+                //     height: 100,
+                //     width: 100
+                // },
+                elevation: 1
             }}
             onPress={() => navigation.navigate('OrderDetailsScreen', {
                 item: item

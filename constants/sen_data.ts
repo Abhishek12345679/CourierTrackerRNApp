@@ -1,4 +1,4 @@
 export const sensitiveData = {
-  baseUrl: 'https://7cf3c7288dc7.ngrok.io',
+  baseUrl: 'https://9d333e9e221c.ngrok.io',
   // baseUrl: 'http://localhost:3000/',
 };

@@ -3,13 +3,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Input } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, ScrollView, Button, Pressable, TouchableOpacity, StatusBar, TextInput } from 'react-native'
+import { View, Text, ScrollView, Button, Pressable, TouchableOpacity, StatusBar, TextInput, ActivityIndicator } from 'react-native'
 import { Avatar, Switch } from 'react-native-ui-lib'
+import GoogleSignInCard from '../../components/GoogleSignInCard'
+import GoogleSignOutCard from '../../components/GoogleSignOutCard'
 import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
 import store from '../../store/store'
 
 const SettingsScreen = ({ navigation }: any) => {
+
+    const [signingOut, setSigningOut] = useState(false)
 
     const logout = async () => {
         store.resetLoginCredentials()
@@ -17,6 +21,17 @@ const SettingsScreen = ({ navigation }: any) => {
         store.removeOrders()
         await AsyncStorage.removeItem('loginCredentials')
         await AsyncStorage.removeItem('credentials')
+    }
+
+
+    const signOutFromGoogle = async () => {
+        setSigningOut(true)
+        store.resetCredentials()
+        store.removeOrders()
+        await AsyncStorage.removeItem('orders')
+        await AsyncStorage.removeItem('credentials')
+        setSigningOut(false)
+
     }
 
     const switches = [
@@ -30,26 +45,19 @@ const SettingsScreen = ({ navigation }: any) => {
 
 
     useEffect(() => {
-
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
                         // console.log(switchesRef.current.values)
-                        store.updateSettings(
-                            switchesRef.current.values
-
-                        )
+                        store.updateSettings(switchesRef.current.values)
                         navigation.pop()
                     }}>
-                    {/* <Text>Add</Text> */}
                     <MaterialIcons name="done" size={24} />
                 </TouchableOpacity>
-
             ),
         })
-
     }, [])
 
     const Item = (props: { children: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined, borderColor: string, onPress: () => void }) => (
@@ -110,6 +118,12 @@ const SettingsScreen = ({ navigation }: any) => {
                 </View>
             </Pressable>
 
+            <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                <GoogleSignOutCard
+                    onPress={signOutFromGoogle}
+                    loading={signingOut}
+                />
+            </View>
             <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20 }}>
                 <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
                     <Formik
@@ -175,18 +189,17 @@ const SettingsScreen = ({ navigation }: any) => {
                                         />
                                     </View>
                                 </View>
-                                <SettingsListItem label={switches[0].label} toggleStatus={values.show_delivered_items} onValueChange={(value: boolean) => setFieldValue('show_delivered_items', value)} />
-                                <SettingsListItem label={switches[1].label} toggleStatus={values.allow_fetching_new_orders} onValueChange={(value: boolean) => setFieldValue('allow_fetching_new_orders', value)} />
-                                <SettingsListItem label={switches[2].label} toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', value)} />
-                                <SettingsListItem label={switches[3].label} toggleStatus={values.show_archived_items} onValueChange={(value: boolean) => setFieldValue('show_archived_items', value)} />
+                                <SettingsListItem bgColor="#ffffff00" height={70} label={switches[0].label} toggleStatus={values.show_delivered_items} onValueChange={(value: boolean) => setFieldValue('show_delivered_items', value)} />
+                                <SettingsListItem bgColor="#ffffff00" height={70} label={switches[1].label} toggleStatus={values.allow_fetching_new_orders} onValueChange={(value: boolean) => setFieldValue('allow_fetching_new_orders', value)} />
+                                <SettingsListItem bgColor="#ffffff00" height={70} label={switches[2].label} toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', value)} />
+                                <SettingsListItem bgColor="#ffffff00" height={70} label={switches[3].label} toggleStatus={values.show_archived_items} onValueChange={(value: boolean) => setFieldValue('show_archived_items', value)} />
                                 {/* <Button title="submit" onPress={handleSubmit} /> */}
                             </>
                         )}
                     </Formik>
                 </View>
             </View>
-            {/* <Button title="Logout" onPress={logout} /> */}
-            <Item onPress={logout} borderColor="#db1507dc"><Text style={{ color: "#fff", fontSize: 18 }}>logout</Text></Item>
+            <Item onPress={logout} borderColor="transparent"><Text style={{ color: "#fff", fontSize: 20, fontFamily: 'segoe-bold' }}>logout</Text></Item>
         </ScrollView >
     )
 }

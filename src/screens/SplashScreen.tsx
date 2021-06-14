@@ -16,6 +16,8 @@ const SplashScreen = observer(() => {
         const credentials = await AsyncStorage.getItem('loginCredentials')
         const googleCredentials = await AsyncStorage.getItem('credentials')
 
+        console.log('google creds: ', googleCredentials)
+
         if (credentials) {
             store.setLoginCredentials(JSON.parse(credentials!))
             if (googleCredentials) {

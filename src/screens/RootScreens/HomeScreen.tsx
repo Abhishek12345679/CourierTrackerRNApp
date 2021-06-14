@@ -12,6 +12,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import { Modal, Card, Button, Datepicker } from '@ui-kitten/components'
 import { HeaderTitle } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { TextField } = Incubator
 
@@ -33,14 +34,6 @@ const HomeScreen: React.FC = observer((props: any) => {
     //     }, [store.googleCredentials])
     // );
 
-    useEffect(() => {
-        if (store.googleCredentials.refresh_token !== "") {
-            console.log("logged in via google")
-            // console.log("google Creds: ",store.googleCredentials)
-            setGmailAccessStatus(true)
-            getOrders()
-        }
-    }, [])
 
     useEffect(() => { fetchUserInfo() }, [store.userInfo,])
 
@@ -69,6 +62,22 @@ const HomeScreen: React.FC = observer((props: any) => {
     }, []);
 
 
+
+    useEffect(async () => {
+        console.log("google Creds: ", store.googleCredentials)
+        if (store.googleCredentials.refresh_token !== "") {
+            console.log("logged in via google")
+            setGmailAccessStatus(true)
+
+            const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
+            console.log(ordersInAsyncStorage)
+            if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
+                getOrders()
+            } else {
+                store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+            }
+        }
+    }, [])
 
 
     const getAmazonOrders = async (auth: Credentials) => {
@@ -117,8 +126,6 @@ const HomeScreen: React.FC = observer((props: any) => {
     }
 
     const getOrders = async () => {
-
-
         const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
         const myntraOrders = await getMyntraOrders(store.googleCredentials)
         const ajioOrders = await getAjioOrders(store.googleCredentials)
@@ -127,6 +134,7 @@ const HomeScreen: React.FC = observer((props: any) => {
 
         // setOrders(sortedOrders)
         store.saveOrders(sortedOrders)
+        await store.saveOrdersLocally(sortedOrders)
         setFetchingOrders(false)
 
         console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))

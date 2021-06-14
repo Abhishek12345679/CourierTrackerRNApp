@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {applySnapshot, flow, onSnapshot, types} from 'mobx-state-tree';
 import {sensitiveData} from '../../constants/sen_data';
 import {OrderList} from '../../constants/Types/OrderTypes';
@@ -100,7 +101,7 @@ const store = types
     didTryAutoLogin: types.optional(types.boolean, false),
   })
   .actions((self) => ({
-    fetchUserInfo: flow(function* fetchProjects() {
+    fetchUserInfo: flow(function* fetchUserInfo() {
       try {
         const userInfo: userInfoType = yield getUserInfo(
           self.googleCredentials,
@@ -118,11 +119,22 @@ const store = types
     saveOrders(orderList: OrderList[]) {
       (self as any).orders = orderList;
     },
+    saveOrdersLocally: flow(function* saveOrdersLocally(
+      orderList: OrderList[],
+    ) {
+      try {
+        yield AsyncStorage.setItem('orders', JSON.stringify(orderList));
+        console.log('orders written to local storage!');
+      } catch (error) {
+        console.error(error);
+      }
+    }),
     removeOrders() {
       applySnapshot(self.orders, []);
     },
     setCalendarEventId(id: string, orderId: string, eta: string) {
-      console.log({id, orderId, eta});
+      // console.log({id, orderId, eta});
+
       self.orders.map((order, index) => {
         if (order.EstimatedDeliveryTime === eta) {
           order.orderItems.map((item, index) => {

@@ -10,10 +10,11 @@ import store from '../../store/store'
 import { sensitiveData } from '../../../constants/sen_data'
 
 import ImageColors from 'react-native-image-colors'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const OrderDetailsScreen = observer((props: any) => {
     const { item } = props.route.params
-    const [primaryColor, setPrimaryColor] = useState('#000000')
+    const [primaryColor, setPrimaryColor] = useState('')
     const [secondaryColor, setSecondaryColor] = useState('')
 
     const formattedPrice = new Intl.NumberFormat('en-IN', {
@@ -25,7 +26,7 @@ const OrderDetailsScreen = observer((props: any) => {
     const extractColorsFromImage = async () => {
 
         const colors = await ImageColors.getColors(item.productImage, {
-            fallback: '#000000',
+            fallback: '#121212',
             cache: false,
             key: 'unique_key',
         })
@@ -34,15 +35,20 @@ const OrderDetailsScreen = observer((props: any) => {
             setPrimaryColor(colors.darkMuted!)
             console.log(colors.darkMuted!)
         } else {
-            // test
+            setPrimaryColor(colors.secondary!)
             console.log(colors)
         }
     }
 
+    const removeEventFromCalendar = async (eventid: string) => {
+        await Calendar.deleteEventAsync(eventid)
+        //update orders by setting calendarEventId to ""
+        console.log("Item deleted")
+
+    }
+
 
     const checkFlipkartDeliveryStatus = async (productName: string) => {
-
-
         const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkFlipkartDeliveryStatus`, {
             method: "POST",
             headers: {
@@ -78,6 +84,7 @@ const OrderDetailsScreen = observer((props: any) => {
             endDate: new Date(item.ETA)
         })
         store.setCalendarEventId(event, item.orderId, Date.parse(item.ETA).toString())
+        // await AsyncStorage.setItem('orders', JSON.stringify(store.orders))
         // console.log(event)
         // Calendar.openEventInCalendar(event)
     }
@@ -133,24 +140,22 @@ const OrderDetailsScreen = observer((props: any) => {
                 </View>
 
             </ScrollView>
-            <View style={{ flexDirection: 'row', backgroundColor: primaryColor }}>
-                {/* <Text>Price</Text>
-                <Text>{formattedPrice}</Text> */}
-                <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
-                    style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: '#ccc', marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
-                    onPress={addEventToCalendar}>
-                    {item.calendarEventId.length === 0 ?
-                        <View style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: primaryColor, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}>
+            <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
+                style={{ flexDirection: 'row', width: '100%', backgroundColor: primaryColor, height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
+                onPress={item.calendarEventId.length === 0 ? addEventToCalendar : () => removeEventFromCalendar(item.calendarEventId)}>
+
+                {
+                    item.calendarEventId.length === 0 ?
+                        <View style={{ flexDirection: 'row', width: '100%', height: 70, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}>
                             {/* <Image source={require('../../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} /> */}
                             <MaterialCommunityIcons name="bell-ring" size={24} color="#fff" style={{ marginEnd: 10 }} />
                             <Text style={{ fontFamily: 'segoe-bold', fontSize: 15, color: '#fff' }}>Add to Calendar</Text>
                         </View> :
-                        <View>
-                            <Text style={{ color: "#fff" }}>Added to Calendar</Text>
+                        <View style={{ flexDirection: 'row', width: '100%', height: 70, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}>
+                            <Text style={{ fontFamily: 'segoe-bold', fontSize: 15, color: '#fff' }}>Added to Calendar</Text>
                         </View>
-                    }
-                </Pressable>
-            </View>
+                }
+            </Pressable>
         </View >
     )
 })
