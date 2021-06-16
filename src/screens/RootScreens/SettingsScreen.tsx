@@ -30,7 +30,9 @@ const SettingsScreen = ({ navigation }: any) => {
         store.removeOrders()
         await AsyncStorage.removeItem('orders')
         await AsyncStorage.removeItem('credentials')
-        setSigningOut(false)
+        setTimeout(() => {
+            setSigningOut(false)
+        }, 5000)
 
     }
 
@@ -118,12 +120,12 @@ const SettingsScreen = ({ navigation }: any) => {
                 </View>
             </Pressable>
 
-            <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+            {store.googleCredentials.access_token !== "" && <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                 <GoogleSignOutCard
                     onPress={signOutFromGoogle}
                     loading={signingOut}
                 />
-            </View>
+            </View>}
             <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20 }}>
                 <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
                     <Formik

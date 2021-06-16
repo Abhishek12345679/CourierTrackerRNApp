@@ -17,7 +17,7 @@ enableScreens()
 const AuthStackNavigator = createNativeStackNavigator();
 export const AuthNavigator = () => {
     return (
-        <AuthStackNavigator.Navigator screenOptions={{ headerShown: false }}>
+        <AuthStackNavigator.Navigator screenOptions={{ headerShown: false, headerTintColor: "#ccc" }}>
             <AuthStackNavigator.Screen
                 name="LoginScreen"
                 component={LoginScreen}
@@ -73,7 +73,7 @@ export const RootNavigator = () => {
             <RootStackNavigator.Screen
                 name="AuthUrlScreen"
                 component={AuthUrlScreen}
-                options={{ stackPresentation: 'modal' }}
+                options={{ stackPresentation: 'modal', headerHideBackButton: true }}
             />
         </RootStackNavigator.Navigator>
     );

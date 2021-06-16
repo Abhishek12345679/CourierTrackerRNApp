@@ -30,9 +30,9 @@ const GoogleSignInCard = (props: Props) => {
         }}>
             <Text style={{ color: "#fffdfd", fontSize: 15, fontFamily: 'gotham-black' }}>
                 Sign in to  <Text style={{ color: '#d6d3d3', fontStyle: "italic" }}>Google</Text>  to give us access to your emails, so that can we scan it for orders.
-                </Text>
+            </Text>
             <Pressable
-                style={{ width: '90%', height: 50, backgroundColor: "#fff", justifyContent: "space-around", flexDirection: "row", alignItems: "center", paddingHorizontal: 100, marginTop: 20, borderRadius: 10 }}
+                style={{ width: '100%', height: 50, backgroundColor: "#fff", justifyContent: "space-around", flexDirection: "row", alignItems: "center", paddingHorizontal: 100, marginTop: 20, borderRadius: 5 }}
                 onPress={props.onPress}
                 android_ripple={{ color: "#121212", radius: 150, }}
 

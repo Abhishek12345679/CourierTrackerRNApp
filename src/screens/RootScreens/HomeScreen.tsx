@@ -35,7 +35,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     // );
 
 
-    useEffect(() => { fetchUserInfo() }, [store.userInfo,])
+    useEffect(() => { fetchUserInfo() }, [])
 
     console.log(store.googleCredentials)
     const [orders, setOrders] = useState<OrderListType[]>([])
@@ -54,29 +54,32 @@ const HomeScreen: React.FC = observer((props: any) => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const onRefresh = React.useCallback(() => {
-        // setRefreshing(true);
-        // getOrders().then(() => {
-        //     setRefreshing(false)
-        // })
-
+        console.log("refreshing...")
+        setRefreshing(true);
+        getOrders().then(() => {
+            setRefreshing(false)
+        })
     }, []);
 
 
 
-    useEffect(async () => {
-        console.log("google Creds: ", store.googleCredentials)
-        if (store.googleCredentials.refresh_token !== "") {
-            console.log("logged in via google")
-            setGmailAccessStatus(true)
+    useEffect(() => {
+        const onStart = async () => {
+            console.log("google Creds: ", store.googleCredentials)
+            if (store.googleCredentials.refresh_token !== "") {
+                console.log("logged in via google")
+                setGmailAccessStatus(true)
 
-            const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
-            console.log(ordersInAsyncStorage)
-            if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
-                getOrders()
-            } else {
-                store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+                const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
+                console.log(ordersInAsyncStorage)
+                if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
+                    getOrders()
+                } else {
+                    store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+                }
             }
         }
+        onStart()
     }, [])
 
 
@@ -126,6 +129,8 @@ const HomeScreen: React.FC = observer((props: any) => {
     }
 
     const getOrders = async () => {
+        setFetchingOrders(true)
+
         const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
         const myntraOrders = await getMyntraOrders(store.googleCredentials)
         const ajioOrders = await getAjioOrders(store.googleCredentials)
@@ -209,13 +214,17 @@ const HomeScreen: React.FC = observer((props: any) => {
         })
     }, [store.userInfo, name, pfp]);
 
-    // if (store.orders.length === 0)
-    //     return (
-    //         <View style={{ flex: 1, backgroundColor: '#090c08', justifyContent: 'center', alignItems: 'center' }}>
-    //             {/* <ActivityIndicator size="large" color="#fff" /> */}
-    //             <Text style={{ color: "#fff" }}>No Orders</Text>
-    //         </View>
-    //     )
+    if (store.orders.length === 0)
+        return (
+            <View style={{ flex: 1, backgroundColor: '#121212' }}>
+                {
+                    !gmailAccessStatus && (<View style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center' }}><GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /></View>)
+                }
+                <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: "#fff" }}>No Orders</Text>
+                </View>
+            </View>
+        )
 
 
     return (
@@ -242,14 +251,14 @@ const HomeScreen: React.FC = observer((props: any) => {
                 />
                 <TouchableOpacity
                     style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#e2e2e2', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
-                    onPress={() => { }}>
+                    onPress={() => {
+
+                    }}>
                     <MaterialIcons name="search" size={24} />
                 </TouchableOpacity>
             </View>
-            {
-                !gmailAccessStatus && (<View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}><GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /></View>)
-            }
-            {store.orders.length > 0 ?
+
+            {!fetchingOrders ?
                 <FlatList
                     showsVerticalScrollIndicator={false}
                     style={{ backgroundColor: '#121212' }}
@@ -257,13 +266,14 @@ const HomeScreen: React.FC = observer((props: any) => {
                     keyExtractor={item => item.EstimatedDeliveryTime}
                     data={store.orders}
                     renderItem={renderOrderItem}
-                    refreshing={refreshing}
-                    onRefresh={() => { onRefresh }
+                    refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
+                    onRefresh={() => {
+                        store.settings.allow_fetching_new_orders && onRefresh()
+                    }
                     }
                 /> :
                 <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
-                    {/* <ActivityIndicator size="large" color="#fff" /> */}
-                    <Text style={{ color: "#888787", fontFamily: 'gotham-black', fontSize: 20 }}>No Orders</Text>
+                    <ActivityIndicator size="large" color="#fff" />
                 </View>
             }
             <Modal
