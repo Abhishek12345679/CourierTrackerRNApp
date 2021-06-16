@@ -16,6 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { TextField } = Incubator
 
+import database from '@react-native-firebase/database';
+
 // import { useFocusEffect } from '@react-navigation/native';
 
 
@@ -37,8 +39,8 @@ const HomeScreen: React.FC = observer((props: any) => {
 
     useEffect(() => { fetchUserInfo() }, [])
 
-    console.log(store.googleCredentials)
     const [orders, setOrders] = useState<OrderListType[]>([])
+    const [manualOrders, setManualOrders] = useState<Order[] | unknown[]>([])
     const [gmailAccessStatus, setGmailAccessStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [fetchingOrders, setFetchingOrders] = useState(false)
@@ -56,6 +58,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     const onRefresh = React.useCallback(() => {
         console.log("refreshing...")
         setRefreshing(true);
+        fetchManualOrders()
         getOrders().then(() => {
             setRefreshing(false)
         })
@@ -65,13 +68,13 @@ const HomeScreen: React.FC = observer((props: any) => {
 
     useEffect(() => {
         const onStart = async () => {
-            console.log("google Creds: ", store.googleCredentials)
+            // console.log("google Creds: ", store.googleCredentials)
             if (store.googleCredentials.refresh_token !== "") {
                 console.log("logged in via google")
                 setGmailAccessStatus(true)
 
                 const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
-                console.log(ordersInAsyncStorage)
+                // console.log(ordersInAsyncStorage)
                 if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
                     getOrders()
                 } else {
@@ -128,14 +131,26 @@ const HomeScreen: React.FC = observer((props: any) => {
         }
     }
 
+    const fetchManualOrders = () => {
+        database().ref(`/users/${store.loginCredentials.uid}/orders`)
+            .on('value', snapshot => {
+                const orders = snapshot.val()
+                const newOrders = Object.entries(orders).map(([key, value]) => value)
+                setManualOrders(newOrders)
+            });
+    }
+
     const getOrders = async () => {
         setFetchingOrders(true)
 
         const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
         const myntraOrders = await getMyntraOrders(store.googleCredentials)
         const ajioOrders = await getAjioOrders(store.googleCredentials)
-        const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders)
+        const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders)
         const sortedOrders = sortOrders(groupedOrders)
+
+
+        // console.log('FBOrders: ', FBOrders)
 
         // setOrders(sortedOrders)
         store.saveOrders(sortedOrders)
@@ -154,8 +169,9 @@ const HomeScreen: React.FC = observer((props: any) => {
     }
 
 
-    const groupOrders = (flipkartOrders: Order[], myntraOrders: Order[], ajioOrders: Order[]) => {
-        const superArray: Order[] = [...flipkartOrders, ...myntraOrders, ...ajioOrders]
+    const groupOrders = (flipkartOrders: Order[], myntraOrders: Order[], ajioOrders: Order[], manualOrders: Order[]) => {
+        console.log("manual orders: ", manualOrders)
+        const superArray: Order[] = [...flipkartOrders, ...myntraOrders, ...ajioOrders, ...manualOrders]
         const groups = superArray.reduce((acc: any, order: Order) => {
             acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
             return acc

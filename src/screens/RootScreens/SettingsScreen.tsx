@@ -14,6 +14,7 @@ import store from '../../store/store'
 const SettingsScreen = ({ navigation }: any) => {
 
     const [signingOut, setSigningOut] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
 
     const logout = async () => {
         store.resetLoginCredentials()
@@ -52,9 +53,9 @@ const SettingsScreen = ({ navigation }: any) => {
                 <TouchableOpacity
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
-                        // console.log(switchesRef.current.values)
                         store.updateSettings(switchesRef.current.values)
                         navigation.pop()
+
                     }}>
                     <MaterialIcons name="done" size={24} />
                 </TouchableOpacity>

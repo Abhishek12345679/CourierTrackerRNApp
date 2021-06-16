@@ -172,7 +172,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 value={values.productName}
                                 onChangeText={handleChange('productName')}
                             />
-                            <Input
+                            {/* <Input
                                 autoCorrect={false}
                                 autoCapitalize="none"
                                 label="Estimated Delivery Time"
@@ -182,7 +182,8 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 placeholder="Enter the ETA"
                                 value={values.ETA}
                                 onChangeText={handleChange('ETA')}
-                            />
+                            /> */}
+
 
 
                             <Input

@@ -113,9 +113,14 @@ const store = types
         console.error('Failed to fetch projects', error);
       }
     }),
-    updateSettings(values: settingsType) {
-      self.settings = values;
-    },
+    updateSettings: flow(function* updateSettings(values: settingsType) {
+      try {
+        self.settings = values;
+        yield AsyncStorage.setItem('settings', JSON.stringify(values));
+      } catch (error) {
+        console.error(error);
+      }
+    }),
     saveOrders(orderList: OrderList[]) {
       (self as any).orders = orderList;
     },

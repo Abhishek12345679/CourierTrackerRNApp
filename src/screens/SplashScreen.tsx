@@ -37,8 +37,22 @@ const SplashScreen = observer(() => {
         }
     }
 
+    const fetchSettings = async () => {
+        try {
+            console.log("fetching settings...")
+            const settings = await AsyncStorage.getItem('settings')
+            if (settings) {
+                await store.updateSettings(JSON.parse(settings))
+            }
+        } catch (err) {
+            console.error(err)
+        }
+
+    }
+
     useEffect(() => {
         getCredentials()
+        fetchSettings()
     }, [])
 
     return (
