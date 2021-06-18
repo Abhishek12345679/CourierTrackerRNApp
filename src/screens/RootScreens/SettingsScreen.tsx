@@ -162,11 +162,12 @@ const SettingsScreen = ({ navigation }: any) => {
                                         <Input
                                             keyboardType="numeric"
                                             maxLength={2}
-                                            value={values.orders_newer_than + " d"}
+
+                                            value={values.orders_newer_than}
                                             onChangeText={(value) => {
                                                 const regex = /^(0*[1-9][0-9]*(\.[0-9]*)?|0*\.[0-9]*[1-9][0-9]*)$/;
                                                 if (!value || regex.test(value.toString())) {
-                                                    if (parseInt(value) >= 0) {
+                                                    if (parseInt(value) > 0 || value === undefined || value === "") {
                                                         setFieldValue("orders_newer_than", value);
                                                     }
                                                 }
@@ -194,7 +195,7 @@ const SettingsScreen = ({ navigation }: any) => {
                                 </View>
                                 <SettingsListItem bgColor="#ffffff00" height={70} label={switches[0].label} toggleStatus={values.show_delivered_items} onValueChange={(value: boolean) => setFieldValue('show_delivered_items', value)} />
                                 <SettingsListItem bgColor="#ffffff00" height={70} label={switches[1].label} toggleStatus={values.allow_fetching_new_orders} onValueChange={(value: boolean) => setFieldValue('allow_fetching_new_orders', value)} />
-                                <SettingsListItem bgColor="#ffffff00" height={70} label={switches[2].label} toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', value)} />
+                                <SettingsListItem disabled={true} bgColor="#ffffff00" height={70} label={switches[2].label} toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', value)} />
                                 <SettingsListItem bgColor="#ffffff00" height={70} label={switches[3].label} toggleStatus={values.show_archived_items} onValueChange={(value: boolean) => setFieldValue('show_archived_items', value)} />
                                 {/* <Button title="submit" onPress={handleSubmit} /> */}
                             </>

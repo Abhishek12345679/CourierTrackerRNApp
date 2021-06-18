@@ -1,5 +1,5 @@
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
-import { Input } from '@ui-kitten/components'
+import { Datepicker, Input } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import React, { useEffect } from 'react'
 import { useRef } from 'react'
@@ -14,10 +14,47 @@ import store from '../../store/store'
 import * as Calendar from 'expo-calendar'
 import { createCalendar } from '../../components/OrderItem'
 
+import storage from '@react-native-firebase/storage';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+
+import Firebase from '@react-native-firebase/app'
+
 const AddOrderScreen = ({ navigation }: any) => {
 
     const addToCalendarRef = useRef({})
     const formRef = useRef({})
+
+    // TODO: one new manual order addition rerender the screen (useFocusEffect) or use the real times changes while fetching from rnfb-realtime-database
+    const uploadImageAsync = (uri: string, fileName: string) => {
+        // setLoading(true);
+        const ref = storage().ref(`${store.loginCredentials.uid}/productImages`).child(`${fileName}.jpg`)
+        const uploadTask = ref.putFile(uri)
+
+        return uploadTask.on(
+            Firebase.storage.TaskEvent.STATE_CHANGED,
+            (s) => {
+                // var progress = (s.bytesTransferred / s.totalBytes) * 100;
+                // console.log("Upload is " + progress + "% done");
+                // switch (s.state) {
+                //     case Firebase.storage.TaskState.PAUSED: // or 'paused'
+                //         console.log("Upload is paused");
+                //         break;
+                //     case Firebase.storage.TaskState.RUNNING: // or 'running'
+                //         console.log("Upload is running");
+                //         break;
+                // }
+            },
+            (error) => {
+                console.log(error);
+                return;
+            },
+            () => {
+                uploadTask.snapshot!.ref.getDownloadURL().then((downloadURL) => {
+                    formRef.current.setFieldValue('productImage', downloadURL)
+                });
+            }
+        );
+    };
 
     const addEventToCalendar = async (productName: string, ETA: string, orderId: string) => {
         const id = await createCalendar()
@@ -67,28 +104,33 @@ const AddOrderScreen = ({ navigation }: any) => {
                 <Pressable
                     android_ripple={{ color: "#121212", radius: 20 }}
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
-                    onPress={async () => {
-                        const addToCal = addToCalendarRef.current.values.add_to_calendar
-                        const order = formRef.current.values
-                        const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
+                    onPress={() => {
+                        const onSubmit = async () => {
 
-                        console.log(orderId)
+                            // console.log(formRef.current.values)
+                            const addToCal = addToCalendarRef.current.values.add_to_calendar
+                            const order = formRef.current.values
+                            const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
 
-                        let eventId = ""
-                        if (addToCal) {
-                            eventId = await addEventToCalendar(order.productName, order.ETA, orderId)
+                            console.log(orderId)
+
+                            let eventId = ""
+                            if (addToCal) {
+                                eventId = await addEventToCalendar(order.productName, order.ETA, orderId)
+                            }
+                            order.orderId = orderId
+                            order.calendarEventId = eventId
+
+                            database()
+                                .ref(`/users/${store.loginCredentials.uid}/orders`)
+                                .child(orderId)
+                                .set(order)
+                                .then(() => {
+                                    console.log('Data set.')
+                                    navigation.pop()
+                                });
                         }
-                        order.orderId = orderId
-                        order.calendarEventId = eventId
-
-                        database()
-                            .ref(`/users/${store.loginCredentials.uid}/orders`)
-                            .child(orderId)
-                            .set(order)
-                            .then(() => {
-                                console.log('Data set.')
-                                navigation.pop()
-                            });
+                        onSubmit()
                     }}>
                     <MaterialIcons name="done" size={24} />
                 </Pressable>
@@ -105,7 +147,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                     initialValues={{
                         orderNumber: "",
                         productName: "",
-                        productImage: "",
+                        productImage: `https://img.freepik.com/free-vector/black-white-hypnotic-background-abstract-seamless-pattern-illustration_118124-3765.jpg?size=1024&ext=jpg`,
                         sellerName: "",
                         // deliveryCharges: "",
                         ETA: "",
@@ -124,7 +166,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                         <>
                             <View style={{ width: '100%', height: 400, position: 'relative', backgroundColor: "#121212" }}>
                                 <Image
-                                    source={{ uri: `https://img.freepik.com/free-vector/black-white-hypnotic-background-abstract-seamless-pattern-illustration_118124-3765.jpg?size=1024&ext=jpg` }}
+                                    source={{ uri: values.productImage }}
                                     style={{ width: '100%', height: 400, resizeMode: 'cover', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, marginTop: 0, backgroundColor: "#121212" }}
                                 />
                                 <View style={{ backgroundColor: '#000', opacity: 0.35, width: '100%', height: 400, position: 'absolute' }}></View>
@@ -145,7 +187,26 @@ const AddOrderScreen = ({ navigation }: any) => {
                                         backgroundColor: "#020100",
                                         justifyContent: 'center',
                                         alignItems: 'center'
-                                    }}>
+                                    }}
+                                    onPress={async () => {
+                                        launchCamera({
+                                            mediaType: 'photo',
+                                            quality: 0.6,
+                                            cameraType: 'back',
+                                            includeBase64: true,
+                                            saveToPhotos: false,
+                                        }, async (response) => {
+                                            if (!response.didCancel) {
+                                                if (response !== undefined) {
+                                                    const imageUrl = response.assets[0].uri!
+                                                    const fileName = response.assets[0].fileName!
+                                                    uploadImageAsync(imageUrl, fileName)
+                                                }
+
+                                            }
+                                        })
+                                    }}
+                                >
                                     <FontAwesome name="camera" size={20} color="#fff" />
                                 </Pressable>
 
@@ -172,19 +233,16 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 value={values.productName}
                                 onChangeText={handleChange('productName')}
                             />
-                            {/* <Input
-                                autoCorrect={false}
-                                autoCapitalize="none"
+
+                            <Datepicker
+                                placement="top"
                                 label="Estimated Delivery Time"
+                                placeholder="Select the estimated date of arrival (only one)"
+                                controlStyle={{ backgroundColor: "#8b8a8a2c", }}
+                                style={{ marginHorizontal: 10, marginVertical: 10 }}
                                 size="large"
-                                style={{ fontSize: 17, fontWeight: 'bold', backgroundColor: "#8b8a8a2c", padding: 10 }}
-                                textStyle={{ height: 30, color: '#bdb8b8' }}
-                                placeholder="Enter the ETA"
-                                value={values.ETA}
-                                onChangeText={handleChange('ETA')}
-                            /> */}
-
-
+                                date={values.ETA}
+                                onSelect={(date) => setFieldValue('ETA', date)} />
 
                             <Input
                                 autoCorrect={false}

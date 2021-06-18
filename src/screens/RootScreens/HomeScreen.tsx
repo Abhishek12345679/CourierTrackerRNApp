@@ -10,7 +10,7 @@ import OrderList from '../../components/OrderList';
 import { Avatar, Incubator } from 'react-native-ui-lib';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
-import { Modal, Card, Button, Datepicker } from '@ui-kitten/components'
+import { Modal, Card, Button, Datepicker, } from '@ui-kitten/components'
 import { HeaderTitle } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -18,7 +18,7 @@ const { TextField } = Incubator
 
 import database from '@react-native-firebase/database';
 
-// import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const HomeScreen: React.FC = observer((props: any) => {
@@ -30,17 +30,16 @@ const HomeScreen: React.FC = observer((props: any) => {
     //             console.log("logged in via google")
     //             // console.log("google Creds: ",store.googleCredentials)
     //             setGmailAccessStatus(true)
+    //             fetchManualOrders()
     //             getOrders()
     //         }
     //         //   return () => unsubscribe();
-    //     }, [store.googleCredentials])
-    // );
+    //     }, [store.settings, store.settings])
+    // )
 
 
     useEffect(() => { fetchUserInfo() }, [])
 
-    const [orders, setOrders] = useState<OrderListType[]>([])
-    const [manualOrders, setManualOrders] = useState<Order[] | unknown[]>([])
     const [gmailAccessStatus, setGmailAccessStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [fetchingOrders, setFetchingOrders] = useState(false)
@@ -58,23 +57,18 @@ const HomeScreen: React.FC = observer((props: any) => {
     const onRefresh = React.useCallback(() => {
         console.log("refreshing...")
         setRefreshing(true);
-        fetchManualOrders()
         getOrders().then(() => {
             setRefreshing(false)
         })
-    }, []);
+    }, [store.settings]);
 
 
 
     useEffect(() => {
         const onStart = async () => {
-            // console.log("google Creds: ", store.googleCredentials)
             if (store.googleCredentials.refresh_token !== "") {
-                console.log("logged in via google")
                 setGmailAccessStatus(true)
-
                 const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
-                // console.log(ordersInAsyncStorage)
                 if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
                     getOrders()
                 } else {
@@ -83,27 +77,27 @@ const HomeScreen: React.FC = observer((props: any) => {
             }
         }
         onStart()
-    }, [])
+    }, [store.settings])
 
 
     const getAmazonOrders = async (auth: Credentials) => {
-        const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}`)
+        const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const AmazonOrders = await AZResponse.json()
     }
 
     const getFlipkartOrders = async (auth: Credentials) => {
-        const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}`)
+        const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const FlipkartOrders = await FKResponse.json()
         return FlipkartOrders.flipkartOrders
     }
     const getMyntraOrders = async (auth: Credentials) => {
-        const MResponse = await fetch(`${sensitiveData.baseUrl}/getMyntraOrderDetails?tokens=${JSON.stringify(auth)}`)
+        const MResponse = await fetch(`${sensitiveData.baseUrl}/getMyntraOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const MyntraOrders = await MResponse.json()
         return MyntraOrders.myntraOrders
     }
 
     const getAjioOrders = async (auth: Credentials) => {
-        const AResponse = await fetch(`${sensitiveData.baseUrl}/getAjioOrderDetails?tokens=${JSON.stringify(auth)}`)
+        const AResponse = await fetch(`${sensitiveData.baseUrl}/getAjioOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const AjioOrders = await AResponse.json()
         return AjioOrders.ajioOrders
     }
@@ -131,12 +125,13 @@ const HomeScreen: React.FC = observer((props: any) => {
         }
     }
 
-    const fetchManualOrders = () => {
-        database().ref(`/users/${store.loginCredentials.uid}/orders`)
-            .on('value', snapshot => {
+    const fetchManualOrders = async (): Promise<Order[] | unknown[]> => {
+        return await database().ref(`/users/${store.loginCredentials.uid}/orders`)
+            .once('value')
+            .then((snapshot) => {
                 const orders = snapshot.val()
-                const newOrders = Object.entries(orders).map(([key, value]) => value)
-                setManualOrders(newOrders)
+                const newOrders = Object.entries(orders).map(([_, value]) => value)
+                return newOrders
             });
     }
 
@@ -146,13 +141,12 @@ const HomeScreen: React.FC = observer((props: any) => {
         const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
         const myntraOrders = await getMyntraOrders(store.googleCredentials)
         const ajioOrders = await getAjioOrders(store.googleCredentials)
-        const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders)
+
+        const manualOrders = await fetchManualOrders()
+
+        const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders as Order[])
         const sortedOrders = sortOrders(groupedOrders)
 
-
-        // console.log('FBOrders: ', FBOrders)
-
-        // setOrders(sortedOrders)
         store.saveOrders(sortedOrders)
         await store.saveOrdersLocally(sortedOrders)
         setFetchingOrders(false)

@@ -8,6 +8,7 @@ export interface switchGroupProps {
     toggleStatus: boolean,
     onValueChange: (value: boolean) => void,
     bgColor: string
+    disabled?: boolean | undefined
 }
 
 const SwitchGroup = (props: switchGroupProps) => {
@@ -16,7 +17,7 @@ const SwitchGroup = (props: switchGroupProps) => {
         <View
             style={{ flexDirection: 'row', width: '100%', height: props.height, justifyContent: 'space-between', alignItems: 'center', paddingStart: 30, paddingEnd: 30, backgroundColor: props.bgColor }}>
             <Text style={{ color: '#fff', fontSize: 18, }}>{props.label}</Text>
-            <Switch value={props.toggleStatus} onValueChange={props.onValueChange} />
+            <Switch value={props.toggleStatus} onValueChange={props.onValueChange} disabled={props.disabled} />
         </View>
     )
 }

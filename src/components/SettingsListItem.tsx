@@ -21,6 +21,7 @@ const SettingsListItem = (props: switchGroupProps) => {
             width: "100%"
         }}>
             <SwitchGroup
+                disabled={props.disabled}
                 label={props.label}
                 toggleStatus={props.toggleStatus}
                 onValueChange={props.onValueChange}

@@ -57,5 +57,11 @@
 	<string>Allow $(PRODUCT_NAME) to access your calendar</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your reminders</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to save photos</string>
+<key>NSCameraUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to access your camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to use your microphone</string>
 </dict>
 </plist>

@@ -18,7 +18,11 @@ PODS:
     - React-Core
     - UMCore
     - UMImageLoaderInterface
-  - EXPermissions (10.0.0):
+  - EXImagePicker (10.1.4):
+    - UMCore
+    - UMFileSystemInterface
+    - UMPermissionsInterface
+  - EXPermissions (12.0.1):
     - UMCore
     - UMPermissionsInterface
   - EXSplashScreen (0.8.1):
@@ -457,6 +461,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
+  - EXImagePicker (from `../node_modules/expo-image-picker/ios`)
   - EXPermissions (from `../node_modules/expo-permissions/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -527,7 +532,7 @@ DEPENDENCIES:
   - UMFileSystemInterface (from `../node_modules/unimodules-file-system-interface/ios`)
   - UMFontInterface (from `../node_modules/unimodules-font-interface/ios`)
   - UMImageLoaderInterface (from `../node_modules/unimodules-image-loader-interface/ios`)
-  - UMPermissionsInterface (from `../node_modules/expo-calendar/node_modules/unimodules-permissions-interface/ios`)
+  - UMPermissionsInterface (from `../node_modules/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../node_modules/@unimodules/react-native-adapter/ios`)"
   - UMSensorsInterface (from `../node_modules/unimodules-sensors-interface/ios`)
   - UMTaskManagerInterface (from `../node_modules/unimodules-task-manager-interface/ios`)
@@ -572,6 +577,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-font/ios"
   EXImageLoader:
     :path: "../node_modules/expo-image-loader/ios"
+  EXImagePicker:
+    :path: "../node_modules/expo-image-picker/ios"
   EXPermissions:
     :path: "../node_modules/expo-permissions/ios"
   EXSplashScreen:
@@ -671,7 +678,7 @@ EXTERNAL SOURCES:
   UMImageLoaderInterface:
     :path: "../node_modules/unimodules-image-loader-interface/ios"
   UMPermissionsInterface:
-    :path: "../node_modules/expo-calendar/node_modules/unimodules-permissions-interface/ios"
+    :path: "../node_modules/unimodules-permissions-interface/ios"
   UMReactNativeAdapter:
     :path: "../node_modules/@unimodules/react-native-adapter/ios"
   UMSensorsInterface:
@@ -690,7 +697,8 @@ SPEC CHECKSUMS:
   EXFileSystem: 0e4974ab77bff04cda68d2886d070cbe64b93a6b
   EXFont: ec06a9fb8f0d558fb7afa8540f3d932622fa85d6
   EXImageLoader: f96ec9992733a4224418bbd9382e5485c8948944
-  EXPermissions: 17d4846ad1880f6891c74ae58ca1acb43e47ed47
+  EXImagePicker: dd05b8a5cb782c79d07d1d72e5850c6acc2b9a37
+  EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
   EXSplashScreen: 8c7c1112ce7611a853486af4737fe2298eda7657
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
@@ -766,6 +774,6 @@ SPEC CHECKSUMS:
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: f38e67a4d886affbac91bb9466837841ae53733e
+PODFILE CHECKSUM: 5dfe51b48c417366d2d5a81c6d8d73cd304a3484
 
 COCOAPODS: 1.10.1
