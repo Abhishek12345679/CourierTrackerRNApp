@@ -1,13 +1,8 @@
 import React, { useState } from 'react'
-import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
-import { sensitiveData } from '../../constants/sen_data';
 import { useTheme } from '@react-navigation/native';
 import { observer } from 'mobx-react';
-import { Incubator } from 'react-native-ui-lib';
-import { AntDesign } from '@expo/vector-icons';
-
-const { TextField, TouchableOpacity } = Incubator
 
 import { Input } from '@ui-kitten/components'
 
@@ -15,12 +10,22 @@ import auth from '@react-native-firebase/auth';
 import store from '../store/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// TODO: add validation to textinput
+import { Formik } from 'formik';
+import * as yup from 'yup'
+
+const authenticationValidationSchema = yup.object().shape({
+    email: yup
+        .string()
+        .email("Please enter valid email")
+        .required('Email Address is Required'),
+    password: yup
+        .string()
+        .min(8, ({ min }) => `Password must be at least ${min} characters`)
+        .required('Password is required'),
+})
+
 const LoginScreen: React.FC = observer((props: any) => {
     // const { colors } = useTheme()
-
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const [loggingIn, setloggingIn] = useState(false)
     const [isSignIn, setIsSignIn] = useState(false)
 
@@ -34,7 +39,7 @@ const LoginScreen: React.FC = observer((props: any) => {
         console.log('Saved Refresh Token!')
     }
 
-    const EmailPasswordSignIn = async () => {
+    const EmailPasswordSignIn = async (email: string, password: string) => {
         try {
             setloggingIn(true)
             let user
@@ -60,13 +65,10 @@ const LoginScreen: React.FC = observer((props: any) => {
             setloggingIn(false)
             if (error.code === 'auth/email-already-in-use') {
                 console.log('That email address is already in use!');
-
             }
-
             if (error.code === 'auth/invalid-email') {
                 console.log('That email address is invalid!');
             }
-
             console.error(error);
         }
 
@@ -75,48 +77,70 @@ const LoginScreen: React.FC = observer((props: any) => {
         <ScrollView style={{ backgroundColor: '#121212' }}
             contentContainerStyle={{ justifyContent: "center", flex: 1 }}>
             <Text style={styles.text}>{`Welcome \nHooman <3 `}</Text>
-            <View style={styles.form}>
-                <Input
-                    autoCorrect={false}
-                    autoCapitalize="none"
-                    autoCompleteType="email"
-                    label="Email"
-                    size="large"
-                    style={{ fontSize: 17, fontWeight: 'bold', backgroundColor: "#8b8a8a2c", padding: 10 }}
-                    textStyle={{ height: 40, color: '#bdb8b8' }}
-                    placeholder="Enter your email address"
-                    value={email}
-                    onChangeText={setEmail}
-                />
-                <Input
-
-                    label="Password"
-                    size="large"
-                    disabled={email.length < 5}
-                    style={{ fontSize: 17, fontWeight: 'bold', backgroundColor: "#8b8a8a2c", padding: 10 }}
-                    textStyle={{ height: 40, color: '#bdb8b8' }}
-                    placeholder="Enter a valid password"
-                    value={password}
-                    secureTextEntry
-                    onChangeText={setPassword}
-                />
-                <Text style={{ color: '#a7a1a1', paddingStart: 15, fontSize: 15 }}>Don't have an account?</Text>
-                <Text style={{ color: '#a7a1a1', paddingStart: 15, fontSize: 15 }} onPress={() => { setIsSignIn(prev => !prev) }}>Create an account</Text>
-            </View>
-            <View style={{ flexDirection: 'row', backgroundColor: "#2c2727" }}>
-                {/* <Text>Price</Text>
-                <Text>{formattedPrice}</Text> */}
-                <Pressable android_ripple={{ color: '#575454', radius: 100, borderless: false }}
-                    style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: '#0d3f5c', marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
-                    onPress={EmailPasswordSignIn}
-                >
-                    {!loggingIn ?
-                        <Text style={{ fontFamily: 'segoe-bold', fontSize: 17, color: '#aaa8a8' }}>{isSignIn ? "Signin" : "Login"}</Text> :
-                        <ActivityIndicator size="large" color="#aaa8a8" />
-                    }
-                </Pressable>
-            </View>
-        </ScrollView>
+            <Formik
+                validationSchema={authenticationValidationSchema}
+                initialValues={{
+                    email: '',
+                    password: ''
+                }}
+                onSubmit={(values) => EmailPasswordSignIn(values.email, values.password)}
+            // innerRef={formRef}
+            >
+                {({ handleChange, handleBlur, handleSubmit, values, isValid, errors }) => (
+                    <>
+                        <View style={styles.form}>
+                            <Input
+                                autoCorrect={false}
+                                autoCapitalize="none"
+                                autoCompleteType="email"
+                                label="Email"
+                                size="large"
+                                style={{ fontSize: 17, fontWeight: 'bold', backgroundColor: "#8b8a8a2c", padding: 10 }}
+                                textStyle={{ height: 40, color: '#bdb8b8' }}
+                                placeholder="Enter your email address"
+                                value={values.email}
+                                onChangeText={handleChange('email')}
+                                onBlur={handleBlur('email')}
+                            />
+                            {errors.email &&
+                                <Text style={{ fontSize: 12, color: '#fff', marginStart: 15 }}>{errors.email}</Text>
+                            }
+                            <Input
+                                label="Password"
+                                size="large"
+                                style={{ fontSize: 17, fontWeight: 'bold', backgroundColor: "#8b8a8a2c", padding: 10 }}
+                                textStyle={{ height: 40, color: '#bdb8b8' }}
+                                placeholder="Enter a valid password"
+                                value={values.password}
+                                secureTextEntry
+                                onChangeText={handleChange('password')}
+                                onBlur={handleBlur('password')}
+                            />
+                            {errors.password &&
+                                <Text style={{ fontSize: 12, color: '#fff', marginStart: 15 }}>{errors.password}!!</Text>
+                            }
+                            <View style={{ marginTop: 20 }}>
+                                <Text style={{ color: '#e6e1e1', paddingStart: 15, fontSize: 17, marginBottom: 7 }}>Don't have an account?</Text>
+                                <Text style={{ color: '#e6e1e1', paddingStart: 15, fontSize: 17, marginBottom: 7, textDecorationLine: 'underline', textDecorationColor: "#124" }} onPress={() => { setIsSignIn(prev => !prev) }}>Create an account</Text>
+                            </View>
+                        </View>
+                        <View style={{ flexDirection: 'row', backgroundColor: "#2c2727" }}>
+                            <Pressable
+                                disabled={!isValid}
+                                android_ripple={{ color: '#575454', radius: 100, borderless: false }}
+                                style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: '#0d3f5c', marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
+                                onPress={handleSubmit}
+                            >
+                                {!loggingIn ?
+                                    <Text style={{ fontFamily: 'segoe-bold', fontSize: 17, color: '#aaa8a8' }}>{isSignIn ? "Signin" : "Login"}</Text> :
+                                    <ActivityIndicator size="large" color="#aaa8a8" />
+                                }
+                            </Pressable>
+                        </View>
+                    </>
+                )}
+            </Formik>
+        </ScrollView >
     )
 })
 

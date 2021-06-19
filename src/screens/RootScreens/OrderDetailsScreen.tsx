@@ -13,7 +13,10 @@ import ImageColors from 'react-native-image-colors'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const OrderDetailsScreen = observer((props: any) => {
+
+
     const { item } = props.route.params
+    console.log(item.productImage)
     const [primaryColor, setPrimaryColor] = useState('')
     const [secondaryColor, setSecondaryColor] = useState('')
 

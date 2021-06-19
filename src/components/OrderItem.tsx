@@ -15,6 +15,7 @@ import { Button, Icon } from '@ui-kitten/components';
 import database from '@react-native-firebase/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
 
 export const getDefaultCalendarSource = async () => {
     const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);

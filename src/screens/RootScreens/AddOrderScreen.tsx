@@ -1,9 +1,10 @@
+import React, { useEffect, useState } from 'react'
+
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
 import { Datepicker, Input } from '@ui-kitten/components'
 import { Formik } from 'formik'
-import React, { useEffect } from 'react'
 import { useRef } from 'react'
-import { View, Text, ScrollView, Image, Dimensions, Pressable } from 'react-native'
+import { View, Text, ScrollView, Image, Dimensions, Pressable, ActivityIndicator } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-ui-lib'
 import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
@@ -24,10 +25,12 @@ const AddOrderScreen = ({ navigation }: any) => {
     const addToCalendarRef = useRef({})
     const formRef = useRef({})
 
+    const [loading, setLoading] = useState(false)
+
     // TODO: one new manual order addition rerender the screen (useFocusEffect) or use the real times changes while fetching from rnfb-realtime-database
     const uploadImageAsync = (uri: string, fileName: string) => {
-        // setLoading(true);
-        const ref = storage().ref(`${store.loginCredentials.uid}/productImages`).child(`${fileName}.jpg`)
+        setLoading(true);
+        const ref = storage().ref(`${store.loginCredentials.uid}/productImages`).child(`${fileName}`)
         const uploadTask = ref.putFile(uri)
 
         return uploadTask.on(
@@ -46,11 +49,13 @@ const AddOrderScreen = ({ navigation }: any) => {
             },
             (error) => {
                 console.log(error);
+                setLoading(false)
                 return;
             },
             () => {
                 uploadTask.snapshot!.ref.getDownloadURL().then((downloadURL) => {
                     formRef.current.setFieldValue('productImage', downloadURL)
+                    setLoading(false)
                 });
             }
         );
@@ -98,6 +103,29 @@ const AddOrderScreen = ({ navigation }: any) => {
         return r;
     };
 
+    const formatDate = (ETA: string): string => {
+        const months = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ];
+        const date = (new Date(ETA).getDate()).toString()
+        const month = months[new Date(ETA).getMonth()]
+        const year = (new Date(ETA).getFullYear()).toString()
+
+        const formattedDate = `${date} ${month} ${year}`
+        return formattedDate
+    }
+
     useEffect(() => {
         navigation.setOptions({
             headerRight: () => (
@@ -107,19 +135,22 @@ const AddOrderScreen = ({ navigation }: any) => {
                     onPress={() => {
                         const onSubmit = async () => {
 
-                            // console.log(formRef.current.values)
                             const addToCal = addToCalendarRef.current.values.add_to_calendar
                             const order = formRef.current.values
+
                             const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
+                            const formattedDate = formatDate(order.ETA)
 
-                            console.log(orderId)
-
+                            // add to calendar
                             let eventId = ""
                             if (addToCal) {
-                                eventId = await addEventToCalendar(order.productName, order.ETA, orderId)
+                                eventId = await addEventToCalendar(order.productName, formattedDate, orderId)
                             }
+
+
                             order.orderId = orderId
                             order.calendarEventId = eventId
+                            order.ETA = formattedDate
 
                             database()
                                 .ref(`/users/${store.loginCredentials.uid}/orders`)
@@ -165,10 +196,24 @@ const AddOrderScreen = ({ navigation }: any) => {
                     {({ handleChange, handleSubmit, values, setFieldValue }) => (
                         <>
                             <View style={{ width: '100%', height: 400, position: 'relative', backgroundColor: "#121212" }}>
-                                <Image
-                                    source={{ uri: values.productImage }}
-                                    style={{ width: '100%', height: 400, resizeMode: 'cover', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, marginTop: 0, backgroundColor: "#121212" }}
-                                />
+                                {!loading ?
+                                    <Image
+                                        source={{ uri: values.productImage }}
+                                        style={{ width: '100%', height: 400, resizeMode: 'cover', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, marginTop: 0, backgroundColor: "#121212" }}
+                                    /> :
+                                    (<View style={{
+                                        width: '100%',
+                                        height: 400,
+                                        borderBottomLeftRadius: 20,
+                                        borderBottomRightRadius: 20,
+                                        marginTop: 0,
+                                        backgroundColor: "#121212",
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}>
+                                        <ActivityIndicator color="#fff" size="large" />
+                                    </View>)
+                                }
                                 <View style={{ backgroundColor: '#000', opacity: 0.35, width: '100%', height: 400, position: 'absolute' }}></View>
                                 <Pressable
                                     android_ripple={{ color: "#fff", radius: 25, }}
