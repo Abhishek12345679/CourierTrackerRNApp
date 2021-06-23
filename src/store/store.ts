@@ -99,8 +99,16 @@ const store = types
     googleCredentials: types.optional(googleCredentials, {}),
     loginCredentials: types.optional(loginCredentials, {}),
     didTryAutoLogin: types.optional(types.boolean, false),
+    newItemAdded: types.optional(types.boolean, false),
+    manualOrders: types.optional(types.array(types.string), []),
   })
   .actions((self) => ({
+    updateManualOrders() {
+      self.manualOrders.push('new_item');
+    },
+    updateNewItemAdded(status: boolean) {
+      self.newItemAdded = status;
+    },
     fetchUserInfo: flow(function* fetchUserInfo() {
       try {
         const userInfo: userInfoType = yield getUserInfo(
@@ -113,6 +121,9 @@ const store = types
         console.error('Failed to fetch projects', error);
       }
     }),
+    removeUserInfo() {
+      applySnapshot(self.userInfo, {});
+    },
     updateSettings: flow(function* updateSettings(values: settingsType) {
       try {
         self.settings = values;

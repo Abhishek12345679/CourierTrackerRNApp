@@ -1,9 +1,9 @@
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Input } from '@ui-kitten/components'
+import { Input, Styles, Modal, Card, Button } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, ScrollView, Button, Pressable, TouchableOpacity, StatusBar, TextInput, ActivityIndicator } from 'react-native'
+import { View, Text, ScrollView, Pressable, TouchableOpacity, StatusBar, TextInput, ActivityIndicator, StyleSheet } from 'react-native'
 import { Avatar, Switch } from 'react-native-ui-lib'
 import GoogleSignInCard from '../../components/GoogleSignInCard'
 import GoogleSignOutCard from '../../components/GoogleSignOutCard'
@@ -11,10 +11,13 @@ import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
 import store from '../../store/store'
 
+
+
 const SettingsScreen = ({ navigation }: any) => {
 
     const [signingOut, setSigningOut] = useState(false)
     const [submitting, setSubmitting] = useState(false)
+    const [visible, setVisible] = useState(false)
 
     const logout = async () => {
         store.resetLoginCredentials()
@@ -29,6 +32,7 @@ const SettingsScreen = ({ navigation }: any) => {
         setSigningOut(true)
         store.resetCredentials()
         store.removeOrders()
+        store.removeUserInfo()
         await AsyncStorage.removeItem('orders')
         await AsyncStorage.removeItem('credentials')
         setTimeout(() => {
@@ -42,6 +46,10 @@ const SettingsScreen = ({ navigation }: any) => {
         { label: "allow fetching new orders" },
         { label: "dark mode" },
         { label: "show archived orders" },
+    ]
+    const miscButtons = [
+        { label: "privacy policy", onPress: () => { } },
+        { label: "open source licenses", onPress: () => { } },
     ]
 
     const switchesRef = useRef()
@@ -63,28 +71,27 @@ const SettingsScreen = ({ navigation }: any) => {
         })
     }, [])
 
-    const Item = (props: { children: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined, borderColor: string, onPress: () => void }) => (
-        <Pressable
-
+    const Item = (props: { children: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined, borderColor: string, onPress: () => void, height: number, style?: any }) => (
+        <TouchableOpacity
             onPress={props.onPress}
-            android_ripple={{ color: '#8b8a8a2c', radius: 250, borderless: false }}
+            // android_ripple={{ color: '#8b8a8a2c', radius: 100, borderless: false }}
             style={{
-                flex: 1,
-                flexDirection: 'row',
-                height: 75,
-                marginTop: 15,
-                backgroundColor: '#202020ed',
-                borderWidth: 1,
-                borderColor: props.borderColor,
-                borderRadius: 7,
-                marginLeft: 15,
-                marginRight: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 20
+                ...{
+                    flex: 1,
+                    flexDirection: 'row',
+                    height: props.height,
+                    marginTop: 15,
+                    backgroundColor: '#202020ed',
+                    borderRadius: 7,
+                    marginLeft: 15,
+                    marginRight: 15,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: 20
+                }, ...props.style
             }}>
             {props.children}
-        </Pressable>
+        </TouchableOpacity>
     )
 
 
@@ -197,15 +204,67 @@ const SettingsScreen = ({ navigation }: any) => {
                                 <SettingsListItem bgColor="#ffffff00" height={70} label={switches[1].label} toggleStatus={values.allow_fetching_new_orders} onValueChange={(value: boolean) => setFieldValue('allow_fetching_new_orders', value)} />
                                 <SettingsListItem disabled={true} bgColor="#ffffff00" height={70} label={switches[2].label} toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', value)} />
                                 <SettingsListItem bgColor="#ffffff00" height={70} label={switches[3].label} toggleStatus={values.show_archived_items} onValueChange={(value: boolean) => setFieldValue('show_archived_items', value)} />
-                                {/* <Button title="submit" onPress={handleSubmit} /> */}
                             </>
                         )}
                     </Formik>
                 </View>
             </View>
-            <Item onPress={logout} borderColor="transparent"><Text style={{ color: "#fff", fontSize: 20, fontFamily: 'segoe-bold' }}>logout</Text></Item>
+            <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
+                <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
+                    {
+                        miscButtons.map((btn, index) => (
+                            <Item key={index} style={{ justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: 0, marginBottom: 0 }} onPress={() => { }} height={60} borderColor="transparent"><Text style={{ color: '#fff', fontSize: 18, marginLeft: 0 }}>{btn.label}</Text></Item>
+                        ))
+                    }
+                </View>
+            </View>
+            <Item height={70} onPress={() => {
+                setVisible(true)
+            }} borderColor="transparent"><Text style={{ color: "#fff", fontSize: 15, fontFamily: 'segoe-bold' }}>logout</Text></Item>
+            <Modal
+                visible={visible}
+                backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', }}
+                // onBackdropPress={() => setVisible(false)}
+                style={{ width: "80%", height: 150 }}
+            >
+                <Card
+                    style={{
+                        flex: 1,
+                        height: 100,
+                        borderWidth: 0,
+                        justifyContent: "space-evenly",
+                        backgroundColor: '#dad8d8'
+                    }}
+                >
+                    <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20, borderWidth: 0 }}>
+                        <Text
+                            style={{ fontFamily: 'gotham-bold', fontSize: 15 }}>
+                            Are you sure you want to log out?
+                        </Text>
+                    </View>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            width: '100%',
+                            height: 100,
+                            alignItems: 'center',
+                            justifyContent: 'space-around',
+                            borderWidth: 0
+                        }}>
+                        <Button
+                            appearance="filled"
+                            onPress={logout}
+                            style={{ width: 120, height: 50, borderWidth: 0 }}>Logout</Button>
+                        <Button
+                            appearance='outline'
+                            onPress={() => setVisible(false)}
+                            style={{ width: 120, height: 50, borderWidth: 0 }}>Cancel</Button>
+                    </View>
+                </Card>
+            </Modal>
         </ScrollView >
     )
 }
+
 
 export default SettingsScreen

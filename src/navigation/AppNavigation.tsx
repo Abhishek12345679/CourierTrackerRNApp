@@ -73,7 +73,7 @@ export const RootNavigator = () => {
             <RootStackNavigator.Screen
                 name="AuthUrlScreen"
                 component={AuthUrlScreen}
-                options={{ stackPresentation: 'modal', headerHideBackButton: true }}
+                options={{ stackPresentation: 'modal', headerShown: false }}
             />
         </RootStackNavigator.Navigator>
     );

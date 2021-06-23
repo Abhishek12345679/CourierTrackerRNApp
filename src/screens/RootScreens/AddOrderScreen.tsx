@@ -158,6 +158,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 .set(order)
                                 .then(() => {
                                     console.log('Data set.')
+                                    store.updateManualOrders()
                                     navigation.pop()
                                 });
                         }

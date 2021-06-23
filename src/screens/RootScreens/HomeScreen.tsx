@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image, StatusBar } from 'react-native'
-
 import store, { Credentials, userInfoType } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
 import { observer } from 'mobx-react';
@@ -9,37 +8,17 @@ import { Order, AmazonOrder, OrderList as OrderListType } from '../../../constan
 import OrderList from '../../components/OrderList';
 import { Avatar, Incubator } from 'react-native-ui-lib';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-
 import { Modal, Card, Button, Datepicker, } from '@ui-kitten/components'
 import { HeaderTitle } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const { TextField } = Incubator
-
 import database from '@react-native-firebase/database';
-
 import { useFocusEffect } from '@react-navigation/native';
 
 
 const HomeScreen: React.FC = observer((props: any) => {
 
-    // TODO: add loading spinner while the orders are being fetched
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //         if (store.googleCredentials.refresh_token !== "") {
-    //             console.log("logged in via google")
-    //             // console.log("google Creds: ",store.googleCredentials)
-    //             setGmailAccessStatus(true)
-    //             fetchManualOrders()
-    //             getOrders()
-    //         }
-    //         //   return () => unsubscribe();
-    //     }, [store.settings, store.settings])
-    // )
-
-
-    useEffect(() => { fetchUserInfo() }, [])
-
+    const [searchText, setSearchText] = useState('')
     const [gmailAccessStatus, setGmailAccessStatus] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [fetchingOrders, setFetchingOrders] = useState(false)
@@ -50,9 +29,52 @@ const HomeScreen: React.FC = observer((props: any) => {
     const isAndroid = (Platform.OS === "android")
     const [pfp, setPfp] = useState(store.userInfo.profilePicture)
     const [name, setName] = useState(store.userInfo.name)
-
-
     const [refreshing, setRefreshing] = useState<boolean>(false);
+
+    // const filteredOrderItems = searchText !== "" ? store.orders.filter((order) => order.EstimatedDeliveryTime.toLowerCase().includes(searchText)) : store.orders
+
+    //TODO: Find some other way to run focusEffect like action.
+
+    // run when new item is added
+    useFocusEffect(
+        useCallback(() => {
+            // console.log("updated manual orders!!")
+            // const onNewItemsAdded = database()
+            //     .ref(`/users/${store.loginCredentials.uid}/orders`)
+            //     .on('value', (snapshot) => {
+            //         getOrders()
+            //         console.log("testtest")
+            //     })
+            // return () => database().ref(`/users/${store.loginCredentials.uid}/orders`).off('value', onNewItemsAdded);
+        }, [store.manualOrders])
+    );
+
+    // run when someone signs in to google 
+    useFocusEffect(
+        useCallback(() => {
+            const onStart = async () => {
+                // console.log("signed in to google!!")
+                // if (store.googleCredentials.refresh_token !== "") {
+                //     setGmailAccessStatus(true)
+                //     await fetchUserInfo()
+                //     const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
+                //     if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
+                //         getOrders()
+                //     } else {
+                //         store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+                //     }
+                // } else {
+                //     setGmailAccessStatus(false)
+                // }
+            }
+            onStart()
+
+        }, [store.googleCredentials])
+    );
+
+    useEffect(() => {
+        fetchUserInfo()
+    }, [store.userInfo])
 
     const onRefresh = React.useCallback(() => {
         console.log("refreshing...")
@@ -61,8 +83,6 @@ const HomeScreen: React.FC = observer((props: any) => {
             setRefreshing(false)
         })
     }, [store.settings]);
-
-
 
     useEffect(() => {
         const onStart = async () => {
@@ -255,9 +275,8 @@ const HomeScreen: React.FC = observer((props: any) => {
                     fieldStyle={{ marginHorizontal: 20 }}
                     placeholderTextColor="#aaa"
                     placeholder="Type something..."
-
-                    value={""}
-                    onChangeText={() => { }}
+                    value={searchText}
+                    onChangeText={(text) => setSearchText(text)}
                 />
                 <TouchableOpacity
                     style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#e2e2e2', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
@@ -286,7 +305,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                     <ActivityIndicator size="large" color="#fff" />
                 </View>
             }
-            <Modal
+            {/* <Modal
                 visible={visible}
                 backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', }}
                 onBackdropPress={() => setVisible(false)}>
@@ -301,7 +320,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                         Submit
                     </Button>
                 </Card>
-            </Modal>
+            </Modal> */}
         </View>
     )
 })

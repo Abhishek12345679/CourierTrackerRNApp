@@ -86,7 +86,7 @@ const LoginScreen: React.FC = observer((props: any) => {
                 onSubmit={(values) => EmailPasswordSignIn(values.email, values.password)}
             // innerRef={formRef}
             >
-                {({ handleChange, handleBlur, handleSubmit, values, isValid, errors }) => (
+                {({ handleChange, handleBlur, handleSubmit, values, isValid, errors, touched }) => (
                     <>
                         <View style={styles.form}>
                             <Input
@@ -102,7 +102,7 @@ const LoginScreen: React.FC = observer((props: any) => {
                                 onChangeText={handleChange('email')}
                                 onBlur={handleBlur('email')}
                             />
-                            {errors.email &&
+                            {(errors.email && touched.email) &&
                                 <Text style={{ fontSize: 12, color: '#fff', marginStart: 15 }}>{errors.email}</Text>
                             }
                             <Input
@@ -116,7 +116,7 @@ const LoginScreen: React.FC = observer((props: any) => {
                                 onChangeText={handleChange('password')}
                                 onBlur={handleBlur('password')}
                             />
-                            {errors.password &&
+                            {(errors.password && touched.password) &&
                                 <Text style={{ fontSize: 12, color: '#fff', marginStart: 15 }}>{errors.password}!!</Text>
                             }
                             <View style={{ marginTop: 20 }}>
