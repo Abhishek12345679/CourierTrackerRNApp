@@ -48,7 +48,12 @@ const SettingsScreen = ({ navigation }: any) => {
         { label: "show archived orders" },
     ]
     const miscButtons = [
-        { label: "privacy policy", onPress: () => { } },
+        {
+            label: "privacy policy",
+            onPress: () => {
+                navigation.navigate("PrivacyPolicyScreen")
+            }
+        },
         { label: "open source licenses", onPress: () => { } },
     ]
 
@@ -213,7 +218,13 @@ const SettingsScreen = ({ navigation }: any) => {
                 <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
                     {
                         miscButtons.map((btn, index) => (
-                            <Item key={index} style={{ justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: 0, marginBottom: 0 }} onPress={() => { }} height={60} borderColor="transparent"><Text style={{ color: '#fff', fontSize: 18, marginLeft: 0 }}>{btn.label}</Text></Item>
+                            <Item
+                                key={index} style={{ justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: 0, marginBottom: 0 }}
+                                onPress={btn.onPress}
+                                height={60}
+                                borderColor="transparent">
+                                <Text style={{ color: '#fff', fontSize: 18, marginLeft: 0 }}>{btn.label}</Text>
+                            </Item>
                         ))
                     }
                 </View>

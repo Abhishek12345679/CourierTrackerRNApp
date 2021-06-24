@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import SettingsScreen from '../screens/RootScreens/SettingsScreen';
 import OrderDetailsScreen from '../screens/RootScreens/OrderDetailsScreen';
 import AddOrderScreen from '../screens/RootScreens/AddOrderScreen';
+import PrivacyPolicyScreen from '../screens/RootScreens/PrivacyPolicyScreen';
 
 
 enableScreens()
@@ -85,7 +86,7 @@ export const SettingsNavigator = () => {
         <SettingsStackNavigator.Navigator
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
-                    color: "#cec3c3",
+                    color: "#ffffff",
                     // fontSize: 45,
                     // fontFamily: 'gotham-',
                 },
@@ -95,10 +96,11 @@ export const SettingsNavigator = () => {
 
                 },
                 stackPresentation: 'modal',
-                headerTitle: 'Settings'
+                // headerTitle: 'Settings'
             })}
         >
-            <SettingsStackNavigator.Screen name="SettingsScreen" component={SettingsScreen} />
+            <SettingsStackNavigator.Screen name="SettingsScreen" component={SettingsScreen} options={{ headerTitle: 'Settings' }} />
+            <SettingsStackNavigator.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} options={{ headerTitle: 'Privacy Policy' }} />
         </SettingsStackNavigator.Navigator>
     );
 };

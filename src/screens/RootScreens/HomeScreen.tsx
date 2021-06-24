@@ -238,7 +238,12 @@ const HomeScreen: React.FC = observer((props: any) => {
                         style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                         onPress={() => props.navigation.navigate('AddOrder')}>
                         <MaterialIcons name="add" size={24} />
-                    </TouchableOpacity> : <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 35 }}>AIO</HeaderTitle>}
+                    </TouchableOpacity> :
+                        <View style={{ flexDirection: 'row' }}>
+                            <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 30, color: "#8abedf" }}>Order</HeaderTitle>
+                            <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 30, color: "#ec5a3c" }}>Gator</HeaderTitle>
+                        </View>
+                    }
                 </View>
             ),
         })
@@ -260,7 +265,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
             <StatusBar barStyle="light-content" />
-            <View style={{ flexDirection: 'row', height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20, backgroundColor: '#121212' }}>
+            {/* <View style={{ flexDirection: 'row', height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20, backgroundColor: '#121212' }}>
                 <TextField
                     style={{ fontSize: 17, fontFamily: 'segoe-normal', width: '100%', color: "#fff" }}
                     containerStyle={{
@@ -285,13 +290,13 @@ const HomeScreen: React.FC = observer((props: any) => {
                     }}>
                     <MaterialIcons name="search" size={24} />
                 </TouchableOpacity>
-            </View>
+            </View> */}
 
             {!fetchingOrders ?
                 <FlatList
                     showsVerticalScrollIndicator={false}
                     style={{ backgroundColor: '#121212' }}
-                    contentContainerStyle={{ justifyContent: 'center', paddingBottom: 70 }}
+                    contentContainerStyle={{ justifyContent: 'center', paddingBottom: 70, paddingTop: 30 }}
                     keyExtractor={item => item.EstimatedDeliveryTime}
                     data={store.orders}
                     renderItem={renderOrderItem}
