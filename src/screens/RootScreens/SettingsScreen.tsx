@@ -229,9 +229,14 @@ const SettingsScreen = ({ navigation }: any) => {
                     }
                 </View>
             </View>
-            <Item height={70} onPress={() => {
-                setVisible(true)
-            }} borderColor="transparent"><Text style={{ color: "#fff", fontSize: 15, fontFamily: 'segoe-bold' }}>logout</Text></Item>
+            <Item
+                height={70}
+                onPress={() => {
+                    setVisible(true)
+                }}
+                borderColor="transparent">
+                <Text style={{ color: "#fff", fontSize: 15, fontFamily: 'segoe-bold' }}>logout</Text>
+            </Item>
             <Modal
                 visible={visible}
                 backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', }}

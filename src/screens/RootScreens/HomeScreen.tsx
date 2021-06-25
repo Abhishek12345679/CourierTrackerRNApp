@@ -264,7 +264,7 @@ const HomeScreen: React.FC = observer((props: any) => {
 
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
-            <StatusBar barStyle="light-content" />
+            <StatusBar barStyle="light-content" backgroundColor="#121212" />
             {/* <View style={{ flexDirection: 'row', height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20, backgroundColor: '#121212' }}>
                 <TextField
                     style={{ fontSize: 17, fontFamily: 'segoe-normal', width: '100%', color: "#fff" }}
@@ -292,11 +292,16 @@ const HomeScreen: React.FC = observer((props: any) => {
                 </TouchableOpacity>
             </View> */}
 
+
+
             {!fetchingOrders ?
                 <FlatList
+                    ListHeaderComponent={<Text style={{ color: "#fff", fontSize: 40, fontFamily: 'gotham-black', padding: 15 }}>Orders</Text>}
                     showsVerticalScrollIndicator={false}
                     style={{ backgroundColor: '#121212' }}
-                    contentContainerStyle={{ justifyContent: 'center', paddingBottom: 70, paddingTop: 30 }}
+                    contentContainerStyle={{
+                        justifyContent: 'center'
+                    }}
                     keyExtractor={item => item.EstimatedDeliveryTime}
                     data={store.orders}
                     renderItem={renderOrderItem}

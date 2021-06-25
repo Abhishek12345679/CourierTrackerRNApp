@@ -1,7 +1,7 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { observer } from 'mobx-react'
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Pressable, StatusBar } from 'react-native'
+import { View, Text, ScrollView, Pressable, StatusBar, TouchableOpacity, Linking, ToastAndroid } from 'react-native'
 import Image from 'react-native-ui-lib/image'
 import { Order } from '../../../constants/Types/OrderTypes'
 import { createCalendar } from '../../components/OrderItem'
@@ -11,19 +11,45 @@ import { sensitiveData } from '../../../constants/sen_data'
 
 import ImageColors from 'react-native-image-colors'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Clipboard from '@react-native-clipboard/clipboard';
+import { Feather } from '@expo/vector-icons'
+import Delivered from '../../components/Delivered'
 
 const OrderDetailsScreen = observer((props: any) => {
 
 
     const { item } = props.route.params
-    console.log(item.productImage)
     const [primaryColor, setPrimaryColor] = useState('')
-    const [secondaryColor, setSecondaryColor] = useState('')
+    // const [secondaryColor, setSecondaryColor] = useState('')
+    const [deliveryStatus, setDeliveryStatus] = useState(false)
 
-    const formattedPrice = new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR'
-    }).format(parseInt(item.productPrice))
+    const extraData = [
+        // { label: 'Seller Name', data: item.sellerName },
+        { label: 'Delivery Charges', data: item.deliveryCharges ? item.deliveryCharges : "NA" },
+        { label: 'Delivery Discount', data: item.deliveryDiscount ? item.deliveryDiscount : "NA" },
+        { label: 'Total Amount \n(Total Price of the Order)', data: item.totalPrice },
+        // { label: 'Product Link', data: item.productLink },
+        // { label: 'Ordered from', data: item.from },
+    ]
+
+
+
+    const formatPrice = (price: string | number) => {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR'
+        }).format(parseInt(price.toString()))
+
+    }
+
+    const copyToClipboard = () => {
+        Clipboard.setString(item.orderNumber);
+        ToastAndroid.showWithGravity(
+            `Copied Order Number\n${item.orderNumber}`,
+            ToastAndroid.SHORT,
+            ToastAndroid.TOP
+        );
+    };
 
 
     const extractColorsFromImage = async () => {
@@ -61,6 +87,7 @@ const OrderDetailsScreen = observer((props: any) => {
         })
         const delStat = await statusResponse.json()
         console.log(delStat)
+        setDeliveryStatus(delStat)
     }
 
 
@@ -95,51 +122,70 @@ const OrderDetailsScreen = observer((props: any) => {
 
     return (
         <View style={{ flex: 1 }}>
-            <StatusBar barStyle="light-content" />
-            <ScrollView style={{ flex: 1, backgroundColor: "#121212" }}>
-                <View style={{ width: '100%', height: 400, position: "relative" }}>
+            <StatusBar barStyle="light-content" backgroundColor="#121212" />
+            <ScrollView style={{ flex: 1, backgroundColor: "#121212" }} contentContainerStyle={{ justifyContent: 'center', alignItems: "center" }}>
+                <View style={{ width: '95%', height: 400, position: "relative", marginTop: 10 }}>
                     <Image
                         source={{ uri: item.productImage }}
-                        style={{ width: '100%', height: 400, resizeMode: 'cover', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, marginTop: 0, backgroundColor: "#121212" }}
+                        style={{ width: '100%', height: 400, resizeMode: 'cover', borderRadius: 20, marginTop: 0 }}
                     />
 
-                    <View style={{ backgroundColor: '#000', opacity: 0.5, width: '100%', height: 400, position: 'absolute' }}></View>
-                    <Text style={{ color: "#fff", position: 'absolute', bottom: 0, fontSize: 30, fontFamily: 'segoe-bold', marginBottom: 10, marginStart: 10 }}>{item.productName}</Text>
+                    <View style={{ backgroundColor: '#000', opacity: 0.5, width: '100%', height: 400, position: 'absolute', borderRadius: 20 }}></View>
+                    <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', marginBottom: 10, width: '100%', justifyContent: "space-between", alignItems: 'flex-end', paddingEnd: 10 }}>
+                        <Text style={{ color: "#fff", fontSize: 25, fontFamily: 'gotham-bold', width: '80%', paddingHorizontal: 20 }}>{item.productName.slice(0, 50)}...</Text>
+                        <Delivered bgColor={primaryColor} status={deliveryStatus} width="20%" />
+                    </View>
+                    <Pressable
+                        style={{ width: 50, height: 50, backgroundColor: '#ccc', position: 'absolute', marginTop: 10, marginStart: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}
+                        onPress={() => props.navigation.goBack()}
+                        android_ripple={{ color: "#fff", radius: 25, }}
+
+                    >
+                        <Ionicons name="arrow-back" size={24} color="#000" style={{ transform: [{ rotate: '-90deg' }] }} />
+                    </Pressable>
                 </View>
-                <Pressable
-                    style={{ width: 50, height: 50, backgroundColor: '#ccc', position: 'absolute', marginTop: 10, marginStart: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}
-                    onPress={() => props.navigation.goBack()}
-                    android_ripple={{ color: "#fff", radius: 25, }}
+                <View style={{ flexDirection: 'row', width: '100%', justifyContent: "space-between", padding: 20, alignItems: 'center' }}>
+                    <View>
+                        <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'gotham-block', fontSize: 13 }}>Order Number</Text>
+                        <Text style={{ color: "#fff", marginStart: 5, fontSize: 22, fontFamily: "gotham-bold" }}>{item.orderNumber}</Text>
+                    </View>
+                    <TouchableOpacity onPress={copyToClipboard} style={{ height: 30, width: 30, justifyContent: "center", alignItems: "center", backgroundColor: "#eaf0f0", borderRadius: 15 }}>
+                        <Ionicons name="copy" size={22} color="#000" />
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity disabled={item.productLink === ""} onPress={() => Linking.openURL(item.productLink)} style={{ flexDirection: 'row', width: '90%', justifyContent: "space-between", padding: 20, alignItems: 'center', backgroundColor: "#222121", borderRadius: 10, marginBottom: 20 }}>
+                    <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, fontFamily: "gotham-bold" }}>{item.productLink === "" ? "Link not available" : "Go to the Product/Order"}</Text>
+                    {item.productLink === "" ? <FontAwesome name="unlink" size={24} color="#fff" /> : <Feather name="link" size={24} color="#fff" />}
+                </TouchableOpacity>
 
-                >
-                    <Ionicons name="arrow-back" size={24} color="#000" style={{ transform: [{ rotate: '-90deg' }] }} />
-                </Pressable>
-                <View style={{ flexDirection: 'row', marginTop: 20, width: '100%', justifyContent: "space-between", paddingHorizontal: 10 }}>
-                    <View>
-                        <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'segoe-bold' }}>Order Number</Text>
-                        <Text style={{ color: "#fff", marginStart: 5 }}>{item.orderNumber.slice(15)}...</Text>
+                <View style={{ width: '90%', backgroundColor: "#222121", borderRadius: 10 }}>
+                    <View style={{ paddingTop: 20, paddingLeft: 20 }}>
+                        <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'gotham-block', fontSize: 13 }}>Seller Name</Text>
+                        <Text style={{ color: "#fff", marginStart: 5, fontSize: 22, fontFamily: "gotham-bold" }}>{item.sellerName ? item.sellerName : "NA"}</Text>
                     </View>
-                    <View>
-                        <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>Seller</Text>
-                        <Text style={{ color: "#fff", marginStart: 10, width: 100 }}>{item.sellerName}</Text>
-                    </View>
-                    <View>
-                        <Text style={{ color: "#fff", marginStart: 10, fontFamily: 'segoe-bold' }}>Arriving by</Text>
-                        <Text style={{ color: "#fff", marginStart: 10 }}>{item.ETA}</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 20, alignItems: 'center' }}>
+                        <View>
+                            <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'gotham-block', fontSize: 13 }}>Arriving by</Text>
+                            <Text style={{ color: "#fff", marginStart: 5, fontSize: 22, fontFamily: "gotham-bold" }}>{item.ETA}</Text>
+                        </View>
+                        <View>
+                            <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'gotham-block', fontSize: 13 }}> Price</Text>
+                            <View>
+                                <Text style={{ marginStart: 5, fontSize: 22, fontFamily: "gotham-bold", color: '#fff' }}>{formatPrice(item.productPrice)}</Text>
+                            </View>
+                        </View>
                     </View>
                 </View>
-                <View>
-                    <Text style={{ color: "#ccc", padding: 20 }}>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla tristique mauris nec velit auctor finibus. Etiam ante neque, dictum ac scelerisque vel, tristique vitae dolor. Praesent tellus libero, tempus et vehicula ut, commodo in arcu. Aenean nec magna malesuada, efficitur sapien porttitor, consequat orci. Donec et urna nisl. Nam venenatis, sapien at consectetur fermentum, lacus ipsum molestie sapien, non malesuada sapien urna in quam. Cras et tortor ut enim porta vehicula sed et est. Sed nec dui ut sapien viverra dictum ac non augue. Integer nec aliquam nunc. Nunc tellus metus, tincidunt sed congue eu, luctus id est. Morbi eu lacus lacus. Donec accumsan volutpat varius. Ut laoreet non lectus nec bibendum. Nulla sollicitudin lacus ut neque consequat commodo. Phasellus venenatis sem non mauris mattis, sit amet efficitur urna mollis. Nullam enim justo, feugiat nec lacus quis, ultrices tristique sem.
-
-                        Cras pulvinar nunc eget erat commodo, nec rutrum est euismod. Nullam rhoncus ultrices pulvinar. Fusce ornare ex a nibh euismod iaculis. Nam in placerat quam. Quisque ac magna purus. Proin tempor, velit ac semper rhoncus, nulla urna aliquet neque, commodo sagittis sem ligula quis est. Duis sed massa eu nisi faucibus dignissim. Fusce at tristique nisi, at fermentum erat. Praesent tempor lacinia nisi, sit amet porta lorem. Interdum et malesuada fames ac ante ipsum primis in faucibus. Quisque eu feugiat tellus.
-
-                        Mauris elementum sapien eu sem iaculis, sed tempus velit volutpat. Nunc id blandit augue, sed semper magna. Nam luctus sollicitudin diam, vitae sagittis lacus rhoncus sit amet. Curabitur blandit porta leo. Quisque ultricies dui purus, in pellentesque nunc rhoncus ut. Nulla imperdiet nec dolor quis condimentum. Duis purus diam, varius eget felis et, sollicitudin aliquet leo. In erat orci, ultrices vel iaculis et, laoreet sed magna. Integer eget felis sit amet purus pretium fermentum. Morbi tempor lacinia lacus non convallis. Nulla in malesuada justo. Nam ultrices, magna sit amet porta consectetur, enim urna congue ante, rutrum venenatis nisi enim rutrum elit. Nullam quam tortor, condimentum non rutrum id, ullamcorper eu ligula. Sed laoreet mattis neque, eu interdum ligula molestie et.
-
-                        Nulla id convallis libero. Integer et tellus in metus suscipit suscipit. Mauris diam magna, iaculis imperdiet scelerisque et, ullamcorper non lacus. Sed quis commodo orci. Pellentesque id ex nunc. In porttitor tristique neque at lobortis. Mauris leo eros, euismod a blandit vitae, convallis a velit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vulputate, enim sed molestie pulvinar, nibh arcu posuere ipsum, vitae facilisis nulla arcu in lectus. Mauris nibh odio, facilisis eget cursus non, consequat ut massa. In accumsan sem in diam semper imperdiet. Praesent pellentesque erat sit amet eleifend blandit. Aliquam tincidunt leo id tellus eleifend euismod.
-
-                        Praesent nec dolor libero. Duis sit amet auctor purus, eget aliquam augue. Donec consequat nisl eu sagittis gravida. Aliquam euismod, justo ut facilisis ultrices, est elit lobortis tellus, vestibulum lacinia mi nisi a nibh. Morbi interdum commodo justo, ut imperdiet sapien convallis in. Phasellus convallis, quam sed volutpat ullamcorper, turpis massa scelerisque dolor, non ullamcorper ligula erat a arcu. Aenean vel est sapien. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce sed feugiat nisi. Nam scelerisque orci vel est finibus, sit amet varius ex imperdiet. Nulla lobortis, leo ac tincidunt volutpat, diam nulla congue lacus, efficitur dictum ex enim eu purus. Integer tristique lacus sit amet gravida posuere. Quisque blandit felis vitae lobortis ullamcorpe
-                    </Text>
+                <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
+                    <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
+                        {extraData.map((data, idx) => (
+                            <View style={{ flexDirection: 'row', width: '100%', justifyContent: "space-between", padding: 20, alignItems: 'center', }}>
+                                <Text style={{ color: "#fff", marginStart: 5, fontSize: 15, fontFamily: "gotham-normal" }}>{data.label}</Text>
+                                {<Text style={{ color: "#fff", marginStart: 5, fontFamily: 'gotham-bold', fontSize: 15 }}>{isNaN(parseInt(data.data)) ? data.data : formatPrice(data.data)}</Text>}
+                            </View>
+                        ))
+                        }
+                    </View>
                 </View>
 
             </ScrollView>

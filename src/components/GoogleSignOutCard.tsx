@@ -11,7 +11,7 @@ const GoogleSignOutCard = (props: Props) => {
         <View style={{
             width: '92%',
             height: 150,
-            backgroundColor: "#dacece",
+            backgroundColor: "#ffffff",
             marginTop: 15,
             borderRadius: 5,
             paddingHorizontal: 20,
