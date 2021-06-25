@@ -15,6 +15,7 @@ const { TextField } = Incubator
 import database from '@react-native-firebase/database';
 import { useFocusEffect } from '@react-navigation/native';
 
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 
 const HomeScreen: React.FC = observer((props: any) => {
 
@@ -25,6 +26,7 @@ const HomeScreen: React.FC = observer((props: any) => {
 
     const [visible, setVisible] = useState(false)
     const [date, setDate] = useState(new Date());
+    const [selectedIndex, setSelectedIndex] = useState(0)
 
     const isAndroid = (Platform.OS === "android")
     const [pfp, setPfp] = useState(store.userInfo.profilePicture)
@@ -103,6 +105,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const AmazonOrders = await AZResponse.json()
+        return AmazonOrders.amazonOrders
     }
 
     const getFlipkartOrders = async (auth: Credentials) => {
@@ -239,7 +242,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                         onPress={() => props.navigation.navigate('AddOrder')}>
                         <MaterialIcons name="add" size={24} />
                     </TouchableOpacity> :
-                        <View style={{ flexDirection: 'row' }}>
+                        <View style={{ flexDirection: 'column' }}>
                             <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 30, color: "#8abedf" }}>Order</HeaderTitle>
                             <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 30, color: "#ec5a3c" }}>Gator</HeaderTitle>
                         </View>
@@ -291,12 +294,24 @@ const HomeScreen: React.FC = observer((props: any) => {
                     <MaterialIcons name="search" size={24} />
                 </TouchableOpacity>
             </View> */}
+            <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 50, marginVertical: 15 }}>
+                <SegmentedControl
+                    style={{ width: '85%', height: 40 }}
+                    appearance="dark"
+                    values={['Other Products', 'Amazon Orders']}
+                    momentary={true}
+                    selectedIndex={selectedIndex}
+                    onChange={async (event) => {
+                        setSelectedIndex(event.nativeEvent.selectedSegmentIndex)
+                        await getAmazonOrders(store.googleCredentials)
 
-
+                    }}
+                />
+            </View>
 
             {!fetchingOrders ?
                 <FlatList
-                    ListHeaderComponent={<Text style={{ color: "#fff", fontSize: 40, fontFamily: 'gotham-black', padding: 15 }}>Orders</Text>}
+                    // ListHeaderComponent={<Text style={{ color: "#fff", fontSize: 40, fontFamily: 'gotham-black', padding: 15 }}>Orders</Text>}
                     showsVerticalScrollIndicator={false}
                     style={{ backgroundColor: '#121212' }}
                     contentContainerStyle={{
