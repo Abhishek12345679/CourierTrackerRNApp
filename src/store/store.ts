@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {applySnapshot, flow, onSnapshot, types} from 'mobx-state-tree';
 import {sensitiveData} from '../../constants/sen_data';
-import {OrderList} from '../../constants/Types/OrderTypes';
+import {OrderList, AmazonOrderList} from '../../constants/Types/OrderTypes';
 
 export type Credentials = {
   access_token: string;
@@ -75,9 +75,23 @@ const order = types.model('Order', {
   calendarEventId: types.optional(types.string, ''),
 });
 
+const amazonOrder = types.model('AmazonOrder', {
+  orderId: types.optional(types.string, ''),
+  totalPrice: types.optional(types.string, ''),
+  orderNumber: types.optional(types.string, ''),
+  ETA: types.optional(types.string, ''),
+  delivery_address: types.optional(types.string, ''),
+  invoiceLink: types.optional(types.string, ''),
+  orderPreviewLink: types.optional(types.string, ''),
+});
+
 const orderList = types.model('OrderList', {
   EstimatedDeliveryTime: types.optional(types.string, ''),
   orderItems: types.optional(types.array(order), []),
+});
+const amazonOrderList = types.model('AmazonOrderList', {
+  EstimatedDeliveryTime: types.optional(types.string, ''),
+  orderItems: types.optional(types.array(amazonOrder), []),
 });
 
 const getUserInfo = async (auth: Credentials): Promise<userInfoType> => {
@@ -96,6 +110,7 @@ const store = types
     userInfo: types.optional(userInfo, {}),
     settings: types.optional(settings, {}),
     orders: types.optional(types.array(orderList), []),
+    amazonOrders: types.optional(types.array(amazonOrderList), []),
     googleCredentials: types.optional(googleCredentials, {}),
     loginCredentials: types.optional(loginCredentials, {}),
     didTryAutoLogin: types.optional(types.boolean, false),
@@ -135,11 +150,24 @@ const store = types
     saveOrders(orderList: OrderList[]) {
       (self as any).orders = orderList;
     },
+    saveAmazonOrders(orderList: AmazonOrderList[]) {
+      (self as any).amazonOrders = orderList;
+    },
     saveOrdersLocally: flow(function* saveOrdersLocally(
       orderList: OrderList[],
     ) {
       try {
         yield AsyncStorage.setItem('orders', JSON.stringify(orderList));
+        console.log('orders written to local storage!');
+      } catch (error) {
+        console.error(error);
+      }
+    }),
+    saveAmazonOrdersLocally: flow(function* saveAmazonOrdersLocally(
+      orderList: AmazonOrderList[],
+    ) {
+      try {
+        yield AsyncStorage.setItem('amazonOrders', JSON.stringify(orderList));
         console.log('orders written to local storage!');
       } catch (error) {
         console.error(error);

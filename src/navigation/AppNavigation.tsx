@@ -12,6 +12,7 @@ import SettingsScreen from '../screens/RootScreens/SettingsScreen';
 import OrderDetailsScreen from '../screens/RootScreens/OrderDetailsScreen';
 import AddOrderScreen from '../screens/RootScreens/AddOrderScreen';
 import PrivacyPolicyScreen from '../screens/RootScreens/PrivacyPolicyScreen';
+import ETAOverviewScreen from '../screens/RootScreens/ETAOverviewScreen';
 
 
 enableScreens()
@@ -68,8 +69,9 @@ export const RootNavigator = () => {
                         // fontFamily: 'segoe-bold'
                     },
                 }} />
-            <RootStackNavigator.Screen name="Settings" component={SettingsNavigator} options={{ headerShown: false, headerTitle: "Settings" }} />
-            <RootStackNavigator.Screen name="AddOrder" component={AddOrderNavigator} options={{ headerShown: false, headerTitle: "Add Order" }} />
+            <RootStackNavigator.Screen name="Settings" component={SettingsNavigator} options={{ headerShown: false }} />
+            <RootStackNavigator.Screen name="AddOrder" component={AddOrderNavigator} options={{ headerShown: false }} />
+            <RootStackNavigator.Screen name="ETAOverview" component={ETAOverviewScreen} options={{ headerShown: false }} />
 
             <RootStackNavigator.Screen
                 name="AuthUrlScreen"

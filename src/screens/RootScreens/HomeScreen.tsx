@@ -4,7 +4,7 @@ import store, { Credentials, userInfoType } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
 import { observer } from 'mobx-react';
 import GoogleSignInCard from '../../components/GoogleSignInCard';
-import { Order, AmazonOrder, OrderList as OrderListType } from '../../../constants/Types/OrderTypes';
+import { Order, AmazonOrder, OrderList as OrderListType, AmazonOrderList } from '../../../constants/Types/OrderTypes';
 import OrderList from '../../components/OrderList';
 import { Avatar, Incubator } from 'react-native-ui-lib';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -81,6 +81,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     const onRefresh = React.useCallback(() => {
         console.log("refreshing...")
         setRefreshing(true);
+
         getOrders().then(() => {
             setRefreshing(false)
         })
@@ -105,6 +106,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const AmazonOrders = await AZResponse.json()
+        console.log(JSON.stringify(AmazonOrders.amazonOrders, null, 2))
         return AmazonOrders.amazonOrders
     }
 
@@ -164,17 +166,24 @@ const HomeScreen: React.FC = observer((props: any) => {
         const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
         const myntraOrders = await getMyntraOrders(store.googleCredentials)
         const ajioOrders = await getAjioOrders(store.googleCredentials)
+        const amazonOrders = await getAmazonOrders(store.googleCredentials)
 
         const manualOrders = await fetchManualOrders()
 
         const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders as Order[])
         const sortedOrders = sortOrders(groupedOrders)
 
+        const groupedAmazonOrders = groupAmazonOrders(amazonOrders)
+        const sortedAmazonOrders = sortAmazonOrders(groupedAmazonOrders)
+
         store.saveOrders(sortedOrders)
         await store.saveOrdersLocally(sortedOrders)
+        store.saveAmazonOrders(sortedAmazonOrders)
+        await store.saveAmazonOrdersLocally(sortedAmazonOrders)
         setFetchingOrders(false)
 
-        console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
+        // console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
+        console.log("sorted orders: ", JSON.stringify(store.amazonOrders, null, 4))
     }
 
 
@@ -187,8 +196,9 @@ const HomeScreen: React.FC = observer((props: any) => {
 
 
     const groupOrders = (flipkartOrders: Order[], myntraOrders: Order[], ajioOrders: Order[], manualOrders: Order[]) => {
-        console.log("manual orders: ", manualOrders)
-        const superArray: Order[] = [...flipkartOrders, ...myntraOrders, ...ajioOrders, ...manualOrders]
+        // console.log("manual orders: ", manualOrders)
+        let superArray = []
+        superArray = [...flipkartOrders, ...myntraOrders, ...ajioOrders, ...manualOrders]
         const groups = superArray.reduce((acc: any, order: Order) => {
             acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
             return acc
@@ -203,6 +213,28 @@ const HomeScreen: React.FC = observer((props: any) => {
         return newOrderList
     }
 
+    const groupAmazonOrders = (amazonOrders: AmazonOrder[]) => {
+        const groups = amazonOrders.reduce((acc: any, order: AmazonOrder) => {
+            acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
+            return acc
+        }, {})
+
+        // console.log(JSON.stringify(groups, null, 4))
+
+        const newOrderList: AmazonOrderList[] = Object.entries(groups).map(([k, v]) => ({
+            EstimatedDeliveryTime: k,
+            orderItems: v as AmazonOrder[]
+        }))
+        return newOrderList
+    }
+
+    const sortAmazonOrders = (groupedOrders: AmazonOrderList[]) => {
+        groupedOrders.sort((a: AmazonOrderList, b: AmazonOrderList) => {
+            return parseInt(a.EstimatedDeliveryTime) - parseInt(b.EstimatedDeliveryTime)
+        })
+        return groupedOrders
+    }
+
 
 
     const renderOrderItem: ListRenderItem<OrderListType> = ({ item, index, separators }) => (
@@ -211,6 +243,9 @@ const HomeScreen: React.FC = observer((props: any) => {
             index={index}
             separators={separators}
             openCalendarDialog={() => { setVisible(true) }}
+            goToOverview={() => props.navigation.navigate("ETAOverview", {
+                ETAList: store.orders.map((data) => data.EstimatedDeliveryTime)
+            })}
         // navigation={props.navigation}
         />
     )
@@ -309,7 +344,8 @@ const HomeScreen: React.FC = observer((props: any) => {
                 />
             </View>
 
-            {!fetchingOrders ?
+            {/* add the Flatlist stuff for amazonorderlist here  */}
+            {!fetchingOrders ? selectedIndex === 0 ?
                 <FlatList
                     // ListHeaderComponent={<Text style={{ color: "#fff", fontSize: 40, fontFamily: 'gotham-black', padding: 15 }}>Orders</Text>}
                     showsVerticalScrollIndicator={false}
@@ -326,6 +362,9 @@ const HomeScreen: React.FC = observer((props: any) => {
                     }
                     }
                 /> :
+                <View style={{ justifyContent: "center", alignItems: 'center', flex: 1 }}>
+                    <Text style={{ color: "#fff" }}>No Amazon Orders</Text>
+                </View> :
                 <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color="#fff" />
                 </View>

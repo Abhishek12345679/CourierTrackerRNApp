@@ -29,8 +29,14 @@ export type OrderList = {
   EstimatedDeliveryTime: string;
   orderItems: Order[];
 };
+export type AmazonOrderList = {
+  // [ETA: string]: Order;
+  EstimatedDeliveryTime: string;
+  orderItems: AmazonOrder[];
+};
 
 export type AmazonOrder = {
+  orderId: string;
   totalPrice: string;
   orderNumber: string;
   ETA: string;
