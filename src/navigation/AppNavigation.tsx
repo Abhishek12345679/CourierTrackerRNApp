@@ -13,6 +13,7 @@ import OrderDetailsScreen from '../screens/RootScreens/OrderDetailsScreen';
 import AddOrderScreen from '../screens/RootScreens/AddOrderScreen';
 import PrivacyPolicyScreen from '../screens/RootScreens/PrivacyPolicyScreen';
 import ETAOverviewScreen from '../screens/RootScreens/ETAOverviewScreen';
+import OpenSourceLicensesScreen from '../screens/RootScreens/OpenSourceLicensesScreen';
 
 
 enableScreens()
@@ -103,6 +104,7 @@ export const SettingsNavigator = () => {
         >
             <SettingsStackNavigator.Screen name="SettingsScreen" component={SettingsScreen} options={{ headerTitle: 'Settings' }} />
             <SettingsStackNavigator.Screen name="PrivacyPolicyScreen" component={PrivacyPolicyScreen} options={{ headerTitle: 'Privacy Policy' }} />
+            <SettingsStackNavigator.Screen name="OpenSourceLicensesScreen" component={OpenSourceLicensesScreen} options={{ headerTitle: 'Open Source Licenses' }} />
         </SettingsStackNavigator.Navigator>
     );
 };

@@ -54,7 +54,7 @@ const SettingsScreen = ({ navigation }: any) => {
                 navigation.navigate("PrivacyPolicyScreen")
             }
         },
-        { label: "open source licenses", onPress: () => { } },
+        { label: "open source licenses", onPress: () => { navigation.navigate("OpenSourceLicensesScreen") } },
     ]
 
     const switchesRef = useRef()
