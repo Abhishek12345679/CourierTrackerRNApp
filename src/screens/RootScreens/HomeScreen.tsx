@@ -4,7 +4,7 @@ import store, { Credentials, userInfoType } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
 import { observer } from 'mobx-react';
 import GoogleSignInCard from '../../components/GoogleSignInCard';
-import { Order, AmazonOrder, OrderList as OrderListType, AmazonOrderList } from '../../../constants/Types/OrderTypes';
+import { Order, AmazonOrder, OrderList as OrderListType, AmazonOrderList as AmazonOrderListType } from '../../../constants/Types/OrderTypes';
 import OrderList from '../../components/OrderList';
 import { Avatar, Incubator } from 'react-native-ui-lib';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -16,6 +16,7 @@ import database from '@react-native-firebase/database';
 import { useFocusEffect } from '@react-navigation/native';
 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import AmazonOrderList from '../../components/AmazonOrderList'
 
 const HomeScreen: React.FC = observer((props: any) => {
 
@@ -33,7 +34,6 @@ const HomeScreen: React.FC = observer((props: any) => {
     const [name, setName] = useState(store.userInfo.name)
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
-    // const filteredOrderItems = searchText !== "" ? store.orders.filter((order) => order.EstimatedDeliveryTime.toLowerCase().includes(searchText)) : store.orders
 
     //TODO: Find some other way to run focusEffect like action.
 
@@ -221,15 +221,15 @@ const HomeScreen: React.FC = observer((props: any) => {
 
         // console.log(JSON.stringify(groups, null, 4))
 
-        const newOrderList: AmazonOrderList[] = Object.entries(groups).map(([k, v]) => ({
+        const newOrderList: AmazonOrderListType[] = Object.entries(groups).map(([k, v]) => ({
             EstimatedDeliveryTime: k,
             orderItems: v as AmazonOrder[]
         }))
         return newOrderList
     }
 
-    const sortAmazonOrders = (groupedOrders: AmazonOrderList[]) => {
-        groupedOrders.sort((a: AmazonOrderList, b: AmazonOrderList) => {
+    const sortAmazonOrders = (groupedOrders: AmazonOrderListType[]) => {
+        groupedOrders.sort((a: AmazonOrderListType, b: AmazonOrderListType) => {
             return parseInt(a.EstimatedDeliveryTime) - parseInt(b.EstimatedDeliveryTime)
         })
         return groupedOrders
@@ -243,6 +243,17 @@ const HomeScreen: React.FC = observer((props: any) => {
             index={index}
             separators={separators}
             openCalendarDialog={() => { setVisible(true) }}
+            goToOverview={() => props.navigation.navigate("ETAOverview", {
+                ETAList: store.orders.map((data) => data.EstimatedDeliveryTime)
+            })}
+        // navigation={props.navigation}
+        />
+    )
+    const renderAmazonOrderItem: ListRenderItem<AmazonOrderListType> = ({ item, index, separators }) => (
+        <AmazonOrderList
+            item={item}
+            index={index}
+            separators={separators}
             goToOverview={() => props.navigation.navigate("ETAOverview", {
                 ETAList: store.orders.map((data) => data.EstimatedDeliveryTime)
             })}
@@ -303,32 +314,6 @@ const HomeScreen: React.FC = observer((props: any) => {
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
             <StatusBar barStyle="light-content" backgroundColor="#121212" />
-            {/* <View style={{ flexDirection: 'row', height: 60, justifyContent: 'space-between', alignItems: 'center', width: '95%', marginVertical: 20, backgroundColor: '#121212' }}>
-                <TextField
-                    style={{ fontSize: 17, fontFamily: 'segoe-normal', width: '100%', color: "#fff" }}
-                    containerStyle={{
-                        height: 45,
-                        justifyContent: "center",
-                        borderRadius: 10,
-                        width: '75%',
-                        backgroundColor: "#faf4f45c",
-                        marginStart: 25,
-                        elevation: 1
-                    }}
-                    fieldStyle={{ marginHorizontal: 20 }}
-                    placeholderTextColor="#aaa"
-                    placeholder="Type something..."
-                    value={searchText}
-                    onChangeText={(text) => setSearchText(text)}
-                />
-                <TouchableOpacity
-                    style={{ width: 40, height: 40, borderRadius: 10, backgroundColor: '#e2e2e2', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
-                    onPress={() => {
-
-                    }}>
-                    <MaterialIcons name="search" size={24} />
-                </TouchableOpacity>
-            </View> */}
             <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 50, marginVertical: 15 }}>
                 <SegmentedControl
                     style={{ width: '85%', height: 40 }}
@@ -338,13 +323,16 @@ const HomeScreen: React.FC = observer((props: any) => {
                     selectedIndex={selectedIndex}
                     onChange={async (event) => {
                         setSelectedIndex(event.nativeEvent.selectedSegmentIndex)
-                        await getAmazonOrders(store.googleCredentials)
-
+                        const amazonOrders = await AsyncStorage.getItem('amazonOrders')
+                        if (amazonOrders === "" || amazonOrders === undefined || amazonOrders === null) {
+                            await getAmazonOrders(store.googleCredentials)
+                        } else {
+                            store.saveAmazonOrders(JSON.parse(amazonOrders!))
+                        }
                     }}
                 />
             </View>
 
-            {/* add the Flatlist stuff for amazonorderlist here  */}
             {!fetchingOrders ? selectedIndex === 0 ?
                 <FlatList
                     // ListHeaderComponent={<Text style={{ color: "#fff", fontSize: 40, fontFamily: 'gotham-black', padding: 15 }}>Orders</Text>}
@@ -362,9 +350,22 @@ const HomeScreen: React.FC = observer((props: any) => {
                     }
                     }
                 /> :
-                <View style={{ justifyContent: "center", alignItems: 'center', flex: 1 }}>
-                    <Text style={{ color: "#fff" }}>No Amazon Orders</Text>
-                </View> :
+                <FlatList
+                    // ListHeaderComponent={<Text style={{ color: "#fff", fontSize: 40, fontFamily: 'gotham-black', padding: 15 }}>Orders</Text>}
+                    showsVerticalScrollIndicator={false}
+                    style={{ backgroundColor: '#121212' }}
+                    contentContainerStyle={{
+                        justifyContent: 'center'
+                    }}
+                    keyExtractor={item => item.EstimatedDeliveryTime}
+                    data={store.amazonOrders}
+                    renderItem={renderAmazonOrderItem}
+                    refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
+                    onRefresh={() => {
+                        store.settings.allow_fetching_new_orders && onRefresh()
+                    }
+                    }
+                /> :
                 <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
                     <ActivityIndicator size="large" color="#fff" />
                 </View>

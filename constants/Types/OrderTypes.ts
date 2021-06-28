@@ -43,4 +43,5 @@ export type AmazonOrder = {
   delivery_address: string;
   invoiceLink: string;
   orderPreviewLink: string;
+  calendarEventId: string;
 };

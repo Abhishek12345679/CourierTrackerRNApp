@@ -83,6 +83,7 @@ const amazonOrder = types.model('AmazonOrder', {
   delivery_address: types.optional(types.string, ''),
   invoiceLink: types.optional(types.string, ''),
   orderPreviewLink: types.optional(types.string, ''),
+  calendarEventId: types.optional(types.string, ''),
 });
 
 const orderList = types.model('OrderList', {

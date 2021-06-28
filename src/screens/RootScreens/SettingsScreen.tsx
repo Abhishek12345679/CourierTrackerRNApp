@@ -11,7 +11,7 @@ import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
 import store from '../../store/store'
 
-
+// FIXME: white background even after setting #121212 in android/colors
 
 const SettingsScreen = ({ navigation }: any) => {
 

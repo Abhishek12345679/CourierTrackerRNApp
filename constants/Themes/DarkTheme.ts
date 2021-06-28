@@ -5,7 +5,7 @@ export const DarkTheme = {
   colors: {
     ...SystemDarkTheme.colors,
     primary: '#FFF',
-    background: '#212529',
+    background: '#121212',
     text: '#fff',
     card: '#212529',
   },

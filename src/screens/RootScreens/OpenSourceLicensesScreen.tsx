@@ -13,7 +13,7 @@ const OpenSourceLicensesScreen = () => {
     const [depList, setDepList] = useState<dependency[]>([])
     useEffect(() => {
         for (const [key, value] of Object.entries(packages.dependencies)) {
-            setDepList((prev) => [...prev, { "name": key, "version": value }])
+            setDepList((prev) => [...prev, { "name": key, "version": value as string }])
         }
     }, [])
 

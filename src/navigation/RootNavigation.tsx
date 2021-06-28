@@ -33,7 +33,7 @@ const AppContainer = observer(() => {
 
     return (
         <NavigationContainer
-            theme={LightTheme}
+            theme={DarkTheme}
         >
             {/* <SplashScreen /> */}
             {isLoggedIn && <RootNavigator />}

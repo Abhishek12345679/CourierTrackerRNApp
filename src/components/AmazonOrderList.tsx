@@ -1,23 +1,23 @@
 import React from 'react'
 import { View, Text, ListRenderItem } from 'react-native'
-import { Order, OrderList as OrderListType } from '../../constants/Types/OrderTypes'
-import OrderItem from './OrderItem'
+import { AmazonOrderList as AmazonOrderListType } from '../../constants/Types/OrderTypes'
+import AmazonOrderItem from './AmazonOrderItem'
 
-const OrderList: ListRenderItem<OrderListType> = ({ item, index, separators, openCalendarDialog, goToOverview }) => {
+const AmazonOrderList: ListRenderItem<AmazonOrderListType> = ({ item, index, separators, goToOverview }) => {
     const ETA = new Date(parseInt(item.EstimatedDeliveryTime)).toDateString()
     return (
         <View>
             <Text onPress={goToOverview} style={{ color: "#fff", fontFamily: 'segoe-bold', fontSize: 18, marginTop: 15, marginStart: 15 }}>{ETA}</Text>
             {item.orderItems && item.orderItems.map((order, i) => (
-                <OrderItem
+                <AmazonOrderItem
                     key={order.orderId}
                     item={order}
                     index={i}
                     separators={separators}
-                    openCalendarDialog={openCalendarDialog} />
+                />
             ))}
         </View>
     )
 }
 
-export default OrderList
+export default AmazonOrderList

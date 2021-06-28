@@ -25,7 +25,6 @@ export const AuthNavigator = () => {
                 name="LoginScreen"
                 component={LoginScreen}
             />
-            {/* add sign in screen and login screen separately */}
         </AuthStackNavigator.Navigator>
     );
 };
@@ -90,8 +89,6 @@ export const SettingsNavigator = () => {
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
                     color: "#ffffff",
-                    // fontSize: 45,
-                    // fontFamily: 'gotham-',
                 },
                 headerTintColor: "#fff",
                 headerStyle: {
@@ -99,7 +96,6 @@ export const SettingsNavigator = () => {
 
                 },
                 stackPresentation: 'modal',
-                // headerTitle: 'Settings'
             })}
         >
             <SettingsStackNavigator.Screen name="SettingsScreen" component={SettingsScreen} options={{ headerTitle: 'Settings' }} />
