@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
-import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { AuthNavigator, RootNavigator } from './AppNavigation';
 
 import { LightTheme } from '../../constants/Themes/LightTheme';
@@ -11,15 +11,10 @@ import SplashScreen from '../screens/SplashScreen';
 
 
 const AppContainer = observer(() => {
-
-    // if (store.loginCredentials && store.didTryAutoLogin) {
-    //     console.log("AuthNavigator...")
-    // }
     const loginCredsKeysLength = Object.values(store.loginCredentials)
     let isLoggedIn = false
 
     loginCredsKeysLength.forEach((value, index) => {
-        console.log()
         if (value !== "") {
             isLoggedIn = true
         } else {
@@ -27,15 +22,10 @@ const AppContainer = observer(() => {
         }
     })
 
-
-
-    useEffect(() => { console.log("Logged in:", isLoggedIn) }, [])
-
     return (
         <NavigationContainer
             theme={DarkTheme}
         >
-            {/* <SplashScreen /> */}
             {isLoggedIn && <RootNavigator />}
             {!isLoggedIn && store.didTryAutoLogin && <AuthNavigator />}
             {!isLoggedIn && !store.didTryAutoLogin && <SplashScreen />}

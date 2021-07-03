@@ -64,7 +64,7 @@ const AuthUrlScreen = observer((props: any) => {
         try {
             await setCredentials(authData)
             props.navigation.navigate("HomeScreen", {
-                reload: true
+                from: 'AuthUrlScreen'
             })
         } catch (e) {
             console.log("Credentials not saved!: ", e)

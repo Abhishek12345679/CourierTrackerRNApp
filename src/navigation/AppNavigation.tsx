@@ -48,15 +48,19 @@ export const RootNavigator = () => {
                 stackPresentation: 'modal',
             })}
         >
-            <RootStackNavigator.Screen name="HomeScreen" component={HomeScreen} options={{
-                headerShown: true,
-                headerTitle: "AIO",
-                headerTitleStyle: {
-                    color: "#ffffff",
-                    fontSize: 35,
-                    fontFamily: 'gotham-black'
-                },
-            }} />
+            <RootStackNavigator.Screen
+                name="HomeScreen"
+                component={HomeScreen}
+                initialParams={{ from: '' }}
+                options={{
+                    headerShown: true,
+                    headerTitle: "AIO",
+                    headerTitleStyle: {
+                        color: "#ffffff",
+                        fontSize: 35,
+                        fontFamily: 'gotham-black'
+                    },
+                }} />
             <RootStackNavigator.Screen
                 name="OrderDetailsScreen"
                 component={OrderDetailsScreen}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image, StatusBar } from 'react-native'
+import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image, StatusBar, InteractionManager } from 'react-native'
 import store, { Credentials, userInfoType } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
 import { observer } from 'mobx-react';
@@ -35,47 +35,11 @@ const HomeScreen: React.FC = observer((props: any) => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
 
-    //TODO: Find some other way to run focusEffect like action.
-
-    // run when new item is added
-    useFocusEffect(
-        useCallback(() => {
-            // console.log("updated manual orders!!")
-            // const onNewItemsAdded = database()
-            //     .ref(`/users/${store.loginCredentials.uid}/orders`)
-            //     .on('value', (snapshot) => {
-            //         getOrders()
-            //         console.log("testtest")
-            //     })
-            // return () => database().ref(`/users/${store.loginCredentials.uid}/orders`).off('value', onNewItemsAdded);
-        }, [store.manualOrders])
-    );
-
-    // run when someone signs in to google 
-    useFocusEffect(
-        useCallback(() => {
-            const onStart = async () => {
-                // console.log("signed in to google!!")
-                // if (store.googleCredentials.refresh_token !== "") {
-                //     setGmailAccessStatus(true)
-                //     await fetchUserInfo()
-                //     const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
-                //     if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
-                //         getOrders()
-                //     } else {
-                //         store.saveOrders(JSON.parse(ordersInAsyncStorage!))
-                //     }
-                // } else {
-                //     setGmailAccessStatus(false)
-                // }
-            }
-            onStart()
-
-        }, [store.googleCredentials])
-    );
+    // const [fromScreen, setFromScreen] = useState(props.route.params.from)
 
     useEffect(() => {
         fetchUserInfo()
+        console.log("user info called")
     }, [store.userInfo])
 
     const onRefresh = React.useCallback(() => {
@@ -86,22 +50,6 @@ const HomeScreen: React.FC = observer((props: any) => {
             setRefreshing(false)
         })
     }, [store.settings]);
-
-    useEffect(() => {
-        const onStart = async () => {
-            if (store.googleCredentials.refresh_token !== "") {
-                setGmailAccessStatus(true)
-                const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
-                if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
-                    getOrders()
-                } else {
-                    store.saveOrders(JSON.parse(ordersInAsyncStorage!))
-                }
-            }
-        }
-        onStart()
-    }, [store.settings])
-
 
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
@@ -183,7 +131,7 @@ const HomeScreen: React.FC = observer((props: any) => {
         setFetchingOrders(false)
 
         // console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
-        console.log("sorted orders: ", JSON.stringify(store.amazonOrders, null, 4))
+        // console.log("sorted orders: ", JSON.stringify(store.amazonOrders, null, 4))
     }
 
 
@@ -235,8 +183,6 @@ const HomeScreen: React.FC = observer((props: any) => {
         return groupedOrders
     }
 
-
-
     const renderOrderItem: ListRenderItem<OrderListType> = ({ item, index, separators }) => (
         <OrderList
             item={item}
@@ -267,7 +213,10 @@ const HomeScreen: React.FC = observer((props: any) => {
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
                     {isAndroid && <TouchableOpacity
                         style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
-                        onPress={() => props.navigation.navigate('AddOrder')}>
+                        onPress={() => {
+
+                            props.navigation.navigate('AddOrder')
+                        }}>
                         {/* <Text>Add</Text> */}
                         <MaterialIcons name="add" size={24} />
                     </TouchableOpacity>}
@@ -298,6 +247,41 @@ const HomeScreen: React.FC = observer((props: any) => {
         })
     }, [store.userInfo, name, pfp]);
 
+    // run when someone signs in to google 
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         if (fromScreen === "AuthUrlScreen") {
+    //             const onStart = async () => {
+    //                 console.log("signed in to google!!")
+    //                 if (store.googleCredentials.refresh_token !== "") {
+    //                     setGmailAccessStatus(true)
+    //                     await fetchUserInfo()
+    //                     const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
+    //                     if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
+    //                         getOrders()
+    //                     } else {
+    //                         store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+    //                     }
+    //                 } else {
+    //                     setGmailAccessStatus(false)
+    //                 }
+    //                 setFromScreen("")
+    //             }
+    //             onStart()
+    //         }
+    //         else if (fromScreen === "AddOrderScreen") {
+    //             console.log("from:", fromScreen)
+    //             // const onNewItemsAdded = database()
+    //             //     .ref(`/users/${store.loginCredentials.uid}/orders`)
+    //             //     .on('value', (_snapshot) => {
+    //             //         console.log("testtest")
+    //             //         getOrders()
+    //             //     })
+    //             // return () => database().ref(`/users/${store.loginCredentials.uid}/orders`).off('value', onNewItemsAdded);
+    //         }
+    //     }, [fromScreen])
+    // );
+
     if (store.orders.length === 0)
         return (
             <View style={{ flex: 1, backgroundColor: '#121212' }}>
@@ -310,16 +294,14 @@ const HomeScreen: React.FC = observer((props: any) => {
             </View>
         )
 
-
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
-            <StatusBar barStyle="light-content" backgroundColor="#121212" />
+            <StatusBar barStyle="light-content" backgroundColor="#000" />
             <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 50, marginVertical: 15 }}>
                 <SegmentedControl
                     style={{ width: '85%', height: 40 }}
                     appearance="dark"
                     values={['Other Products', 'Amazon Orders']}
-                    momentary={true}
                     selectedIndex={selectedIndex}
                     onChange={async (event) => {
                         setSelectedIndex(event.nativeEvent.selectedSegmentIndex)

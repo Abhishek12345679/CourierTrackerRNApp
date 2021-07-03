@@ -90,6 +90,7 @@ const LoginScreen: React.FC = observer((props: any) => {
                     <>
                         <View style={styles.form}>
                             <Input
+                                importantForAutofill="yes"
                                 autoCorrect={false}
                                 autoCapitalize="none"
                                 autoCompleteType="email"

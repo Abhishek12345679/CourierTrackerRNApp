@@ -169,7 +169,7 @@ const store = types
     ) {
       try {
         yield AsyncStorage.setItem('amazonOrders', JSON.stringify(orderList));
-        console.log('orders written to local storage!');
+        console.log('amazon orders written to local storage!');
       } catch (error) {
         console.error(error);
       }
