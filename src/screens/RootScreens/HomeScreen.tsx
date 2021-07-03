@@ -36,6 +36,7 @@ const HomeScreen: React.FC = observer((props: any) => {
 
 
     // const [fromScreen, setFromScreen] = useState(props.route.params.from)
+    const fromScreen = props.route.params.from
 
     useEffect(() => {
         fetchUserInfo()
@@ -265,7 +266,6 @@ const HomeScreen: React.FC = observer((props: any) => {
     //                 } else {
     //                     setGmailAccessStatus(false)
     //                 }
-    //                 setFromScreen("")
     //             }
     //             onStart()
     //         }
