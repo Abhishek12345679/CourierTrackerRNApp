@@ -346,8 +346,6 @@ const HomeScreen: React.FC = observer((props: any) => {
 
             {!fetchingOrders ? selectedIndex === 0 ?
                 <FlatList
-
-
                     showsVerticalScrollIndicator={false}
                     style={{ backgroundColor: '#121212' }}
                     contentContainerStyle={{
