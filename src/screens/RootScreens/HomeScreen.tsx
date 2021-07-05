@@ -20,13 +20,11 @@ import AmazonOrderList from '../../components/AmazonOrderList'
 
 const HomeScreen: React.FC = observer((props: any) => {
 
-    const [searchText, setSearchText] = useState('')
-    const [gmailAccessStatus, setGmailAccessStatus] = useState(false)
+    const [gmailAccessStatus, setGmailAccessStatus] = useState(props.route.params.gmailAccess)
     const [isLoading, setIsLoading] = useState(false)
     const [fetchingOrders, setFetchingOrders] = useState(false)
 
     const [visible, setVisible] = useState(false)
-    const [date, setDate] = useState(new Date());
     const [selectedIndex, setSelectedIndex] = useState(0)
 
     const isAndroid = (Platform.OS === "android")
@@ -35,8 +33,15 @@ const HomeScreen: React.FC = observer((props: any) => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
 
+    const [forceRefresh, setForceRefresh] = useState(0)
+
+
+
     // const [fromScreen, setFromScreen] = useState(props.route.params.from)
-    const fromScreen = props.route.params.from
+    let fromScreen = props.route.params.from
+    // console.log("from: ", fromScreen)
+
+
 
     useEffect(() => {
         fetchUserInfo()
@@ -55,7 +60,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const AmazonOrders = await AZResponse.json()
-        console.log(JSON.stringify(AmazonOrders.amazonOrders, null, 2))
+        // console.log(JSON.stringify(AmazonOrders.amazonOrders, null, 2))
         return AmazonOrders.amazonOrders
     }
 
@@ -215,7 +220,6 @@ const HomeScreen: React.FC = observer((props: any) => {
                     {isAndroid && <TouchableOpacity
                         style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                         onPress={() => {
-
                             props.navigation.navigate('AddOrder')
                         }}>
                         {/* <Text>Add</Text> */}
@@ -246,41 +250,65 @@ const HomeScreen: React.FC = observer((props: any) => {
                 </View>
             ),
         })
-    }, [store.userInfo, name, pfp]);
+    }, [name, pfp]);
 
-    // run when someone signs in to google 
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         if (fromScreen === "AuthUrlScreen") {
-    //             const onStart = async () => {
-    //                 console.log("signed in to google!!")
-    //                 if (store.googleCredentials.refresh_token !== "") {
-    //                     setGmailAccessStatus(true)
-    //                     await fetchUserInfo()
-    //                     const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
-    //                     if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
-    //                         getOrders()
-    //                     } else {
-    //                         store.saveOrders(JSON.parse(ordersInAsyncStorage!))
-    //                     }
-    //                 } else {
-    //                     setGmailAccessStatus(false)
-    //                 }
-    //             }
-    //             onStart()
-    //         }
-    //         else if (fromScreen === "AddOrderScreen") {
-    //             console.log("from:", fromScreen)
-    //             // const onNewItemsAdded = database()
-    //             //     .ref(`/users/${store.loginCredentials.uid}/orders`)
-    //             //     .on('value', (_snapshot) => {
-    //             //         console.log("testtest")
-    //             //         getOrders()
-    //             //     })
-    //             // return () => database().ref(`/users/${store.loginCredentials.uid}/orders`).off('value', onNewItemsAdded);
-    //         }
-    //     }, [fromScreen])
-    // );
+    //check gmail status after logging out (every time, screen is in focus) but mainly bc i had to check the status after logging out [HACKY]
+    useFocusEffect(
+        useCallback(() => {
+            const checkGmailAccessStatus = async () => {
+                console.log("checking status...")
+                const googleCreds = await AsyncStorage.getItem('orders')
+                if (googleCreds === "" || googleCreds === null) {
+                    setGmailAccessStatus(false)
+                } else {
+                    setGmailAccessStatus(true)
+                }
+            }
+            checkGmailAccessStatus()
+        }, [fromScreen])
+    )
+
+    // re-renders screen so the mst states are updated [HACKY]
+    useFocusEffect(
+        useCallback(() => {
+            if (fromScreen === "SettingsScreen") {
+                fromScreen = "";
+                setForceRefresh(c => c + 1)
+            }
+        }, [fromScreen])
+    )
+
+    // re-fetch all orders when adding new manual order
+    useFocusEffect(
+        useCallback(() => {
+            if (fromScreen === "AddOrderScreen") {
+                const loadOrders = async () => {
+                    console.log("from: ", fromScreen)
+                    await getOrders()
+                    fromScreen = "";
+                }
+                loadOrders()
+            }
+        }, [fromScreen])
+    )
+
+    //runs only once when the screen is loaded/rendered [HACKY]
+    useEffect(() => {
+        const loadOrders = async () => {
+            const googleCreds = await AsyncStorage.getItem('credentials')
+            if (googleCreds !== null) {
+                setGmailAccessStatus(true)
+                const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
+                if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
+                    await getOrders()
+                    await fetchUserInfo()
+                } else {
+                    store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+                }
+            }
+        }
+        loadOrders()
+    }, [])
 
     if (store.orders.length === 0)
         return (
@@ -315,9 +343,11 @@ const HomeScreen: React.FC = observer((props: any) => {
                 />
             </View>
 
+
             {!fetchingOrders ? selectedIndex === 0 ?
                 <FlatList
-                    // ListHeaderComponent={<Text style={{ color: "#fff", fontSize: 40, fontFamily: 'gotham-black', padding: 15 }}>Orders</Text>}
+
+
                     showsVerticalScrollIndicator={false}
                     style={{ backgroundColor: '#121212' }}
                     contentContainerStyle={{
@@ -333,7 +363,6 @@ const HomeScreen: React.FC = observer((props: any) => {
                     }
                 /> :
                 <FlatList
-                    // ListHeaderComponent={<Text style={{ color: "#fff", fontSize: 40, fontFamily: 'gotham-black', padding: 15 }}>Orders</Text>}
                     showsVerticalScrollIndicator={false}
                     style={{ backgroundColor: '#121212' }}
                     contentContainerStyle={{

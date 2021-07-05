@@ -51,7 +51,7 @@ export const RootNavigator = () => {
             <RootStackNavigator.Screen
                 name="HomeScreen"
                 component={HomeScreen}
-                initialParams={{ from: '' }}
+                initialParams={{ gmailAccess: false, from: '' }}
                 options={{
                     headerShown: true,
                     headerTitle: "AIO",

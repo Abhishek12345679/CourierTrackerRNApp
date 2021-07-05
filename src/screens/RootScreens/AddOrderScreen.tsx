@@ -133,43 +133,42 @@ const AddOrderScreen = ({ navigation }: any) => {
                     android_ripple={{ color: "#121212", radius: 20 }}
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
+                        // navigation.navigate("HomeScreen", {
+                        //     from: "AddOrderScreen"
+                        // })
 
-                        navigation.navigate("HomeScreen", {
-                            from: "AddOrderScreen"
-                        })
+                        const onSubmit = async () => {
 
-                        // const onSubmit = async () => {
+                            const addToCal = addToCalendarRef.current.values.add_to_calendar
+                            const order = formRef.current.values
 
-                        //     const addToCal = addToCalendarRef.current.values.add_to_calendar
-                        //     const order = formRef.current.values
+                            const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
+                            const formattedDate = formatDate(order.ETA)
 
-                        //     const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
-                        //     const formattedDate = formatDate(order.ETA)
-
-                        //     // add to calendar
-                        //     let eventId = ""
-                        //     if (addToCal) {
-                        //         eventId = await addEventToCalendar(order.productName, formattedDate, orderId)
-                        //     }
+                            // add to calendar
+                            let eventId = ""
+                            if (addToCal) {
+                                eventId = await addEventToCalendar(order.productName, formattedDate, orderId)
+                            }
 
 
-                        //     order.orderId = orderId
-                        //     order.calendarEventId = eventId
-                        //     order.ETA = formattedDate
+                            order.orderId = orderId
+                            order.calendarEventId = eventId
+                            order.ETA = formattedDate
 
-                        //     database()
-                        //         .ref(`/users/${store.loginCredentials.uid}/orders`)
-                        //         .child(orderId)
-                        //         .set(order)
-                        //         .then(() => {
-                        //             console.log('Data set.')
-                        //             store.updateManualOrders()
-                        //             navigation.navigate("HomeScreen", {
-                        //                 from: "AddOrderScreen"
-                        //             })
-                        //         });
-                        // }
-                        // onSubmit()
+                            database()
+                                .ref(`/users/${store.loginCredentials.uid}/orders`)
+                                .child(orderId)
+                                .set(order)
+                                .then(() => {
+                                    console.log('Data set.')
+                                    store.updateManualOrders()
+                                    navigation.navigate("HomeScreen", {
+                                        from: "AddOrderScreen"
+                                    })
+                                });
+                        }
+                        onSubmit()
                     }
                     }>
                     <MaterialIcons name="done" size={24} />

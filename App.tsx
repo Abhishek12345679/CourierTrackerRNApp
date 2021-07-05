@@ -11,6 +11,8 @@ import AppContainer from './src/navigation/RootNavigation';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
+import { Provider } from 'mobx-react';
+import store from './src/store/store';
 
 declare const global: { HermesInternal: null | {} };
 
@@ -40,13 +42,13 @@ const App = () => {
   }
 
   return (
-    <>
+    <Provider store={store}>
       <StatusBar barStyle="dark-content" />
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={eva.light}>
         <AppContainer />
       </ApplicationProvider>
-    </>
+    </Provider>
   )
 };
 

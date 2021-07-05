@@ -2,6 +2,7 @@ import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Input, Styles, Modal, Card, Button } from '@ui-kitten/components'
 import { Formik } from 'formik'
+import { observer } from 'mobx-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { View, Text, ScrollView, Pressable, TouchableOpacity, StatusBar, TextInput, ActivityIndicator, StyleSheet } from 'react-native'
 import { Avatar, Switch } from 'react-native-ui-lib'
@@ -13,7 +14,7 @@ import store from '../../store/store'
 
 // FIXME: white background even after setting #121212 in android/colors
 
-const SettingsScreen = ({ navigation }: any) => {
+const SettingsScreen: React.FC = observer((props: any) => {
 
     const [signingOut, setSigningOut] = useState(false)
     const [submitting, setSubmitting] = useState(false)
@@ -51,23 +52,26 @@ const SettingsScreen = ({ navigation }: any) => {
         {
             label: "privacy policy",
             onPress: () => {
-                navigation.navigate("PrivacyPolicyScreen")
+                props.navigation.navigate("PrivacyPolicyScreen")
             }
         },
-        { label: "open source licenses", onPress: () => { navigation.navigate("OpenSourceLicensesScreen") } },
+        { label: "open source licenses", onPress: () => { props.navigation.navigate("OpenSourceLicensesScreen") } },
     ]
 
     const switchesRef = useRef()
 
 
     useEffect(() => {
-        navigation.setOptions({
+        props.navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
                         store.updateSettings(switchesRef.current.values)
-                        navigation.pop()
+                        // console.log(store.settings)
+                        props.navigation.navigate("HomeScreen", {
+                            from: "SettingsScreen"
+                        })
 
                     }}>
                     <MaterialIcons name="done" size={24} />
@@ -133,7 +137,7 @@ const SettingsScreen = ({ navigation }: any) => {
                 </View>
             </Pressable>
 
-            {store.googleCredentials.access_token !== "" && <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+            {store.googleCredentials.refresh_token !== "" && <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                 <GoogleSignOutCard
                     onPress={signOutFromGoogle}
                     loading={signingOut}
@@ -280,7 +284,7 @@ const SettingsScreen = ({ navigation }: any) => {
             </Modal>
         </ScrollView >
     )
-}
+})
 
 
 export default SettingsScreen
