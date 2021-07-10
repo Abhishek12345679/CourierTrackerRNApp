@@ -67,7 +67,7 @@ const AuthUrlScreen = observer((props: any) => {
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const AmazonOrders = await AZResponse.json()
-        console.log(JSON.stringify(AmazonOrders.amazonOrders, null, 2))
+        console.log("Amazon Orders", JSON.stringify(AmazonOrders.amazonOrders, null, 2))
         return AmazonOrders.amazonOrders
     }
 

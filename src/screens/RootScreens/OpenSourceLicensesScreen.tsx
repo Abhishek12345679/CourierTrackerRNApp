@@ -21,8 +21,8 @@ const OpenSourceLicensesScreen = () => {
         <ScrollView style={{ flex: 1, backgroundColor: "#121212" }}>
             <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20 }}>
                 <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
-                    {depList.map((dep, _index) => (
-                        <View style={{ width: '100%', justifyContent: "space-between", padding: 20 }}>
+                    {depList.map((dep, index) => (
+                        <View style={{ width: '100%', justifyContent: "space-between", padding: 20 }} key={index}>
                             <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, fontFamily: "gotham-bold", marginBottom: 10 }}>{dep.name}</Text>
                             <Text style={{ color: "#fff", marginStart: 5, fontSize: 15, fontFamily: "gotham-normal" }}>{dep.version}</Text>
                         </View>

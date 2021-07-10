@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image, StatusBar, InteractionManager } from 'react-native'
+import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image, StatusBar, InteractionManager, ScrollView } from 'react-native'
 import store, { Credentials, userInfoType } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
 import { observer } from 'mobx-react';
@@ -8,7 +8,7 @@ import { Order, AmazonOrder, OrderList as OrderListType, AmazonOrderList as Amaz
 import OrderList from '../../components/OrderList';
 import { Avatar, Incubator } from 'react-native-ui-lib';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { Modal, Card, Button, Datepicker, } from '@ui-kitten/components'
+import { Modal } from '@ui-kitten/components'
 import { HeaderTitle } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const { TextField } = Incubator
@@ -19,6 +19,7 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import AmazonOrderList from '../../components/AmazonOrderList'
 
 const HomeScreen: React.FC = observer((props: any) => {
+
 
     const [gmailAccessStatus, setGmailAccessStatus] = useState(props.route.params.gmailAccess)
     const [isLoading, setIsLoading] = useState(false)
@@ -31,31 +32,25 @@ const HomeScreen: React.FC = observer((props: any) => {
     const [pfp, setPfp] = useState(store.userInfo.profilePicture)
     const [name, setName] = useState(store.userInfo.name)
     const [refreshing, setRefreshing] = useState<boolean>(false);
-
-
     const [forceRefresh, setForceRefresh] = useState(0)
 
-
-
-    // const [fromScreen, setFromScreen] = useState(props.route.params.from)
     let fromScreen = props.route.params.from
-    // console.log("from: ", fromScreen)
-
-
 
     useEffect(() => {
         fetchUserInfo()
         console.log("user info called")
     }, [store.userInfo])
 
+
     const onRefresh = React.useCallback(() => {
         console.log("refreshing...")
         setRefreshing(true);
-
         getOrders().then(() => {
             setRefreshing(false)
+        }).catch((err) => {
+            setRefreshing(false)
         })
-    }, [store.settings]);
+    }, []);
 
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
@@ -81,20 +76,6 @@ const HomeScreen: React.FC = observer((props: any) => {
         return AjioOrders.ajioOrders
     }
 
-    const getGoogleAccess = async () => {
-        try {
-            setIsLoading(true)
-            const response = await fetch(`${sensitiveData.baseUrl}/authorize`)
-            const data = await response.json()
-            setIsLoading(false)
-            props.navigation.navigate('AuthUrlScreen', {
-                url: decodeURIComponent(data.url)
-            })
-        } catch (err) {
-            console.error(err)
-            setIsLoading(false)
-        }
-    }
 
     const fetchUserInfo = async () => {
         const userInfo = await store.fetchUserInfo()
@@ -105,36 +86,46 @@ const HomeScreen: React.FC = observer((props: any) => {
     }
 
     const fetchManualOrders = async (): Promise<Order[] | unknown[]> => {
+        let emptyOrders: Order[] = [];
         return await database().ref(`/users/${store.loginCredentials.uid}/orders`)
             .once('value')
             .then((snapshot) => {
                 const orders = snapshot.val()
+                console.log(orders)
+                if (orders === null) {
+                    return emptyOrders
+                }
                 const newOrders = Object.entries(orders).map(([_, value]) => value)
                 return newOrders
             });
     }
 
     const getOrders = async () => {
+
         setFetchingOrders(true)
+        try {
+            const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
+            const myntraOrders = await getMyntraOrders(store.googleCredentials)
+            const ajioOrders = await getAjioOrders(store.googleCredentials)
+            const amazonOrders = await getAmazonOrders(store.googleCredentials)
 
-        const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
-        const myntraOrders = await getMyntraOrders(store.googleCredentials)
-        const ajioOrders = await getAjioOrders(store.googleCredentials)
-        const amazonOrders = await getAmazonOrders(store.googleCredentials)
+            const manualOrders = await fetchManualOrders()
 
-        const manualOrders = await fetchManualOrders()
+            const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders as Order[])
+            const sortedOrders = sortOrders(groupedOrders)
 
-        const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders as Order[])
-        const sortedOrders = sortOrders(groupedOrders)
+            const groupedAmazonOrders = groupAmazonOrders(amazonOrders)
+            const sortedAmazonOrders = sortAmazonOrders(groupedAmazonOrders)
 
-        const groupedAmazonOrders = groupAmazonOrders(amazonOrders)
-        const sortedAmazonOrders = sortAmazonOrders(groupedAmazonOrders)
-
-        store.saveOrders(sortedOrders)
-        await store.saveOrdersLocally(sortedOrders)
-        store.saveAmazonOrders(sortedAmazonOrders)
-        await store.saveAmazonOrdersLocally(sortedAmazonOrders)
-        setFetchingOrders(false)
+            store.saveOrders(sortedOrders)
+            await store.saveOrdersLocally(sortedOrders)
+            store.saveAmazonOrders(sortedAmazonOrders)
+            await store.saveAmazonOrdersLocally(sortedAmazonOrders)
+            setFetchingOrders(false)
+        } catch (err) {
+            console.error(err)
+            setFetchingOrders(false)
+        }
 
         // console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
         // console.log("sorted orders: ", JSON.stringify(store.amazonOrders, null, 4))
@@ -218,14 +209,14 @@ const HomeScreen: React.FC = observer((props: any) => {
             headerRight: () => (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
                     {isAndroid && <TouchableOpacity
-                        style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
+                        style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20, shadowColor: '#da1d1d', elevation: 50 }}
                         onPress={() => {
                             props.navigation.navigate('AddOrder')
                         }}>
                         {/* <Text>Add</Text> */}
                         <MaterialIcons name="add" size={24} />
                     </TouchableOpacity>}
-                    <TouchableOpacity style={{ marginEnd: 20 }} onPress={() => props.navigation.navigate('Settings')}>
+                    <TouchableOpacity style={{ marginEnd: 20, }} onPress={() => props.navigation.navigate('Settings')}>
                         <Avatar
                             size={isAndroid ? 50 : 40}
                             source={{ uri: store.userInfo.profilePicture }}
@@ -257,8 +248,8 @@ const HomeScreen: React.FC = observer((props: any) => {
         useCallback(() => {
             const checkGmailAccessStatus = async () => {
                 console.log("checking status...")
-                const googleCreds = await AsyncStorage.getItem('orders')
-                if (googleCreds === "" || googleCreds === null) {
+                const googleCreds = await AsyncStorage.getItem('credentials')
+                if (googleCreds === "" || googleCreds == null) {
                     setGmailAccessStatus(false)
                 } else {
                     setGmailAccessStatus(true)
@@ -268,20 +259,11 @@ const HomeScreen: React.FC = observer((props: any) => {
         }, [fromScreen])
     )
 
-    // re-renders screen so the mst states are updated [HACKY]
-    useFocusEffect(
-        useCallback(() => {
-            if (fromScreen === "SettingsScreen") {
-                fromScreen = "";
-                setForceRefresh(c => c + 1)
-            }
-        }, [fromScreen])
-    )
 
     // re-fetch all orders when adding new manual order
     useFocusEffect(
         useCallback(() => {
-            if (fromScreen === "AddOrderScreen") {
+            if (fromScreen === "AddOrderScreen" || fromScreen === "SettingsScreen") {
                 const loadOrders = async () => {
                     console.log("from: ", fromScreen)
                     await getOrders()
@@ -310,21 +292,10 @@ const HomeScreen: React.FC = observer((props: any) => {
         loadOrders()
     }, [])
 
-    if (store.orders.length === 0)
-        return (
-            <View style={{ flex: 1, backgroundColor: '#121212' }}>
-                {
-                    !gmailAccessStatus && (<View style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center' }}><GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /></View>)
-                }
-                <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: "#fff" }}>No Orders</Text>
-                </View>
-            </View>
-        )
 
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
-            <StatusBar barStyle="light-content" backgroundColor="#000" />
+            <StatusBar barStyle="light-content" />
             <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 50, marginVertical: 15 }}>
                 <SegmentedControl
                     style={{ width: '85%', height: 40 }}
@@ -343,42 +314,116 @@ const HomeScreen: React.FC = observer((props: any) => {
                 />
             </View>
 
+            {
+                selectedIndex === 0 ?
+                    fetchingOrders ?
+                        <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
+                            <ActivityIndicator size="large" color="#fff" />
+                        </View> :
+                        store.orders.length > 0 ?
+                            <FlatList
+                                showsVerticalScrollIndicator={false}
+                                style={{ backgroundColor: '#121212' }}
+                                contentContainerStyle={{
+                                    justifyContent: 'center'
+                                }}
+                                keyExtractor={item => item.EstimatedDeliveryTime}
+                                data={store.orders}
+                                renderItem={renderOrderItem}
+                                refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
+                                onRefresh={() => {
+                                    store.settings.allow_fetching_new_orders && onRefresh()
+                                }
+                                }
+                            /> :
+                            <ScrollView
+                                contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                                style={{ flex: 1, backgroundColor: '#121212' }}
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={refreshing}
+                                        onRefresh={onRefresh}
+                                    />}
+                            >
+                                <Text style={{ color: "#fff" }}>Kaalo Badal chaaye ko jasto :3</Text>
+                            </ScrollView>
+                    :
+                    fetchingOrders ?
+                        <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
+                            <ActivityIndicator size="large" color="#fff" />
+                        </View> :
+                        store.amazonOrders.length > 0 ?
+                            <FlatList
+                                showsVerticalScrollIndicator={false}
+                                style={{ backgroundColor: '#121212' }}
+                                contentContainerStyle={{
+                                    justifyContent: 'center'
+                                }}
+                                keyExtractor={item => item.EstimatedDeliveryTime}
+                                data={store.amazonOrders}
+                                renderItem={renderAmazonOrderItem}
+                                refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
+                                onRefresh={() => {
+                                    store.settings.allow_fetching_new_orders && onRefresh()
+                                }
+                                }
+                            /> :
+                            <ScrollView
+                                contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                                style={{ flex: 1, backgroundColor: '#121212' }}
+                                refreshControl={
+                                    <RefreshControl
+                                        refreshing={refreshing}
+                                        onRefresh={onRefresh}
+                                    />}
+                            >
+                                <Text style={{ color: "#fff" }}>Kaalo Badal chaaye ko jasto :3</Text>
+                            </ScrollView>
 
-            {!fetchingOrders ? selectedIndex === 0 ?
-                <FlatList
-                    showsVerticalScrollIndicator={false}
-                    style={{ backgroundColor: '#121212' }}
-                    contentContainerStyle={{
-                        justifyContent: 'center'
-                    }}
-                    keyExtractor={item => item.EstimatedDeliveryTime}
-                    data={store.orders}
-                    renderItem={renderOrderItem}
-                    refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
-                    onRefresh={() => {
-                        store.settings.allow_fetching_new_orders && onRefresh()
-                    }
-                    }
-                /> :
-                <FlatList
-                    showsVerticalScrollIndicator={false}
-                    style={{ backgroundColor: '#121212' }}
-                    contentContainerStyle={{
-                        justifyContent: 'center'
-                    }}
-                    keyExtractor={item => item.EstimatedDeliveryTime}
-                    data={store.amazonOrders}
-                    renderItem={renderAmazonOrderItem}
-                    refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
-                    onRefresh={() => {
-                        store.settings.allow_fetching_new_orders && onRefresh()
-                    }
-                    }
-                /> :
-                <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
-                    <ActivityIndicator size="large" color="#fff" />
-                </View>
             }
+
+
+            {/* {selectedIndex === 0 ?
+                (store.orders.length > 0 && !fetchingOrders) ?
+                    <FlatList
+                        showsVerticalScrollIndicator={false}
+                        style={{ backgroundColor: '#121212' }}
+                        contentContainerStyle={{
+                            justifyContent: 'center'
+                        }}
+                        keyExtractor={item => item.EstimatedDeliveryTime}
+                        data={store.orders}
+                        renderItem={renderOrderItem}
+                        refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
+                        onRefresh={() => {
+                            store.settings.allow_fetching_new_orders && onRefresh()
+                        }
+                        }
+                    /> : <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
+                        <ActivityIndicator size="large" color="#fff" />
+                    </View> :
+                (store.amazonOrders.length > 0 && !fetchingOrders) ?
+                    <FlatList
+                        showsVerticalScrollIndicator={false}
+                        style={{ backgroundColor: '#121212' }}
+                        contentContainerStyle={{
+                            justifyContent: 'center'
+                        }}
+                        keyExtractor={item => item.EstimatedDeliveryTime}
+                        data={store.amazonOrders}
+                        renderItem={renderAmazonOrderItem}
+                        refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
+                        onRefresh={() => {
+                            store.settings.allow_fetching_new_orders && onRefresh()
+                        }
+                        }
+                    /> :
+                    <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={{ color: "#fff" }}>Kaalo Badal chaaye ko jasto :3</Text>
+                    </View>
+
+
+            } */}
             {/* <Modal
                 visible={visible}
                 backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', }}

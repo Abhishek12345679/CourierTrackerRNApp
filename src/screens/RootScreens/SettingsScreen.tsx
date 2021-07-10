@@ -12,7 +12,6 @@ import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
 import store from '../../store/store'
 
-// FIXME: white background even after setting #121212 in android/colors
 
 const SettingsScreen: React.FC = observer((props: any) => {
 
@@ -24,6 +23,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
         store.resetLoginCredentials()
         store.resetCredentials()
         store.removeOrders()
+        // store.removeAmazonOrders()
         await AsyncStorage.removeItem('loginCredentials')
         await AsyncStorage.removeItem('credentials')
     }
@@ -137,12 +137,14 @@ const SettingsScreen: React.FC = observer((props: any) => {
                 </View>
             </Pressable>
 
-            {store.googleCredentials.refresh_token !== "" && <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                <GoogleSignOutCard
-                    onPress={signOutFromGoogle}
-                    loading={signingOut}
-                />
-            </View>}
+            {store.googleCredentials.refresh_token !== "" &&
+                <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                    <GoogleSignOutCard
+                        onPress={signOutFromGoogle}
+                        loading={signingOut}
+                    />
+                </View>
+            }
             <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20 }}>
                 <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
                     <Formik
@@ -223,7 +225,8 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     {
                         miscButtons.map((btn, index) => (
                             <Item
-                                key={index} style={{ justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: 0, marginBottom: 0 }}
+                                key={index}
+                                style={{ justifyContent: 'flex-start', alignItems: 'flex-start', marginTop: 0, marginBottom: 0 }}
                                 onPress={btn.onPress}
                                 height={60}
                                 borderColor="transparent">

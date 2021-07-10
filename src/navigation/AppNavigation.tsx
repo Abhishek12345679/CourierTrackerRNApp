@@ -14,6 +14,7 @@ import AddOrderScreen from '../screens/RootScreens/AddOrderScreen';
 import PrivacyPolicyScreen from '../screens/RootScreens/PrivacyPolicyScreen';
 import ETAOverviewScreen from '../screens/RootScreens/ETAOverviewScreen';
 import OpenSourceLicensesScreen from '../screens/RootScreens/OpenSourceLicensesScreen';
+import AmazonOrderDetailsScreen from '../screens/RootScreens/AmazonOrderDetailsScreen';
 
 
 enableScreens()
@@ -66,6 +67,18 @@ export const RootNavigator = () => {
                 component={OrderDetailsScreen}
                 options={{
                     headerShown: false,
+                    headerTitleStyle: {
+                        color: "#FFF",
+                        fontWeight: 'bold',
+                        fontSize: 20,
+                        // fontFamily: 'segoe-bold'
+                    },
+                }} />
+            <RootStackNavigator.Screen
+                name="AmazonOrderDetailsScreen"
+                component={AmazonOrderDetailsScreen}
+                options={{
+                    headerShown: true,
                     headerTitleStyle: {
                         color: "#FFF",
                         fontWeight: 'bold',

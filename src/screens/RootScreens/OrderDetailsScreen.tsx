@@ -91,17 +91,28 @@ const OrderDetailsScreen = observer((props: any) => {
     }
 
 
-    // useEffect(() => {
-    //     props.navigation.setOptions({
-    //         title: item.productName
-    //     })
-    // }, []);
+    const checkMyntraDeliveryStatus = async (productName: string) => {
+        const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkMyntraDeliveryStatus`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
+        })
+        const delStat = await statusResponse.json()
+        console.log(delStat)
+        // setDeliveryStatus(delStat)
+    }
 
     useEffect(() => {
+        console.log(item.from)
         extractColorsFromImage()
         if (item.from === "flipkart") {
             console.log(item.productName)
             checkFlipkartDeliveryStatus(item.productName)
+        } else if (item.from.toLowerCase() === "myntra") {
+            console.log(item.productName)
+            checkMyntraDeliveryStatus(item.productName)
         }
     }, [item])
 

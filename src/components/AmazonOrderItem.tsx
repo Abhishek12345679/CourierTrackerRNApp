@@ -45,10 +45,10 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
     const [calendarId, setCalendarId] = useState('')
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
 
-    const formattedPrice = new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR'
-    }).format(parseInt(item.totalPrice))
+    // const formattedPrice = new Intl.NumberFormat('en-IN', {
+    //     style: 'currency',
+    //     currency: 'INR'
+    // }).format(parseInt(item.totalPrice))
 
     useEffect(() => {
         (async () => {
@@ -85,7 +85,7 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
 
     return (
         <Pressable
-            disabled={true}
+            // disabled={true}
             android_ripple={{ color: '#8b8a8a2c', radius: 250, borderless: false }}
             style={{
                 flex: 1,
@@ -107,12 +107,12 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                 // },
                 elevation: 1
             }}
-            onPress={() => navigation.navigate('OrderDetailsScreen', {
+            onPress={() => navigation.navigate('AmazonOrderDetailsScreen', {
                 item: item
             })}
             key={index}
         >
-            <Image
+            {/* <Image
                 source={{ uri: "" }}
                 style={{
                     height: 80,
@@ -124,8 +124,8 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                     overflow: 'hidden',
                 }}
             // resizeMode="contain"
-            />
-            <View style={{ flex: 4 }}>
+            /> */}
+            <View style={{ flex: 1, marginLeft: 20 }}>
                 <View style={{ flexDirection: 'row', width: '100%', marginTop: 10 }}>
                     <Text style={{
                         // fontWeight: 'bold',
@@ -185,13 +185,13 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                     }}>
                     <View style={{ height: 35, marginBottom: 5, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, marginStart: 5, flexDirection: 'row' }}>
                         <Text style={{ flexShrink: 1, color: '#bfc4c1', fontFamily: 'gotham-black', fontSize: 20 }}>
-                            {formattedPrice}
+                            ₹{item.totalPrice}
                         </Text>
                     </View>
                 </View>
             </View>
 
-        </Pressable>
+        </Pressable >
 
     )
 })
