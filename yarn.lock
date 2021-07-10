@@ -2057,7 +2057,14 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.11.tgz#2f4c6e10bee0786abff4604e39a37ded6f3980ce"
   integrity sha512-rQfMIGSR/1r/SyN87+VD8xHHzDYeHaJq6elOSCAD+0iLagXkSI2pfA0LmSXP21uw5i3em7GkkRjfJ8wpqWXZNw==
 
-"@react-native-firebase/app@^12.1.0":
+"@react-native-community/push-notification-ios@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/push-notification-ios/-/push-notification-ios-1.8.0.tgz#7d43cb37b9e644ff3069aafa91befe71688a2dc4"
+  integrity sha512-vxvkeampafjmtDoQBN8Q4azP21l6cMX93+OQZemyIWZmG++OjCVDQVitobf/kWLm5zyGwdylejbpMGo75qo7rA==
+  dependencies:
+    invariant "^2.2.4"
+
+"@react-native-firebase/app@12.1.0":
   version "12.1.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-12.1.0.tgz#fa2c989af2bd876ed83f792c0152067184a7db27"
   integrity sha512-goulw5PFGo2NIqqZXpv7kyv0XPKWQT2G/2ZXEFMdgDnxZGRyiAH82gR/v9rAMCww1lFVTeMZdphU5WFN/qdptg==
@@ -2070,12 +2077,17 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/auth/-/auth-11.5.0.tgz#b7fd56c249ee1f2992cd297ec734dacbd5b9831b"
   integrity sha512-kdO+dbGqZluX1zkxGXI+DNn1PU83WcY9jdXSGtKjiHkoduB4lBmfGvewDlIiYtJNmXly/Jf3FrLEwa77ZDuArQ==
 
-"@react-native-firebase/database@^12.0.0":
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/database/-/database-12.1.0.tgz#ca1095b77db957dd0b7c997b50affe99d393d644"
-  integrity sha512-3VsCd6r474RZMAlj6rqntHnzsYsU58qa6Joo0GshmzuWRkMTbpj8sd3R9sMICavEwxwYbN6Gau7W6GJIyTf7Jw==
+"@react-native-firebase/database@12.0.0":
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/database/-/database-12.0.0.tgz#a2e82495752a044d9a59d9dec3984eb190db2ae3"
+  integrity sha512-zfKhoLxMdMpLnnBtoKT7bBUDkxazWy28jsM9blg/NO26Wm+5+oA5EL++AZ0XCySU3O69KJVXtYEaeY5pmVKAUw==
 
-"@react-native-firebase/storage@^12.1.0":
+"@react-native-firebase/messaging@12.1.0":
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-12.1.0.tgz#eb74e37edabd0c392e28f6df622adafeb1617e23"
+  integrity sha512-8kL2Gs5N6o4aJdeoNrrYnmFvMms+H+mjj3ttlQLWobN7hy7fLCD9sbahJR9W3jzSoOb+XTaxk6Xf3PzVBBB7Mw==
+
+"@react-native-firebase/storage@12.1.0":
   version "12.1.0"
   resolved "https://registry.yarnpkg.com/@react-native-firebase/storage/-/storage-12.1.0.tgz#efb70ad2d5dd062659aa5c830d976e262b14f4fb"
   integrity sha512-xp5LGqPH6KcD0N9yc0Ye454ppxO/+5idL0AqXrmdA/B+HPHt49JRamkXSW8PrFXG3DVm3LcJEKHMhY6cEtpd5w==
@@ -2255,6 +2267,11 @@
   version "15.7.3"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.3.tgz#2ab0d5da2e5815f94b0b9d4b95d1e5f243ab2ca7"
   integrity sha512-KfRL3PuHmqQLOG+2tGpRO26Ctg+Cq1E01D2DMriKEATHgWLfeNDmq9e29Q9WIky0dQ3NPkd1mzYH8Lm936Z9qw==
+
+"@types/react-native-push-notification@^7.3.1":
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/@types/react-native-push-notification/-/react-native-push-notification-7.3.1.tgz#32e06bf685b4058a5c5b8f9abc8e34f600e205f6"
+  integrity sha512-6oEj6E73geW5L5QgZytM8zVBD+VDZgDn0vDQXDF6bqSWxWRRU4ow6zJAU2M5ElssoVwo9Ne7z/4+GpslS+p/SA==
 
 "@types/react-native@^0.63.2":
   version "0.63.52"
@@ -7707,6 +7724,11 @@ react-native-iphone-x-helper@^1.3.0:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/react-native-iphone-x-helper/-/react-native-iphone-x-helper-1.3.1.tgz#20c603e9a0e765fd6f97396638bdeb0e5a60b010"
   integrity sha512-HOf0jzRnq2/aFUcdCJ9w9JGzN3gdEg0zFE4FyYlp4jtidqU03D5X7ZegGKfT1EWteR0gPBGp9ye5T5FvSWi9Yg==
+
+react-native-push-notification@^7.4.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-push-notification/-/react-native-push-notification-7.4.0.tgz#81192356eddfee8eeaf72a9a696c7c90bf5b0ece"
+  integrity sha512-Ac3Ep71e2D8Q/Vy0OHBAO5JwhsFsNSuf9knkpXQWS0B9488nIZJLEMuTpF8610xPvGw7XxVrL/q0oZO5F1pOzw==
 
 react-native-reanimated@^2.2.0:
   version "2.2.0"

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image, StatusBar, InteractionManager, ScrollView } from 'react-native'
+import { View, FlatList, ListRenderItem, TouchableOpacity, ActivityIndicator, Text, RefreshControl, Platform, Image, StatusBar, InteractionManager, ScrollView, Alert } from 'react-native'
 import store, { Credentials, userInfoType } from '../../store/store';
 import { sensitiveData } from '../../../constants/sen_data';
 import { observer } from 'mobx-react';
@@ -12,11 +12,16 @@ import { Modal } from '@ui-kitten/components'
 import { HeaderTitle } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const { TextField } = Incubator
+
 import database from '@react-native-firebase/database';
+import messaging from '@react-native-firebase/messaging';
+
 import { useFocusEffect } from '@react-navigation/native';
 
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import AmazonOrderList from '../../components/AmazonOrderList'
+import PushNotification from "react-native-push-notification";
+import { Button } from 'react-native';
 
 const HomeScreen: React.FC = observer((props: any) => {
 
@@ -36,11 +41,30 @@ const HomeScreen: React.FC = observer((props: any) => {
 
     let fromScreen = props.route.params.from
 
-    useEffect(() => {
-        fetchUserInfo()
-        console.log("user info called")
-    }, [store.userInfo])
+    const callNotification = () => {
+        PushNotification.localNotificationSchedule({
+            //... You can use all the options from localNotifications
+            title: "Order Delivery Reminder",
+            message: "Your Order #212412414 is estimated to arrive by 21st January 2051.", // (required)
+            date: new Date(Date.now() + 10 * 1000), // in 60 secs
+            allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
+            priority: 'max',
+            /* Android Only Properties */
+            repeatTime: 1, // (optional) Increment of configured repeatType. Check 'Repeating Notifications' section for more info.
+            channelId: 'reminder_channel',
+            smallIcon: 'https://img.icons8.com/doodle/452/apple-calendar--v1.png',
+            largeIconUrl: 'https://img.icons8.com/doodle/452/apple-calendar--v1.png',
+            bigLargeIconUrl: 'https://img.icons8.com/doodle/452/apple-calendar--v1.png',
+            bigPictureUrl: 'https://img.icons8.com/doodle/452/apple-calendar--v1.png'
+        });
+    }
 
+    useEffect(() => {
+        const fetchInfo = async () => {
+            fetchUserInfo()
+        }
+        fetchInfo()
+    }, [])
 
     const onRefresh = React.useCallback(() => {
         console.log("refreshing...")
@@ -293,6 +317,8 @@ const HomeScreen: React.FC = observer((props: any) => {
     }, [])
 
 
+
+
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
             <StatusBar barStyle="light-content" />
@@ -322,6 +348,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                         </View> :
                         store.orders.length > 0 ?
                             <FlatList
+                                ListHeaderComponent={<Button title="notify me" onPress={callNotification} />}
                                 showsVerticalScrollIndicator={false}
                                 style={{ backgroundColor: '#121212' }}
                                 contentContainerStyle={{
