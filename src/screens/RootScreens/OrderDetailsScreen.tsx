@@ -179,7 +179,11 @@ const OrderDetailsScreen = observer((props: any) => {
             </ScrollView>
             <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: primaryColor, height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
-                onPress={() => { }}>
+                onPress={
+                    async () => {
+                        await store.toggleCallReminder(item.orderId, item.ETA)
+                    }
+                }>
 
                 {
                     !item.callReminder ?

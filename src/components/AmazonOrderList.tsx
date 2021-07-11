@@ -21,3 +21,5 @@ const AmazonOrderList: ListRenderItem<AmazonOrderListType> = ({ item, index, sep
 }
 
 export default AmazonOrderList
+
+//TODO: add toggle reminder everywhere
