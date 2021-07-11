@@ -122,9 +122,9 @@ const AuthUrlScreen = observer((props: any) => {
         const groupedAmazonOrders = groupAmazonOrders(amazonOrders)
         const sortedAmazonOrders = sortAmazonOrders(groupedAmazonOrders)
 
-        store.saveOrders(sortedOrders)
+        await store.saveOrders(sortedOrders)
         await store.saveOrdersLocally(sortedOrders)
-        store.saveAmazonOrders(sortedAmazonOrders)
+        await store.saveAmazonOrders(sortedAmazonOrders)
         await store.saveAmazonOrdersLocally(sortedAmazonOrders)
         // setFetchingOrders(false)
 
@@ -185,9 +185,9 @@ const AuthUrlScreen = observer((props: any) => {
     const loadOrders = async () => {
         const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
         if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
-            getOrders()
+            await getOrders()
         } else {
-            store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+            await store.saveOrders(JSON.parse(ordersInAsyncStorage!))
         }
     }
 

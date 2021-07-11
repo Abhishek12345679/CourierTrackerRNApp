@@ -41,23 +41,49 @@ const HomeScreen: React.FC = observer((props: any) => {
 
     let fromScreen = props.route.params.from
 
-    const callNotification = () => {
+    enum orderType {
+        amazon = "amazon",
+    }
+
+    const callReminder = (productImageUrl: string, orderNumber: string, ETA: string, orderType: string, productName?: string) => {
         PushNotification.localNotificationSchedule({
-            //... You can use all the options from localNotifications
             title: "Order Delivery Reminder",
-            message: "Your Order #212412414 is estimated to arrive by 21st January 2051.", // (required)
-            date: new Date(Date.now() + 10 * 1000), // in 60 secs
-            allowWhileIdle: false, // (optional) set notification to work while on doze, default: false
+            message: orderType !== "amazon" ? `Your Item ${productName} Order #${orderNumber} is estimated to arrive by ${ETA}` : `Your Order #${orderNumber} is estimated to arrive by ${ETA}`,
+            date: new Date(Date.now() + 10 * 1000),
+            allowWhileIdle: false,
             priority: 'max',
+
             /* Android Only Properties */
-            repeatTime: 1, // (optional) Increment of configured repeatType. Check 'Repeating Notifications' section for more info.
+            // repeatTime: 1,
             channelId: 'reminder_channel',
-            smallIcon: 'https://img.icons8.com/doodle/452/apple-calendar--v1.png',
-            largeIconUrl: 'https://img.icons8.com/doodle/452/apple-calendar--v1.png',
-            bigLargeIconUrl: 'https://img.icons8.com/doodle/452/apple-calendar--v1.png',
-            bigPictureUrl: 'https://img.icons8.com/doodle/452/apple-calendar--v1.png'
+            smallIcon: productImageUrl,
+            largeIconUrl: productImageUrl,
+            bigLargeIconUrl: productImageUrl,
+            bigPictureUrl: productImageUrl
         });
     }
+
+    const initiateNotifications = async () => {
+        const orders = await AsyncStorage.getItem('orders')
+        const amazonOrders = await AsyncStorage.getItem('amazonOrders')
+
+        if (store.orders.length > 0 || store.amazonOrders.length > 0) {
+            console.log("notifications...")
+            store.orders.map((order, i) => {
+                order.orderItems.map((item, i) => {
+                    callReminder(item.productImage, item.orderNumber, item.ETA, item.from, item.productName)
+                })
+            })
+            store.amazonOrders.map((order, i) => {
+                order.orderItems.map((item, i) => {
+                    callReminder("", item.orderNumber, item.ETA, "amazon")
+                })
+            })
+        } else {
+            console.log("No orders")
+        }
+    }
+
 
     useEffect(() => {
         const fetchInfo = async () => {
@@ -141,9 +167,9 @@ const HomeScreen: React.FC = observer((props: any) => {
             const groupedAmazonOrders = groupAmazonOrders(amazonOrders)
             const sortedAmazonOrders = sortAmazonOrders(groupedAmazonOrders)
 
-            store.saveOrders(sortedOrders)
+            await store.saveOrders(sortedOrders)
             await store.saveOrdersLocally(sortedOrders)
-            store.saveAmazonOrders(sortedAmazonOrders)
+            await store.saveAmazonOrders(sortedAmazonOrders)
             await store.saveAmazonOrdersLocally(sortedAmazonOrders)
             setFetchingOrders(false)
         } catch (err) {
@@ -277,6 +303,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                     setGmailAccessStatus(false)
                 } else {
                     setGmailAccessStatus(true)
+                    await fetchUserInfo()
                 }
             }
             checkGmailAccessStatus()
@@ -305,18 +332,49 @@ const HomeScreen: React.FC = observer((props: any) => {
             if (googleCreds !== null) {
                 setGmailAccessStatus(true)
                 const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
+                const amazonOrdersInAsyncStorage = await AsyncStorage.getItem('amazonOrders')
                 if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
                     await getOrders()
                     await fetchUserInfo()
+                    await initiateNotifications()
+
                 } else {
-                    store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+                    await store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+                    await store.saveAmazonOrders(JSON.parse(amazonOrdersInAsyncStorage!))
+                    await initiateNotifications()
                 }
             }
         }
         loadOrders()
     }, [])
 
+    const getGoogleAccess = async () => {
+        try {
+            setIsLoading(true)
+            const response = await fetch(`${sensitiveData.baseUrl}/authorize`)
+            const data = await response.json()
+            setIsLoading(false)
+            props.navigation.navigate('AuthUrlScreen', {
+                url: decodeURIComponent(data.url)
+            })
+        } catch (err) {
+            console.error(err)
+            setIsLoading(false)
+        }
+    }
 
+
+    if (store.orders.length === 0 && store.amazonOrders.length === 0 && !gmailAccessStatus)
+        return (
+            <View style={{ flex: 1, backgroundColor: '#121212' }}>
+                {
+                    !gmailAccessStatus && (<View style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center' }}><GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /></View>)
+                }
+                <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: "#fff" }}>No Orders</Text>
+                </View>
+            </View>
+        )
 
 
     return (
@@ -348,7 +406,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                         </View> :
                         store.orders.length > 0 ?
                             <FlatList
-                                ListHeaderComponent={<Button title="notify me" onPress={callNotification} />}
+                                // ListHeaderComponent={<Button title="notify me" onPress={callNotification} />}
                                 showsVerticalScrollIndicator={false}
                                 style={{ backgroundColor: '#121212' }}
                                 contentContainerStyle={{
@@ -408,65 +466,6 @@ const HomeScreen: React.FC = observer((props: any) => {
                             </ScrollView>
 
             }
-
-
-            {/* {selectedIndex === 0 ?
-                (store.orders.length > 0 && !fetchingOrders) ?
-                    <FlatList
-                        showsVerticalScrollIndicator={false}
-                        style={{ backgroundColor: '#121212' }}
-                        contentContainerStyle={{
-                            justifyContent: 'center'
-                        }}
-                        keyExtractor={item => item.EstimatedDeliveryTime}
-                        data={store.orders}
-                        renderItem={renderOrderItem}
-                        refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
-                        onRefresh={() => {
-                            store.settings.allow_fetching_new_orders && onRefresh()
-                        }
-                        }
-                    /> : <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
-                        <ActivityIndicator size="large" color="#fff" />
-                    </View> :
-                (store.amazonOrders.length > 0 && !fetchingOrders) ?
-                    <FlatList
-                        showsVerticalScrollIndicator={false}
-                        style={{ backgroundColor: '#121212' }}
-                        contentContainerStyle={{
-                            justifyContent: 'center'
-                        }}
-                        keyExtractor={item => item.EstimatedDeliveryTime}
-                        data={store.amazonOrders}
-                        renderItem={renderAmazonOrderItem}
-                        refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
-                        onRefresh={() => {
-                            store.settings.allow_fetching_new_orders && onRefresh()
-                        }
-                        }
-                    /> :
-                    <View style={{ flex: 1, backgroundColor: '#121212', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ color: "#fff" }}>Kaalo Badal chaaye ko jasto :3</Text>
-                    </View>
-
-
-            } */}
-            {/* <Modal
-                visible={visible}
-                backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', }}
-                onBackdropPress={() => setVisible(false)}>
-                <Card disabled={true} style={{}}>
-                    <Text style={{ fontFamily: 'segoe-bold', fontSize: 20 }}>Add this event to the calendar</Text>
-                    <Datepicker
-
-                        date={date}
-                        onSelect={nextDate => setDate(nextDate)}
-                    />
-                    <Button style={{ backgroundColor: "#000" }} onPress={() => setVisible(false)}>
-                        Submit
-                    </Button>
-                </Card>
-            </Modal> */}
         </View>
     )
 })

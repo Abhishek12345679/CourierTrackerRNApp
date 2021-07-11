@@ -72,7 +72,7 @@ const order = types.model('Order', {
   productLink: types.optional(types.string, ''),
   totalPrice: types.optional(types.string, ''),
   from: types.optional(types.string, ''),
-  calendarEventId: types.optional(types.string, ''),
+  callReminder: types.optional(types.boolean, false),
 });
 
 const amazonOrder = types.model('AmazonOrder', {
@@ -83,7 +83,7 @@ const amazonOrder = types.model('AmazonOrder', {
   delivery_address: types.optional(types.string, ''),
   invoiceLink: types.optional(types.string, ''),
   orderPreviewLink: types.optional(types.string, ''),
-  calendarEventId: types.optional(types.string, ''),
+  callReminder: types.optional(types.boolean, false),
 });
 
 const orderList = types.model('OrderList', {
@@ -148,12 +148,22 @@ const store = types
         console.error(error);
       }
     }),
-    saveOrders(orderList: OrderList[]) {
-      (self as any).orders = orderList;
-    },
-    saveAmazonOrders(orderList: AmazonOrderList[]) {
-      (self as any).amazonOrders = orderList;
-    },
+    saveOrders: flow(function* saveOrders(orderList: OrderList[]) {
+      try {
+        (self as any).orders = orderList;
+      } catch (error) {
+        console.error(error);
+      }
+    }),
+    saveAmazonOrders: flow(function* saveAmazonOrders(
+      orderList: AmazonOrderList[],
+    ) {
+      try {
+        (self as any).amazonOrders = orderList;
+      } catch (error) {
+        console.error(error);
+      }
+    }),
     saveOrdersLocally: flow(function* saveOrdersLocally(
       orderList: OrderList[],
     ) {
@@ -176,31 +186,6 @@ const store = types
     }),
     removeOrders() {
       applySnapshot(self.orders, []);
-    },
-    setCalendarEventId(id: string, orderId: string, eta: string) {
-      // console.log({id, orderId, eta});
-
-      self.orders.map((order, index) => {
-        if (order.EstimatedDeliveryTime === eta) {
-          order.orderItems.map((item, index) => {
-            if (item.orderId === orderId) {
-              item.calendarEventId = id;
-              console.log('added: ' + id);
-            }
-          });
-        }
-      });
-    },
-    getCalendarEventId(id: string, orderId: string, eta: string) {
-      self.orders.map((order, index) => {
-        if (order.EstimatedDeliveryTime === eta) {
-          order.orderItems.map((item, index) => {
-            if (item.orderId === orderId) {
-              return item.calendarEventId;
-            }
-          });
-        }
-      });
     },
     setLoginCredentials(credentials: loginCredentialsType) {
       self.loginCredentials = credentials;

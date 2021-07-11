@@ -1,63 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, Pressable, Linking, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
-import { Image, Dialog } from 'react-native-ui-lib'
+import { Image } from 'react-native-ui-lib'
 import { Order } from '../../constants/Types/OrderTypes'
 
-import * as Calendar from 'expo-calendar';
 import { useNavigation } from '@react-navigation/native';
 import store from '../store/store';
 import { observer } from 'mobx-react';
 import { sensitiveData } from '../../constants/sen_data';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
-import { Button, Icon } from '@ui-kitten/components';
-
-import database from '@react-native-firebase/database';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 //BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
 
-export const getDefaultCalendarSource = async () => {
-    const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-    const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
-    return defaultCalendars[0].source;
-}
-
-export const createCalendar = async () => {
-    const defaultCalendarSource =
-        Platform.OS === 'ios'
-            ? await getDefaultCalendarSource()
-            : { isLocalAccount: true, name: 'Woosh' };
-    const newCalendarID = await Calendar.createCalendarAsync({
-        title: 'Expo Calendar',
-        color: 'blue',
-        entityType: Calendar.EntityTypes.EVENT,
-        sourceId: defaultCalendarSource.id,
-        source: defaultCalendarSource,
-        name: 'internalCalendarName',
-        ownerAccount: 'personal',
-        accessLevel: Calendar.CalendarAccessLevel.OWNER,
-    });
-    return newCalendarID
-}
-
-
-
-const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDialog }) => {
+const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
     const navigation = useNavigation()
 
-    const [calendarId, setCalendarId] = useState('')
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
-
-    // const shakeIconRef = React.useRef();
-    // const renderShakeIcon = () => (
-    //     <Icon
-    //         ref={shakeIconRef}
-    //         animation='shake'
-    //         name='shake'
-
-    //     />
-    // );
 
 
     const formattedPrice = new Intl.NumberFormat('en-IN', {
@@ -65,14 +23,6 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
         currency: 'INR'
     }).format(parseInt(item.productPrice))
 
-
-    useEffect(() => {
-        (async () => {
-            const { status } = await Calendar.requestCalendarPermissionsAsync();
-            if (status === 'granted') {
-            }
-        })();
-    }, []);
 
 
     const checkFkAndMyntraDeliveryStatus = async (pName: string, from: string) => {
@@ -93,34 +43,6 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
     //     item && checkFkAndMyntraDeliveryStatus(item.productName, capitalize(item.from))
     // }, [item])
 
-
-
-    const addEventToCalendar = async () => {
-        const id = await createCalendar()
-        console.log("id: ", id)
-        console.log('Date:', new Date(item.ETA))
-
-        const event = await Calendar.createEventAsync(id, {
-            title: item.productName,
-            startDate: new Date((item.ETA)),
-            endDate: new Date((item.ETA))
-        })
-
-        // database()
-        //     .ref(`/users/${store.loginCredentials.uid}/calendar_event_ids`)
-        //     .set({
-
-        //     })
-        //     .then(() => console.log('Data set.'));
-
-        store.setCalendarEventId(event, item.orderId, Date.parse(item.ETA).toString())
-        // await AsyncStorage.setItem('orders', JSON.stringify(store.orders))
-        // console.log(event)
-        // Calendar.openEventInCalendar(event)
-    }
-
-
-
     return (
         <Pressable
             android_ripple={{ color: '#8b8a8a2c', radius: 250, borderless: false }}
@@ -135,13 +57,15 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                 marginRight: 20,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                // shadowRadius: 20,
-                // shadowColor: "#fff",
-                // shadowOpacity: 0.25,
-                // shadowOffset: {
-                //     height: 100,
-                //     width: 100
-                // },
+
+                //ios
+                shadowRadius: 20,
+                shadowColor: "#fff",
+                shadowOpacity: 0.25,
+                shadowOffset: {
+                    height: 100,
+                    width: 100
+                },
                 elevation: 1
             }}
             onPress={() => navigation.navigate('OrderDetailsScreen', {
@@ -192,9 +116,9 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index, openCalendarDi
                             alignItems: 'center',
                             justifyContent: "center",
                         }}
-                        onPress={addEventToCalendar}
+                        onPress={()=>{}}
                     >
-                        {item.calendarEventId.length === 0 ?
+                        {!item.callReminder ?
                             (
                                 <View
                                     style={{ width: 56, height: 40, borderRadius: 12, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginRight: 10, marginTop: 20 }}>

@@ -61,21 +61,6 @@ const AddOrderScreen = ({ navigation }: any) => {
         );
     };
 
-    const addEventToCalendar = async (productName: string, ETA: string, orderId: string) => {
-        const id = await createCalendar()
-        // console.log("id: ", id)
-        const event = await Calendar.createEventAsync(id, {
-            title: productName,
-            startDate: new Date(ETA),
-            endDate: new Date(ETA)
-        })
-        store.setCalendarEventId(event, orderId, Date.parse(ETA).toString())
-        return event
-        // await AsyncStorage.setItem('orders', JSON.stringify(store.orders))
-        // console.log(event)
-        // Calendar.openEventInCalendar(event)
-    }
-
     const stringToUUID = (str: string) => {
         if (str === undefined || !str.length)
             str = "" + Math.random() * new Date().getTime() + Math.random();
@@ -139,21 +124,14 @@ const AddOrderScreen = ({ navigation }: any) => {
 
                         const onSubmit = async () => {
 
-                            const addToCal = addToCalendarRef.current.values.add_to_calendar
+                            const callReminder = addToCalendarRef.current.values.callReminder
                             const order = formRef.current.values
 
                             const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
                             const formattedDate = formatDate(order.ETA)
 
-                            // add to calendar
-                            let eventId = ""
-                            if (addToCal) {
-                                eventId = await addEventToCalendar(order.productName, formattedDate, orderId)
-                            }
-
-
+                            order.callReminder =  callReminder
                             order.orderId = orderId
-                            order.calendarEventId = eventId
                             order.ETA = formattedDate
 
                             database()
@@ -196,7 +174,6 @@ const AddOrderScreen = ({ navigation }: any) => {
                         productLink: "",
                         totalPrice: "",
                         from: "",
-                        // calendarEventId: "",
                     }}
                     onSubmit={() => { }}
                     innerRef={formRef}
@@ -370,20 +347,19 @@ const AddOrderScreen = ({ navigation }: any) => {
                     )}
                 </Formik>
             </KeyboardAwareScrollView>
-            {/* <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', height: 70 }}>
-                <View style={{ overflow: 'hidden', backgroundColor: "#8b8a8a2c", width: "100%" }}> */}
+
             <Formik
                 initialValues={{
-                    add_to_calendar: false
+                    callReminder: false
                 }}
                 onSubmit={() => { }}
                 innerRef={addToCalendarRef}
             >
-                {({ handleChange, handleSubmit, values, setFieldValue }) => (
+                {({  values, setFieldValue }) => (
                     <SwitchGroup
                         label="Add to Calendar"
-                        toggleStatus={values.add_to_calendar}
-                        onValueChange={(value: boolean) => setFieldValue('add_to_calendar', value)}
+                        toggleStatus={values.callReminder}
+                        onValueChange={(value: boolean) => setFieldValue('callReminder', value)}
                         bgColor="#333333"
                         height={75}
                     />)}

@@ -3,14 +3,10 @@ import { observer } from 'mobx-react'
 import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Pressable, StatusBar, TouchableOpacity, Linking, ToastAndroid } from 'react-native'
 import Image from 'react-native-ui-lib/image'
-import { Order } from '../../../constants/Types/OrderTypes'
-import { createCalendar } from '../../components/OrderItem'
-import * as Calendar from 'expo-calendar'
 import store from '../../store/store'
 import { sensitiveData } from '../../../constants/sen_data'
 
 import ImageColors from 'react-native-image-colors'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Feather } from '@expo/vector-icons'
 import Delivered from '../../components/Delivered'
@@ -69,12 +65,6 @@ const OrderDetailsScreen = observer((props: any) => {
         }
     }
 
-    const removeEventFromCalendar = async (eventid: string) => {
-        await Calendar.deleteEventAsync(eventid)
-        //update orders by setting calendarEventId to ""
-        console.log("Item deleted")
-
-    }
 
 
     const checkFlipkartDeliveryStatus = async (productName: string) => {
@@ -116,19 +106,6 @@ const OrderDetailsScreen = observer((props: any) => {
         }
     }, [item])
 
-    const addEventToCalendar = async () => {
-        const id = await createCalendar()
-        // console.log("id: ", id)
-        const event = await Calendar.createEventAsync(id, {
-            title: item.productName,
-            startDate: new Date(item.ETA),
-            endDate: new Date(item.ETA)
-        })
-        store.setCalendarEventId(event, item.orderId, Date.parse(item.ETA).toString())
-        // await AsyncStorage.setItem('orders', JSON.stringify(store.orders))
-        // console.log(event)
-        // Calendar.openEventInCalendar(event)
-    }
 
 
     return (
@@ -202,10 +179,10 @@ const OrderDetailsScreen = observer((props: any) => {
             </ScrollView>
             <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: primaryColor, height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
-                onPress={item.calendarEventId.length === 0 ? addEventToCalendar : () => removeEventFromCalendar(item.calendarEventId)}>
+                onPress={() => { }}>
 
                 {
-                    item.calendarEventId.length === 0 ?
+                    !item.callReminder ?
                         <View style={{ flexDirection: 'row', width: '100%', height: 70, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}>
                             {/* <Image source={require('../../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} /> */}
                             <MaterialCommunityIcons name="bell-ring" size={24} color="#fff" style={{ marginEnd: 10 }} />

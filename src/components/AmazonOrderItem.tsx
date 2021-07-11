@@ -1,87 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { View, Text, Pressable, Linking, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
-import { Image, Dialog } from 'react-native-ui-lib'
-import { AmazonOrder, Order } from '../../constants/Types/OrderTypes'
+import { AmazonOrder } from '../../constants/Types/OrderTypes'
 
-import * as Calendar from 'expo-calendar';
 import { useNavigation } from '@react-navigation/native';
-import store from '../store/store';
 import { observer } from 'mobx-react';
-import { sensitiveData } from '../../constants/sen_data';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
 
 //BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
 
-export const getDefaultCalendarSource = async () => {
-    const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-    const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
-    return defaultCalendars[0].source;
-}
-
-export const createCalendar = async () => {
-    const defaultCalendarSource =
-        Platform.OS === 'ios'
-            ? await getDefaultCalendarSource()
-            : { isLocalAccount: true, name: 'Woosh' };
-    const newCalendarID = await Calendar.createCalendarAsync({
-        title: 'Expo Calendar',
-        color: 'blue',
-        entityType: Calendar.EntityTypes.EVENT,
-        sourceId: defaultCalendarSource.id,
-        source: defaultCalendarSource,
-        name: 'internalCalendarName',
-        ownerAccount: 'personal',
-        accessLevel: Calendar.CalendarAccessLevel.OWNER,
-    });
-    return newCalendarID
-}
-
-
 
 const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) => {
     const navigation = useNavigation()
-
-    const [calendarId, setCalendarId] = useState('')
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
-
-    // const formattedPrice = new Intl.NumberFormat('en-IN', {
-    //     style: 'currency',
-    //     currency: 'INR'
-    // }).format(parseInt(item.totalPrice))
-
-    useEffect(() => {
-        (async () => {
-            const { status } = await Calendar.requestCalendarPermissionsAsync();
-            if (status === 'granted') {
-            }
-        })();
-    }, []);
-
-
-    const addEventToCalendar = async () => {
-        const id = await createCalendar()
-        console.log("id: ", id)
-        console.log('Date:', new Date(item.ETA))
-
-        const event = await Calendar.createEventAsync(id, {
-            title: item.orderNumber,
-            startDate: new Date((item.ETA)),
-            endDate: new Date((item.ETA))
-        })
-
-        // database()
-        //     .ref(`/users/${store.loginCredentials.uid}/calendar_event_ids`)
-        //     .set({
-
-        //     })
-        //     .then(() => console.log('Data set.'));
-
-        store.setCalendarEventId(event, item.orderId, Date.parse(item.ETA).toString())
-        // await AsyncStorage.setItem('orders', JSON.stringify(store.orders))
-        // console.log(event)
-        // Calendar.openEventInCalendar(event)
-    }
 
     return (
         <Pressable
@@ -98,13 +29,15 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                 marginRight: 20,
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                // shadowRadius: 20,
-                // shadowColor: "#fff",
-                // shadowOpacity: 0.25,
-                // shadowOffset: {
-                //     height: 100,
-                //     width: 100
-                // },
+
+                //ios
+                shadowRadius: 20,
+                shadowColor: "#fff",
+                shadowOpacity: 0.25,
+                shadowOffset: {
+                    height: 100,
+                    width: 100
+                },
                 elevation: 1
             }}
             onPress={() => navigation.navigate('AmazonOrderDetailsScreen', {
@@ -112,19 +45,6 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
             })}
             key={index}
         >
-            {/* <Image
-                source={{ uri: "" }}
-                style={{
-                    height: 80,
-                    width: 80,
-                    marginStart: 8,
-                    borderRadius: 5,
-                    // flex: 1,
-                    backgroundColor: "#fff",
-                    overflow: 'hidden',
-                }}
-            // resizeMode="contain"
-            /> */}
             <View style={{ flex: 1, marginLeft: 20 }}>
                 <View style={{ flexDirection: 'row', width: '100%', marginTop: 10 }}>
                     <Text style={{
@@ -155,9 +75,9 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                             alignItems: 'center',
                             justifyContent: "center",
                         }}
-                        onPress={addEventToCalendar}
+                        onPress={() => { }}
                     >
-                        {item.calendarEventId.length === 0 ?
+                        {!item.callReminder ?
                             (
                                 <View
                                     style={{ width: 56, height: 40, borderRadius: 12, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginRight: 10, marginTop: 20 }}>

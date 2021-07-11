@@ -20,7 +20,7 @@ export type Order = {
   productLink?: string;
   totalPrice: string;
   from: string;
-  calendarEventId: string;
+  callReminder: boolean;
   //   totalDeliveryCharges?: string;
 };
 
@@ -43,5 +43,5 @@ export type AmazonOrder = {
   delivery_address: string;
   invoiceLink: string;
   orderPreviewLink: string;
-  calendarEventId: string;
+  callReminder: boolean;
 };
