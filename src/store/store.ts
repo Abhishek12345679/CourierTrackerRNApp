@@ -140,6 +140,7 @@ const store = types
     removeUserInfo() {
       applySnapshot(self.userInfo, {});
     },
+
     updateSettings: flow(function* updateSettings(values: settingsType) {
       try {
         self.settings = values;
@@ -187,6 +188,9 @@ const store = types
     removeOrders() {
       applySnapshot(self.orders, []);
     },
+    // TODO: toggle ((bool)) callReminder
+    // others
+
     setLoginCredentials(credentials: loginCredentialsType) {
       self.loginCredentials = credentials;
     },
@@ -212,6 +216,26 @@ const store = types
         }
       });
     },
+  }))
+  .actions((self) => ({
+    toggleCallReminder: flow(function* toggleCallReminder(
+      orderId: string,
+      eta: string,
+    ) {
+      console.log({orderId, eta});
+      self.orders.map((order) => {
+        console.log(parseInt(order.EstimatedDeliveryTime));
+        if (parseInt(order.EstimatedDeliveryTime) === new Date(eta).getTime()) {
+          order.orderItems.map((item) => {
+            if (item.orderId === orderId) {
+              item.callReminder = !item.callReminder;
+              console.log('reminder set');
+            }
+          });
+        }
+      });
+      yield self.saveOrdersLocally(self.orders);
+    }),
   }))
   .create({});
 

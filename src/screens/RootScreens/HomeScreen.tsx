@@ -235,7 +235,6 @@ const HomeScreen: React.FC = observer((props: any) => {
             item={item}
             index={index}
             separators={separators}
-            openCalendarDialog={() => { setVisible(true) }}
             goToOverview={() => props.navigation.navigate("ETAOverview", {
                 ETAList: store.orders.map((data) => data.EstimatedDeliveryTime)
             })}
@@ -336,12 +335,12 @@ const HomeScreen: React.FC = observer((props: any) => {
                 if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
                     await getOrders()
                     await fetchUserInfo()
-                    await initiateNotifications()
+                    // await initiateNotifications()
 
                 } else {
                     await store.saveOrders(JSON.parse(ordersInAsyncStorage!))
                     await store.saveAmazonOrders(JSON.parse(amazonOrdersInAsyncStorage!))
-                    await initiateNotifications()
+                    // await initiateNotifications()
                 }
             }
         }

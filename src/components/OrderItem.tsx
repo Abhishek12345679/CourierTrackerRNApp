@@ -13,6 +13,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 //BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
 
 const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
+    console.log(item)
     const navigation = useNavigation()
 
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
@@ -116,7 +117,9 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                             alignItems: 'center',
                             justifyContent: "center",
                         }}
-                        onPress={()=>{}}
+                        onPress={async () => {
+                            await store.toggleCallReminder(item.orderId, item.ETA)
+                        }}
                     >
                         {!item.callReminder ?
                             (
