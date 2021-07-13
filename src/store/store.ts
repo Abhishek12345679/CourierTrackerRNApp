@@ -188,6 +188,9 @@ const store = types
     removeOrders() {
       applySnapshot(self.orders, []);
     },
+    removeAmazonOrders() {
+      applySnapshot(self.amazonOrders, []);
+    },
     // TODO: toggle ((bool)) callReminder
     // others
 

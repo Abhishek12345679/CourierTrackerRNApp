@@ -13,7 +13,6 @@ import database from '@react-native-firebase/database';
 import store from '../../store/store'
 
 import * as Calendar from 'expo-calendar'
-import { createCalendar } from '../../components/OrderItem'
 
 import storage from '@react-native-firebase/storage';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
@@ -130,7 +129,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                             const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
                             const formattedDate = formatDate(order.ETA)
 
-                            order.callReminder =  callReminder
+                            order.callReminder = callReminder
                             order.orderId = orderId
                             order.ETA = formattedDate
 
@@ -298,6 +297,9 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 onChangeText={handleChange('sellerName')}
                             />
                             <Input
+                                onBlur={() => {
+                                    setFieldValue('totalPrice', (parseInt(values.quantity) * parseFloat(values.productPrice)).toString())
+                                }}
                                 autoCorrect={false}
                                 autoCapitalize="none"
                                 label="Quantity"
@@ -355,7 +357,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                 onSubmit={() => { }}
                 innerRef={addToCalendarRef}
             >
-                {({  values, setFieldValue }) => (
+                {({ values, setFieldValue }) => (
                     <SwitchGroup
                         label="Add to Calendar"
                         toggleStatus={values.callReminder}

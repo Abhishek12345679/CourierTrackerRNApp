@@ -11,6 +11,15 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { Feather } from '@expo/vector-icons'
 import Delivered from '../../components/Delivered'
 
+export const copyToClipboard = (orderNumber: string) => {
+    Clipboard.setString(orderNumber);
+    ToastAndroid.showWithGravity(
+        `Copied Order Number\n${orderNumber}`,
+        ToastAndroid.SHORT,
+        ToastAndroid.TOP
+    );
+};
+
 const OrderDetailsScreen = observer((props: any) => {
 
 
@@ -37,15 +46,6 @@ const OrderDetailsScreen = observer((props: any) => {
         }).format(parseInt(price.toString()))
 
     }
-
-    const copyToClipboard = () => {
-        Clipboard.setString(item.orderNumber);
-        ToastAndroid.showWithGravity(
-            `Copied Order Number\n${item.orderNumber}`,
-            ToastAndroid.SHORT,
-            ToastAndroid.TOP
-        );
-    };
 
 
     const extractColorsFromImage = async () => {
@@ -137,7 +137,7 @@ const OrderDetailsScreen = observer((props: any) => {
                         <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'gotham-block', fontSize: 13 }}>Order Number</Text>
                         <Text style={{ color: "#fff", marginStart: 5, fontSize: 22, fontFamily: "gotham-bold" }}>{item.orderNumber}</Text>
                     </View>
-                    <TouchableOpacity onPress={copyToClipboard} style={{ height: 30, width: 30, justifyContent: "center", alignItems: "center", backgroundColor: "#eaf0f0", borderRadius: 15 }}>
+                    <TouchableOpacity onPress={() => { copyToClipboard(item.orderNumber) }} style={{ height: 30, width: 30, justifyContent: "center", alignItems: "center", backgroundColor: "#eaf0f0", borderRadius: 15 }}>
                         <Ionicons name="copy" size={22} color="#000" />
                     </TouchableOpacity>
                 </View>

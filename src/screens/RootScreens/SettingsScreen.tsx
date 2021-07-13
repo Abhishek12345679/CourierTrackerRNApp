@@ -23,9 +23,14 @@ const SettingsScreen: React.FC = observer((props: any) => {
         store.resetLoginCredentials()
         store.resetCredentials()
         store.removeOrders()
-        // store.removeAmazonOrders()
+        store.removeAmazonOrders()
+        store.removeUserInfo()
+
+
         await AsyncStorage.removeItem('loginCredentials')
         await AsyncStorage.removeItem('credentials')
+        await AsyncStorage.removeItem('orders')
+        await AsyncStorage.removeItem('amazonOrders')
     }
 
 
@@ -35,6 +40,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
         store.removeOrders()
         store.removeUserInfo()
         await AsyncStorage.removeItem('orders')
+        await AsyncStorage.removeItem('amazonOrders')
         await AsyncStorage.removeItem('credentials')
         setTimeout(() => {
             setSigningOut(false)

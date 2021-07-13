@@ -78,7 +78,7 @@ export const RootNavigator = () => {
                 name="AmazonOrderDetailsScreen"
                 component={AmazonOrderDetailsScreen}
                 options={{
-                    headerShown: true,
+                    headerShown: false,
                     headerTitleStyle: {
                         color: "#FFF",
                         fontWeight: 'bold',

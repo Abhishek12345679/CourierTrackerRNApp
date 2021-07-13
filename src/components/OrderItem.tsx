@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Pressable, Linking, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
-import { Image } from 'react-native-ui-lib'
+import { View, Text, Pressable, Linking, ListRenderItem, Platform, TouchableOpacity, Image } from 'react-native'
+// import { Image } from 'react-native-ui-lib'
 import { Order } from '../../constants/Types/OrderTypes'
 
 import { useNavigation } from '@react-navigation/native';

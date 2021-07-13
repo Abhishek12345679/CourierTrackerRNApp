@@ -67,7 +67,7 @@ const AuthUrlScreen = observer((props: any) => {
     const getAmazonOrders = async (auth: Credentials) => {
         const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
         const AmazonOrders = await AZResponse.json()
-        console.log("Amazon Orders", JSON.stringify(AmazonOrders.amazonOrders, null, 2))
+        // console.log("Amazon Orders", JSON.stringify(AmazonOrders.amazonOrders, null, 2))
         return AmazonOrders.amazonOrders
     }
 
@@ -101,6 +101,10 @@ const AuthUrlScreen = observer((props: any) => {
             .once('value')
             .then((snapshot) => {
                 const orders = snapshot.val()
+
+                if (!orders) {
+                    return []
+                }
                 const newOrders = Object.entries(orders).map(([_, value]) => value)
                 return newOrders
             });
@@ -194,7 +198,7 @@ const AuthUrlScreen = observer((props: any) => {
     const onMessage = async (data: any) => {
 
         const authData = data.nativeEvent.data
-        // console.log("from server: ", authData)
+        console.log("from server: ", authData)
         try {
             await setCredentials(authData)
             await loadOrders()

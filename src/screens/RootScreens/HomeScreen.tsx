@@ -363,7 +363,8 @@ const HomeScreen: React.FC = observer((props: any) => {
     }
 
 
-    if (store.orders.length === 0 && store.amazonOrders.length === 0 && !gmailAccessStatus)
+    if (store.orders.length === 0 && !gmailAccessStatus)
+
         return (
             <View style={{ flex: 1, backgroundColor: '#121212' }}>
                 {
@@ -375,7 +376,7 @@ const HomeScreen: React.FC = observer((props: any) => {
             </View>
         )
 
-
+    console.log(gmailAccessStatus)
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
             <StatusBar barStyle="light-content" />
@@ -405,6 +406,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                         </View> :
                         store.orders.length > 0 ?
                             <FlatList
+
                                 // ListHeaderComponent={<Button title="notify me" onPress={callNotification} />}
                                 showsVerticalScrollIndicator={false}
                                 style={{ backgroundColor: '#121212' }}
@@ -412,7 +414,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                                     justifyContent: 'center'
                                 }}
                                 keyExtractor={item => item.EstimatedDeliveryTime}
-                                data={store.orders}
+                                data={store.orders.slice().reverse()}
                                 renderItem={renderOrderItem}
                                 refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
                                 onRefresh={() => {
@@ -444,7 +446,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                                     justifyContent: 'center'
                                 }}
                                 keyExtractor={item => item.EstimatedDeliveryTime}
-                                data={store.amazonOrders}
+                                data={store.amazonOrders.slice().reverse()}
                                 renderItem={renderAmazonOrderItem}
                                 refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
                                 onRefresh={() => {
