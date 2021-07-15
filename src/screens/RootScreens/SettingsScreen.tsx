@@ -267,7 +267,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
                 >
                     <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20, borderWidth: 0 }}>
                         <Text
-                            style={{ fontFamily: 'gotham-bold', fontSize: 15 }}>
+                            style={{ fontFamily: 'segoe-bold', fontSize: 15 }}>
                             Are you sure you want to log out?
                         </Text>
                     </View>

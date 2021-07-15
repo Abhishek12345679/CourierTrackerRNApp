@@ -60,12 +60,12 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                 alignItems: 'center',
 
                 //ios
-                shadowRadius: 20,
-                shadowColor: "#fff",
-                shadowOpacity: 0.25,
+                shadowRadius: 10,
+                shadowColor: "#202020ed",
+                shadowOpacity: 0.2,
                 shadowOffset: {
-                    height: 100,
-                    width: 100
+                    height: 10,
+                    width: 10
                 },
                 elevation: 1
             }}
@@ -90,13 +90,14 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
             <View style={{ flex: 4 }}>
                 <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
                     <View style={{ paddingHorizontal: 20, width: '65%' }}>
-                        <Text style={{
-                            fontFamily: 'gotham-normal',
-                            marginBottom: 5,
-                            color: '#cecece',
-                            fontSize: 17,
-                            width: '100%'
-                        }}>
+                        <Text
+                            style={{
+                                fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal',
+                                marginBottom: 5,
+                                color: '#cecece',
+                                fontSize: 17,
+                                width: '100%'
+                            }}>
                             {item.productName.slice(0, 50)}{item.productName.length > 50 && "..."}
                         </Text>
                         <Text style={{ flexShrink: 1, color: '#bfc4c1', fontFamily: 'gotham-black', fontSize: 20 }}>

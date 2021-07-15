@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Platform } from 'react-native'
 
 const packages = require('./../../../package.json')
 
@@ -23,13 +23,13 @@ const OpenSourceLicensesScreen = () => {
                 <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
                     {depList.map((dep, index) => (
                         <View style={{ width: '100%', justifyContent: "space-between", padding: 20 }} key={index}>
-                            <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, fontFamily: "gotham-bold", marginBottom: 10 }}>{dep.name}</Text>
-                            <Text style={{ color: "#fff", marginStart: 5, fontSize: 15, fontFamily: "gotham-normal" }}>{dep.version}</Text>
+                            <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, marginBottom: 10 }}>{dep.name}</Text>
+                            <Text style={{ color: "#fff", marginStart: 5, fontSize: 15, fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', }}>{dep.version}</Text>
                         </View>
                     ))}
                 </View>
             </View>
-        </ScrollView>
+        </ScrollView >
     )
 }
 

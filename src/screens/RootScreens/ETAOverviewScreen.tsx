@@ -1,6 +1,6 @@
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import React from 'react'
-import { Pressable } from 'react-native';
+import { Platform, Pressable } from 'react-native';
 import { View, Text, FlatList } from 'react-native'
 
 
@@ -42,8 +42,8 @@ const ETAOverviewScreen = (props: any) => {
                 data={ETAList}
                 renderItem={(item) => (
                     <View style={{ backgroundColor: "#fff", margin: 40, width: 70, height: 70, justifyContent: 'center', alignItems: 'center', borderRadius: 35, }}>
-                        <Text style={{ color: "#000", fontSize: 20, fontFamily: 'gotham-bold' }}>{new Date(parseInt(item.item)).getDate()}</Text>
-                        <Text style={{ color: "#000", fontSize: 20, fontFamily: 'gotham-normal' }}>{months[new Date(parseInt(item.item)).getMonth()]}</Text>
+                        <Text style={{ color: "#000", fontSize: 20, fontFamily: 'segoe-bold' }}>{new Date(parseInt(item.item)).getDate()}</Text>
+                        <Text style={{ color: "#000", fontSize: 20, fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', }}>{months[new Date(parseInt(item.item)).getMonth()]}</Text>
                     </View>
                 )}
                 numColumns={3}

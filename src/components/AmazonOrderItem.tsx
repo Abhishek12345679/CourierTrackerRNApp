@@ -31,14 +31,14 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                 alignItems: 'center',
 
                 //ios
-                shadowRadius: 20,
-                shadowColor: "#fff",
-                shadowOpacity: 0.25,
-                shadowOffset: {
-                    height: 100,
-                    width: 100
-                },
-                elevation: 1
+                // shadowRadius: 20,
+                // shadowColor: "#fff",
+                // shadowOpacity: 0.25,
+                // shadowOffset: {
+                //     height: 100,
+                //     width: 100
+                // },
+                // elevation: 1
             }}
             onPress={() => navigation.navigate('AmazonOrderDetailsScreen', {
                 item: item
@@ -48,13 +48,14 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
             <View style={{ flex: 4 }}>
                 <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
                     <View style={{ paddingHorizontal: 20, width: '65%' }}>
-                        <Text style={{
-                            fontFamily: 'gotham-normal',
-                            marginBottom: 5,
-                            color: '#cecece',
-                            fontSize: 17,
-                            width: '100%'
-                        }}>
+                        <Text
+                            style={{
+                                fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal',
+                                marginBottom: 5,
+                                color: '#cecece',
+                                fontSize: 17,
+                                width: '100%'
+                            }}>
                             {item.orderNumber}
                         </Text>
                         <Text style={{ flexShrink: 1, color: '#bfc4c1', fontFamily: 'gotham-black', fontSize: 20 }}>

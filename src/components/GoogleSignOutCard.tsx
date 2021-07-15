@@ -40,7 +40,7 @@ const GoogleSignOutCard = (props: Props) => {
                 {!props.loading ?
                     <View style={{ flex: 1, flexDirection: 'row', justifyContent: "space-evenly", alignItems: 'center', width: '100%' }}>
                         <Image source={require('../Assets/Icons/google.png')} style={{ height: 24, width: 24, marginEnd: 20 }} />
-                        <Text style={{ fontFamily: 'gotham-bold', color: '#ccc' }}>Sign out of Google</Text>
+                        <Text style={{ fontFamily: 'segoe-bold', color: '#ccc' }}>Sign out of Google</Text>
                     </View> :
                     <ActivityIndicator color="#fff" size="small" />
                 }

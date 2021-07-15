@@ -27,7 +27,7 @@ const App = () => {
       "gotham-black": require("./constants/Fonts/Gotham/Gotham-Black.otf"),
       "gotham-light": require("./constants/Fonts/Gotham/Gotham-Light.otf"),
       "gotham-normal": require("./constants/Fonts/Gotham/GothamBook.ttf"),
-      "gotham-bold": require("./constants/Fonts/Gotham/GothamBold.ttf"),
+      "segoe-bold": require("./constants/Fonts/Gotham/GothamBold.ttf"),
     });
   };
 
