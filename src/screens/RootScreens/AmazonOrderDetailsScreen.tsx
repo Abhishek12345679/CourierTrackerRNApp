@@ -17,7 +17,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }) => {
         const checkAmazonDeliveryStatus = async () => {
             const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkAmazonDeliveryStatus?tokens=${JSON.stringify(store.googleCredentials)}&newer_than=${store.settings.orders_newer_than}`)
             const delStat = await statusResponse.json()
-            console.log(delStat.deliveredOrders)
+            // console.log(delStat.deliveredOrders)
 
             delStat.deliveredOrders.map((orderNumber: string) => {
                 if (orderNumber === item.orderNumber)
@@ -97,7 +97,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }) => {
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: "#000", height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={
                     async () => {
-                        await store.toggleCallReminder(item.orderId, item.ETA)
+                        await store.toggleAmazonCallReminder(item.orderId, item.ETA)
                     }
                 }>
 

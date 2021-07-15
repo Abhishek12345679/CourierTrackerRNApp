@@ -82,25 +82,27 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                     marginStart: 8,
                     borderRadius: 5,
                     // flex: 1,
-                    backgroundColor: "#fff",
+                    backgroundColor: "#000",
                     overflow: 'hidden',
                 }}
             // resizeMode="contain"
             />
             <View style={{ flex: 4 }}>
-                <View style={{ flexDirection: 'row', width: '100%', marginTop: 10 }}>
-                    <Text style={{
-                        // fontWeight: 'bold',
-                        // fontFamily: 'gotham-normal',
-                        marginBottom: 5,
-                        color: '#cecece',
-                        marginEnd: 10,
-                        marginStart: 10,
-                        fontSize: 17,
-                        width: '75%'
-                    }}>
-                        {item.productName.slice(0, 50)}{item.productName.length > 50 && "..."}
-                    </Text>
+                <View style={{ flexDirection: 'row', width: '100%', alignItems: 'center' }}>
+                    <View style={{ paddingHorizontal: 20, width: '65%' }}>
+                        <Text style={{
+                            fontFamily: 'gotham-normal',
+                            marginBottom: 5,
+                            color: '#cecece',
+                            fontSize: 17,
+                            width: '100%'
+                        }}>
+                            {item.productName.slice(0, 50)}{item.productName.length > 50 && "..."}
+                        </Text>
+                        <Text style={{ flexShrink: 1, color: '#bfc4c1', fontFamily: 'gotham-black', fontSize: 20 }}>
+                            {formattedPrice}
+                        </Text>
+                    </View>
                     <Pressable
                         android_ripple={{
                             color: '#000',
@@ -109,54 +111,39 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                         }}
                         style={{
                             flexDirection: 'row',
-                            width: 35,
-                            height: 35,
+                            width: '35%',
+                            // height: 35,
                             // backgroundColor: "#d8d6d6",
-                            elevation: 1,
-                            borderRadius: 18,
-                            alignItems: 'center',
+                            alignItems: 'flex-end',
                             justifyContent: "center",
                         }}
                         onPress={async () => {
                             await store.toggleCallReminder(item.orderId, item.ETA)
                         }}
                     >
-                        {!item.callReminder ?
-                            (
-                                <View
-                                    style={{ width: 56, height: 40, borderRadius: 12, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginRight: 10, marginTop: 20 }}>
-                                    <MaterialCommunityIcons name="bell-ring-outline" size={24} />
-                                </View>
-
-                            ) :
-                            (
-                                <View
-                                    style={{ width: 30, height: 30, borderRadius: 20, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginRight: 10, marginTop: 20 }}
-                                >
-                                    <MaterialCommunityIcons name="bell-ring" size={24} />
-                                </View>
-                            )}
+                        <View
+                            style={{
+                                width: "70%",
+                                borderRadius: 18,
+                                alignItems: 'center',
+                                justifyContent: "center",
+                                height: 60,
+                                backgroundColor: !item.callReminder ? "#424141" : "#239b56"
+                            }}>
+                            {!item.callReminder ?
+                                (
+                                    <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#c0bdbd" />
+                                ) :
+                                (
+                                    <MaterialCommunityIcons name="bell-ring" size={24} color="#000" />
+                                )}
+                        </View>
 
                     </Pressable>
                 </View>
-                <View
-                    style={{
-                        flexDirection: "row",
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        paddingHorizontal: 10,
-                        marginTop: 5
-                    }}>
-                    <View style={{ height: 35, marginBottom: 5, justifyContent: 'center', alignItems: 'center', borderRadius: 5, marginTop: 5, marginStart: 5, flexDirection: 'row' }}>
-                        <Text style={{ flexShrink: 1, color: '#bfc4c1', fontFamily: 'gotham-black', fontSize: 20 }}>
-                            {formattedPrice}
-                        </Text>
-                    </View>
-                </View>
             </View>
 
-        </Pressable >
-
+        </Pressable>
     )
 })
 

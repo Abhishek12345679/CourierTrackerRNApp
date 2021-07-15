@@ -239,6 +239,24 @@ const store = types
       });
       yield self.saveOrdersLocally(self.orders);
     }),
+    toggleAmazonCallReminder: flow(function* toggleAmazonCallReminder(
+      orderId: string,
+      eta: string,
+    ) {
+      console.log({orderId, eta});
+      self.amazonOrders.map((order) => {
+        console.log(parseInt(order.EstimatedDeliveryTime));
+        if (parseInt(order.EstimatedDeliveryTime) === new Date(eta).getTime()) {
+          order.orderItems.map((item) => {
+            if (item.orderId === orderId) {
+              item.callReminder = !item.callReminder;
+              console.log('reminder set');
+            }
+          });
+        }
+      });
+      yield self.saveOrdersLocally(self.orders);
+    }),
   }))
   .create({});
 
