@@ -94,7 +94,7 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                                     <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#c0bdbd" />
                                 ) :
                                 (
-                                    <MaterialCommunityIcons name="bell-ring" size={24} color="#000" />
+                                    <MaterialCommunityIcons name="bell-ring" size={24} color="#c0bdbd" />
                                 )}
                         </View>
 

@@ -18,6 +18,8 @@ const SettingsScreen: React.FC = observer((props: any) => {
     const [signingOut, setSigningOut] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [visible, setVisible] = useState(false)
+    const [editNewerThan, setEditNewerThan] = useState(false)
+
 
     const logout = async () => {
         store.resetLoginCredentials()
@@ -49,7 +51,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
     }
 
     const switches = [
-        { label: "show delivered items" },
+        { label: "Remind me for all orders" },
         { label: "allow fetching new orders" },
         { label: "dark mode" },
         { label: "show archived orders" },
@@ -156,10 +158,11 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     <Formik
                         initialValues={{
                             orders_newer_than: store.settings.orders_newer_than,
-                            show_delivered_items: store.settings.show_delivered_items,
+                            // show_delivered_items: store.settings.show_delivered_items,
+                            remind_all: store.settings.remind_all,
                             allow_fetching_new_orders: store.settings.allow_fetching_new_orders,
                             dark_mode: store.settings.dark_mode,
-                            show_archived_items: store.settings.show_archived_items,
+                            // show_archived_items: store.settings.show_archived_items,
                         }}
                         onSubmit={() => { }}
                         innerRef={switchesRef}
@@ -183,44 +186,81 @@ const SettingsScreen: React.FC = observer((props: any) => {
                                         style={{ flexDirection: 'row', width: '100%', height: 100, justifyContent: 'space-between', alignItems: 'center', paddingStart: 30, paddingEnd: 30 }}>
                                         <Text style={{ color: '#fff', fontSize: 18 }}>show orders newer than</Text>
                                         {/* <Switch value={props.toggleStatus} onValueChange={props.onValueChange} /> */}
-                                        <Input
-                                            keyboardType="numeric"
-                                            maxLength={2}
-
-                                            value={values.orders_newer_than}
-                                            onChangeText={(value) => {
-                                                const regex = /^(0*[1-9][0-9]*(\.[0-9]*)?|0*\.[0-9]*[1-9][0-9]*)$/;
-                                                if (!value || regex.test(value.toString())) {
-                                                    if (parseInt(value) > 0 || value === undefined || value === "") {
-                                                        setFieldValue("orders_newer_than", value);
-                                                    }
-                                                }
-                                            }}
-
-                                            textStyle={{ width: 40, height: 20, color: "#fff", fontSize: 18 }}
-                                            style={{ marginLeft: 20, backgroundColor: "#4d4b4b", borderRadius: 10, borderWidth: 0, }}
-                                            accessoryRight={() => (
-                                                <View style={{ width: 20, height: 20, marginRight: 0, justifyContent: "center", alignItems: 'center' }}>
-                                                    <AntDesign name="caretup" size={14} color="#fff" onPress={() => {
-                                                        if (parseInt(values.orders_newer_than) + 7 < 100) {
-                                                            setFieldValue('orders_newer_than', (parseInt(values.orders_newer_than) + 7).toString())
-                                                        }
-                                                    }} />
-                                                    <AntDesign name="caretdown" size={14} color="#fff" onPress={() => {
-                                                        if (parseInt(values.orders_newer_than) - 7 > 0) {
-                                                            setFieldValue('orders_newer_than', (parseInt(values.orders_newer_than) - 7).toString())
-
-                                                        }
-                                                    }} />
-                                                </View>
-                                            )}
-                                        />
+                                        <TouchableOpacity
+                                            onPress={() => setEditNewerThan(true)}
+                                            style={{ backgroundColor: "#4d4b4b", borderRadius: 5, borderWidth: 0, width: 60, height: 30, alignItems: 'center', justifyContent: 'center' }}
+                                        >
+                                            <Text style={{ color: "#fff", fontSize: 15, fontFamily: 'gotham-bold' }}>{values.orders_newer_than}d</Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
-                                {/* <SettingsListItem bgColor="#ffffff00" height={70} label={switches[0].label} toggleStatus={values.show_delivered_items} onValueChange={(value: boolean) => setFieldValue('show_delivered_items', value)} /> */}
+                                <SettingsListItem bgColor="#ffffff00" height={70} label={switches[0].label} toggleStatus={values.remind_all} onValueChange={(value: boolean) => setFieldValue('remind_all', value)} />
                                 <SettingsListItem bgColor="#ffffff00" height={70} label={switches[1].label} toggleStatus={values.allow_fetching_new_orders} onValueChange={(value: boolean) => setFieldValue('allow_fetching_new_orders', value)} />
                                 <SettingsListItem disabled={true} bgColor="#ffffff00" height={70} label={switches[2].label} toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', value)} />
                                 {/* <SettingsListItem bgColor="#ffffff00" height={70} label={switches[3].label} toggleStatus={values.show_archived_items} onValueChange={(value: boolean) => setFieldValue('show_archived_items', value)} /> */}
+                                <Modal
+                                    visible={editNewerThan}
+                                    backdropStyle={{ backgroundColor: 'rgba(46, 49, 49, 0.4)', }}
+                                    onBackdropPress={() => setEditNewerThan(false)}
+                                    style={{ width: "80%", height: 150, marginTop: 20 }}
+                                >
+                                    <Card
+                                        style={{
+                                            flex: 1,
+                                            height: 150,
+                                            borderWidth: 0,
+                                            justifyContent: "space-evenly",
+                                            backgroundColor: '#111111',
+                                            elevation: 1
+                                        }}
+                                    >
+                                        <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20, borderWidth: 0 }}>
+                                            <Text
+                                                style={{ fontFamily: 'gotham-bold', fontSize: 15, color: '#fff' }}>
+                                                Display Orders Newer Than
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={{
+                                                flexDirection: 'row',
+                                                width: '100%',
+                                                height: 100,
+                                                alignItems: 'center',
+                                                justifyContent: 'space-evenly',
+                                                borderWidth: 0
+                                            }}>
+                                            <Input
+                                                keyboardType="numeric"
+                                                maxLength={2}
+
+                                                value={values.orders_newer_than}
+                                                onChangeText={(value) => {
+                                                    const regex = /^(0*[1-9][0-9]*(\.[0-9]*)?|0*\.[0-9]*[1-9][0-9]*)$/;
+                                                    if (!value || regex.test(value.toString())) {
+                                                        if (parseInt(value) > 0 || value === undefined || value === "") {
+                                                            setFieldValue("orders_newer_than", value);
+                                                        }
+                                                    }
+                                                }}
+
+                                                textStyle={{ width: 40, height: 20, color: "#fff", fontSize: 20, }}
+                                                style={{ backgroundColor: "#4d4b4b", borderRadius: 0, borderWidth: 0, marginTop: 20, marginBottom: 20, width: '65%' }}
+                                                accessoryRight={() => (
+                                                    <Text style={{ color: "#fff" }}>days</Text>
+                                                )}
+                                            />
+                                            <Button
+                                                appearance="filled"
+                                                onPress={() => {
+                                                    setEditNewerThan(false)
+                                                }}
+
+                                                style={{ height: 30, borderWidth: 0, backgroundColor: '#239b56', width: '25%' }}>
+                                                {evaProps => <Text {...evaProps} style={{ color: '#fff' }}>Save</Text>}
+                                            </Button>
+                                        </View>
+                                    </Card>
+                                </Modal>
                             </>
                         )}
                     </Formik>
@@ -252,9 +292,9 @@ const SettingsScreen: React.FC = observer((props: any) => {
             </Item>
             <Modal
                 visible={visible}
-                backdropStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', }}
+                backdropStyle={{ backgroundColor: 'rgba(46, 49, 49, 0.4)', }}
                 // onBackdropPress={() => setVisible(false)}
-                style={{ width: "80%", height: 150 }}
+                style={{ width: "80%", height: 150, marginTop: 20 }}
             >
                 <Card
                     style={{
@@ -262,12 +302,13 @@ const SettingsScreen: React.FC = observer((props: any) => {
                         height: 100,
                         borderWidth: 0,
                         justifyContent: "space-evenly",
-                        backgroundColor: '#dad8d8'
+                        backgroundColor: '#111111',
+                        elevation: 1
                     }}
                 >
                     <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 20, borderWidth: 0 }}>
                         <Text
-                            style={{ fontFamily: 'segoe-bold', fontSize: 15 }}>
+                            style={{ fontFamily: 'gotham-bold', fontSize: 15, color: '#fff' }}>
                             Are you sure you want to log out?
                         </Text>
                     </View>
@@ -291,6 +332,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     </View>
                 </Card>
             </Modal>
+
         </ScrollView >
     )
 })
