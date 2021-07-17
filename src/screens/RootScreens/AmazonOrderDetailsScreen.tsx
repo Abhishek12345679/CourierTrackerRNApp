@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform } from 'react-native'
 import { sensitiveData } from '../../../constants/sen_data'
 import Delivered from '../../components/Delivered'
+import { callReminder } from '../../helpers/notificationHelpers'
 import store from '../../store/store'
 import { copyToClipboard } from './OrderDetailsScreen'
 
@@ -98,6 +99,8 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }) => {
                 onPress={
                     async () => {
                         await store.toggleAmazonCallReminder(item.orderId, item.ETA)
+                        callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
+
                     }
                 }>
 

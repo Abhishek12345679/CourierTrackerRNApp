@@ -45,46 +45,6 @@ const HomeScreen: React.FC = observer((props: any) => {
         amazon = "amazon",
     }
 
-    const callReminder = (productImageUrl: string, orderNumber: string, ETA: string, orderType: string, productName?: string) => {
-        PushNotification.localNotificationSchedule({
-            title: "Order Delivery Reminder",
-            message: orderType !== "amazon" ? `Your Item ${productName} Order #${orderNumber} is estimated to arrive by ${ETA}` : `Your Order #${orderNumber} is estimated to arrive by ${ETA}`,
-            date: new Date(Date.now() + 10 * 1000),
-            allowWhileIdle: false,
-            priority: 'max',
-
-            /* Android Only Properties */
-            // repeatTime: 1,
-            channelId: 'reminder_channel',
-            smallIcon: productImageUrl,
-            largeIconUrl: productImageUrl,
-            bigLargeIconUrl: productImageUrl,
-            bigPictureUrl: productImageUrl
-        });
-    }
-
-    const initiateNotifications = async () => {
-        const orders = await AsyncStorage.getItem('orders')
-        const amazonOrders = await AsyncStorage.getItem('amazonOrders')
-
-        if (store.orders.length > 0 || store.amazonOrders.length > 0) {
-            console.log("notifications...")
-            store.orders.map((order, i) => {
-                order.orderItems.map((item, i) => {
-                    callReminder(item.productImage, item.orderNumber, item.ETA, item.from, item.productName)
-                })
-            })
-            store.amazonOrders.map((order, i) => {
-                order.orderItems.map((item, i) => {
-                    callReminder("", item.orderNumber, item.ETA, "amazon")
-                })
-            })
-        } else {
-            console.log("No orders")
-        }
-    }
-
-
     useEffect(() => {
         const fetchInfo = async () => {
             fetchUserInfo()

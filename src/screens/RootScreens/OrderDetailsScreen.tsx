@@ -10,6 +10,7 @@ import ImageColors from 'react-native-image-colors'
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Feather } from '@expo/vector-icons'
 import Delivered from '../../components/Delivered'
+import { callReminder } from '../../helpers/notificationHelpers'
 
 export const copyToClipboard = (orderNumber: string) => {
     Clipboard.setString(orderNumber);
@@ -182,6 +183,7 @@ const OrderDetailsScreen = observer((props: any) => {
                 onPress={
                     async () => {
                         await store.toggleCallReminder(item.orderId, item.ETA)
+                        callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
                     }
                 }>
 

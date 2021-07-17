@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { observer } from 'mobx-react'
-import React, { useEffect, useState } from 'react'
-import { View, Text, Image, Platform } from 'react-native'
-import { sensitiveData } from '../../constants/sen_data'
-import { Credentials, Order, OrderList as OrderListType } from '../../constants/Types/OrderTypes'
+import React, { useEffect } from 'react'
+import { View, Text, Platform } from 'react-native'
+import { initiateAllNotifications } from '../helpers/notificationHelpers'
 import store from '../store/store'
+
 
 const SplashScreen = observer(() => {
 
@@ -51,8 +51,14 @@ const SplashScreen = observer(() => {
     }
 
     useEffect(() => {
-        getCredentials()
-        fetchSettings()
+        const startUp = async () => {
+            await getCredentials()
+            await fetchSettings()
+            if (store.settings.remind_all) {
+                await initiateAllNotifications()
+            }
+        }
+        startUp()
     }, [])
 
     return (

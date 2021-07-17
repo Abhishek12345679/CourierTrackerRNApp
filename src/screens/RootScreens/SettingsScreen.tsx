@@ -12,7 +12,7 @@ import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
 import store from '../../store/store'
 
-
+//FIXME: add picker for callreminder settings
 const SettingsScreen: React.FC = observer((props: any) => {
 
     const [signingOut, setSigningOut] = useState(false)

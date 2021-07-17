@@ -8,6 +8,7 @@ import store from '../store/store';
 import { observer } from 'mobx-react';
 import { sensitiveData } from '../../constants/sen_data';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { callReminder } from '../helpers/notificationHelpers';
 
 
 //BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
@@ -120,6 +121,11 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                         }}
                         onPress={async () => {
                             await store.toggleCallReminder(item.orderId, item.ETA)
+                            callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
+                            /**
+                             * FIXME: remove reminder notif call if removed
+                             * https://github.com/zo0r/react-native-push-notification#cancelling-notifications
+                             * */
                         }}
                     >
                         <View

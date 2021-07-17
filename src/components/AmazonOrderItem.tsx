@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { observer } from 'mobx-react';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import store from '../store/store';
+import { callReminder } from '../helpers/notificationHelpers';
 
 
 //BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
@@ -78,6 +79,9 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                         }}
                         onPress={async () => {
                             await store.toggleAmazonCallReminder(item.orderId, item.ETA)
+                            callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
+
+
                         }}
                     >
                         <View
