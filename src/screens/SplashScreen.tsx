@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 import { View, Text, Platform } from 'react-native'
+import PushNotification from 'react-native-push-notification'
 import { initiateAllReminders, initiateSelectedReminders } from '../helpers/notificationHelpers'
 import store from '../store/store'
 
@@ -66,12 +67,14 @@ const SplashScreen = observer(() => {
                     await initiateAllReminders()
                     break;
                 case ReminderFrequency.selected:
+                    PushNotification.cancelAllLocalNotifications()
                     await initiateSelectedReminders()
                     break;
                 case ReminderFrequency.none:
-                    //add code to cancel notifications
+                    PushNotification.cancelAllLocalNotifications()
                     break;
                 default:
+                    console.error("Invalid Case")
                 //add default code
             }
         }

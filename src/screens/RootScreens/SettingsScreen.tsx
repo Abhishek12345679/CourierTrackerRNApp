@@ -12,22 +12,15 @@ import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
 import store from '../../store/store'
 
-// add picker for callreminder settings
 import { Picker } from '@react-native-picker/picker';
 
 export type reminderFrequency = "all" | "selected" | "none"
 
 const SettingsScreen: React.FC = observer((props: any) => {
-
-
     const [signingOut, setSigningOut] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [visible, setVisible] = useState(false)
     const [editNewerThan, setEditNewerThan] = useState(false)
-    const [reminders, setReminders] = useState<reminderFrequency>("selected");
-
-    const pickerRef = useRef();
-
 
     const logout = async () => {
         store.resetLoginCredentials()
@@ -210,7 +203,6 @@ const SettingsScreen: React.FC = observer((props: any) => {
                                         dropdownIconColor="#fff"
                                         style={{ width: 50 }}
                                         mode="dropdown"
-                                        ref={pickerRef}
                                         selectedValue={values.reminder_frequency}
                                         onValueChange={(itemValue, itemIndex) =>
                                             setFieldValue('reminder_frequency', itemValue)
@@ -358,7 +350,6 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     </View>
                 </Card>
             </Modal>
-
         </ScrollView >
     )
 })

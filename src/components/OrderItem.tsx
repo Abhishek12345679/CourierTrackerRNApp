@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { sensitiveData } from '../../constants/sen_data';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { callReminder } from '../helpers/notificationHelpers';
+import PushNotification from 'react-native-push-notification';
 
 
 //BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
@@ -120,13 +121,12 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                             justifyContent: "center",
                         }}
                         onPress={async () => {
-                            /**
-                             * FIXME: remove reminder notif call if removed
-                             * https://github.com/zo0r/react-native-push-notification#cancelling-notifications
-                             * */
-                            if (store.settings.reminder_frequency !== "none") {
-                                await store.toggleCallReminder(item.orderId, item.ETA)
+                            if (item.reminder_frequency === "none") {
+                                await store.toggleCallReminder(item.orderId, item.ETA, "selected")
                                 callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
+                            } else {
+                                await store.toggleCallReminder(item.orderId, item.ETA, "none")
+                                PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
                             }
                         }}
                     >
@@ -137,9 +137,9 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                                 alignItems: 'center',
                                 justifyContent: "center",
                                 height: 60,
-                                backgroundColor: !item.callReminder ? "#424141" : "#239b56"
+                                backgroundColor: item.reminder_frequency === "none" ? "#424141" : "#239b56"
                             }}>
-                            {!item.callReminder ?
+                            {item.reminder_frequency === "none" ?
                                 (
                                     <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#c0bdbd" />
                                 ) :
