@@ -11,7 +11,7 @@ export const callReminder = (
   productName?: string,
 ) => {
   PushNotification.localNotificationSchedule({
-    id: parseInt(orderId),
+    id: parseInt(orderId.replace('-', '')),
     title: 'Order Delivery Reminder',
     message:
       orderType !== 'amazon'
@@ -31,7 +31,7 @@ export const callReminder = (
   });
 };
 
-export const initiateAllNotifications = async () => {
+export const initiateAllReminders = async () => {
   try {
     if (store.orders.length > 0 || store.amazonOrders.length > 0) {
       console.log('notifications...');
@@ -60,7 +60,7 @@ export const initiateAllNotifications = async () => {
   }
 };
 
-export const initiateNotifications = async () => {
+export const initiateSelectedReminders = async () => {
   try {
     if (store.orders.length > 0 || store.amazonOrders.length > 0) {
       console.log('notifications...');

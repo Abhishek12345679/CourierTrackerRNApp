@@ -24,15 +24,15 @@ export type userInfoType = {
 
 export type settingsType = {
   orders_newer_than: string;
-  remind_all: boolean;
+  reminder_frequency: string;
   allow_fetching_new_orders: boolean;
   dark_mode: boolean;
-  show_archived_items: boolean;
+  // show_archived_items: boolean;
 };
 
 const settings = types.model('settings', {
   orders_newer_than: types.optional(types.string, '7'),
-  remind_all: types.optional(types.boolean, false),
+  reminder_frequency: types.optional(types.string, 'selected'),
   allow_fetching_new_orders: types.optional(types.boolean, false),
   dark_mode: types.optional(types.boolean, true),
   // show_archived_items: types.optional(types.boolean, false),

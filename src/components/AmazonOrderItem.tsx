@@ -78,9 +78,10 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                             justifyContent: "center",
                         }}
                         onPress={async () => {
-                            await store.toggleAmazonCallReminder(item.orderId, item.ETA)
-                            callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
-
+                            if (store.settings.reminder_frequency !== "none") {
+                                await store.toggleAmazonCallReminder(item.orderId, item.ETA)
+                                callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
+                            }
 
                         }}
                     >

@@ -120,12 +120,14 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                             justifyContent: "center",
                         }}
                         onPress={async () => {
-                            await store.toggleCallReminder(item.orderId, item.ETA)
-                            callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
                             /**
                              * FIXME: remove reminder notif call if removed
                              * https://github.com/zo0r/react-native-push-notification#cancelling-notifications
                              * */
+                            if (store.settings.reminder_frequency !== "none") {
+                                await store.toggleCallReminder(item.orderId, item.ETA)
+                                callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
+                            }
                         }}
                     >
                         <View

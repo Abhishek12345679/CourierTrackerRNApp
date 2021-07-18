@@ -98,9 +98,10 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }) => {
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: "#000", height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={
                     async () => {
-                        await store.toggleAmazonCallReminder(item.orderId, item.ETA)
-                        callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
-
+                        if (store.settings.reminder_frequency !== "none") {
+                            await store.toggleAmazonCallReminder(item.orderId, item.ETA)
+                            callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
+                        }
                     }
                 }>
 

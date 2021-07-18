@@ -182,8 +182,10 @@ const OrderDetailsScreen = observer((props: any) => {
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: primaryColor, height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={
                     async () => {
-                        await store.toggleCallReminder(item.orderId, item.ETA)
-                        callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
+                        if (store.settings.reminder_frequency !== "none") {
+                            await store.toggleCallReminder(item.orderId, item.ETA)
+                            callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
+                        }
                     }
                 }>
 
