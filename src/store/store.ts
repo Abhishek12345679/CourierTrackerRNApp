@@ -71,7 +71,7 @@ const order = types.model('Order', {
   productLink: types.optional(types.string, ''),
   totalPrice: types.optional(types.string, ''),
   from: types.optional(types.string, ''),
-  reminder_frequency: types.optional(types.string, 'none'),
+  callReminder: types.optional(types.boolean, false),
 });
 
 const amazonOrder = types.model('AmazonOrder', {
@@ -82,7 +82,7 @@ const amazonOrder = types.model('AmazonOrder', {
   delivery_address: types.optional(types.string, ''),
   invoiceLink: types.optional(types.string, ''),
   orderPreviewLink: types.optional(types.string, ''),
-  reminder_frequency: types.optional(types.string, 'none'),
+  callReminder: types.optional(types.boolean, false),
 });
 
 const orderList = types.model('OrderList', {
@@ -220,13 +220,13 @@ const store = types
     toggleCallReminder: flow(function* toggleCallReminder(
       orderId: string,
       eta: string,
-      freq: string,
+      status: boolean,
     ) {
       self.orders.map((order) => {
         if (parseInt(order.EstimatedDeliveryTime) === new Date(eta).getTime()) {
           order.orderItems.map((item) => {
             if (item.orderId === orderId) {
-              item.reminder_frequency = freq;
+              item.callReminder = status;
               console.log('reminder set');
             }
           });
@@ -237,13 +237,13 @@ const store = types
     toggleAmazonCallReminder: flow(function* toggleAmazonCallReminder(
       orderId: string,
       eta: string,
-      freq: string,
+      status: boolean,
     ) {
       self.amazonOrders.map((order) => {
         if (parseInt(order.EstimatedDeliveryTime) === new Date(eta).getTime()) {
           order.orderItems.map((item) => {
             if (item.orderId === orderId) {
-              item.reminder_frequency = freq;
+              item.callReminder = status;
               console.log('reminder set');
             }
           });

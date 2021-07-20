@@ -116,14 +116,13 @@ const AddOrderScreen = ({ navigation }: any) => {
                     onPress={() => {
                         const onSubmit = async () => {
 
-                            let reminder_frequency: string | boolean = addToCalendarRef.current.values.reminder_frequency
-                            reminder_frequency = reminder_frequency ? "selected" : "none"
+                            let callReminder: string | boolean = addToCalendarRef.current.values.callReminder
                             const order = formRef.current.values
 
                             const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
                             const formattedDate = formatDate(order.ETA)
 
-                            order.reminder_frequency = reminder_frequency
+                            order.callReminder = callReminder
                             order.orderId = orderId
                             order.ETA = formattedDate
 
@@ -346,7 +345,7 @@ const AddOrderScreen = ({ navigation }: any) => {
 
             <Formik
                 initialValues={{
-                    reminder_frequency: false
+                    callReminder: false
                 }}
                 onSubmit={() => { }}
                 innerRef={addToCalendarRef}
@@ -354,8 +353,8 @@ const AddOrderScreen = ({ navigation }: any) => {
                 {({ values, setFieldValue }) => (
                     <SwitchGroup
                         label="Add to Calendar"
-                        toggleStatus={values.reminder_frequency}
-                        onValueChange={(value: boolean) => setFieldValue('reminder_frequency', value)}
+                        toggleStatus={values.callReminder}
+                        onValueChange={(value: boolean) => setFieldValue('callReminder', value)}
                         bgColor="#333333"
                         height={75}
                     />)}

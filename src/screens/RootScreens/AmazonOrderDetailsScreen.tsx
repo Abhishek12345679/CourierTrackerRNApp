@@ -96,17 +96,17 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
             <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: "#000", height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={async () => {
-                    if (item.reminder_frequency === "none") {
-                        await store.toggleAmazonCallReminder(item.orderId, item.ETA, "selected")
+                    if (!item.callReminder) {
+                        await store.toggleAmazonCallReminder(item.orderId, item.ETA, true)
                         callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
                     } else {
-                        await store.toggleAmazonCallReminder(item.orderId, item.ETA, "none")
+                        await store.toggleAmazonCallReminder(item.orderId, item.ETA, false)
                         PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
                     }
                 }}>
 
                 {
-                    item.reminder_frequency === "none" ?
+                    !item.callReminder ?
                         <View style={{ flexDirection: 'row', width: '100%', height: 70, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}>
                             <MaterialCommunityIcons name="bell-ring" size={24} color="#fff" style={{ marginEnd: 10 }} />
                             <Text style={{ fontFamily: 'segoe-bold', fontSize: 15, color: '#fff' }}>Add to Calendar</Text>

@@ -20,7 +20,7 @@ export type Order = {
   productLink?: string;
   totalPrice: string;
   from: string;
-  reminder_frequency: string;
+  callReminder: boolean;
   //   totalDeliveryCharges?: string;
 };
 
@@ -43,5 +43,5 @@ export type AmazonOrder = {
   delivery_address: string;
   invoiceLink: string;
   orderPreviewLink: string;
-  reminder_frequency: string;
+  callReminder: boolean;
 };

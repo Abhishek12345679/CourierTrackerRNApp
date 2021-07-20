@@ -77,11 +77,11 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                             justifyContent: "center",
                         }}
                         onPress={async () => {
-                            if (item.reminder_frequency == "none") {
-                                await store.toggleAmazonCallReminder(item.orderId, item.ETA, "selected")
+                            if (!item.callReminder) {
+                                await store.toggleAmazonCallReminder(item.orderId, item.ETA, true)
                                 callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
                             } else {
-                                await store.toggleAmazonCallReminder(item.orderId, item.ETA, "none")
+                                await store.toggleAmazonCallReminder(item.orderId, item.ETA, false)
                                 PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
                             }
                         }}
@@ -93,9 +93,9 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                                 alignItems: 'center',
                                 justifyContent: "center",
                                 height: 60,
-                                backgroundColor: item.reminder_frequency === "none" ? "#424141" : "#239b56"
+                                backgroundColor: !item.callReminder ? "#424141" : "#239b56"
                             }}>
-                            {item.reminder_frequency === "none" ?
+                            {!item.callReminder ?
                                 (
                                     <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#c0bdbd" />
                                 ) :

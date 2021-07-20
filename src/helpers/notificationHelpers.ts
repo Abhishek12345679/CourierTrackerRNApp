@@ -66,7 +66,7 @@ export const initiateSelectedReminders = async () => {
       console.log('notifications...');
       store.orders.map((order, i) => {
         order.orderItems
-          .filter(({reminder_frequency}) => reminder_frequency)
+          .filter(({callReminder}) => callReminder)
           .map((item) => {
             callReminder(
               item.productImage,
@@ -80,7 +80,7 @@ export const initiateSelectedReminders = async () => {
       });
       store.amazonOrders.map((order, i) => {
         order.orderItems
-          .filter(({reminder_frequency}) => reminder_frequency)
+          .filter(({callReminder}) => callReminder)
           .map((item) => {
             callReminder(
               '',

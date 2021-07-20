@@ -17,10 +17,13 @@ import { Picker } from '@react-native-picker/picker';
 export type reminderFrequency = "all" | "selected" | "none"
 
 const SettingsScreen: React.FC = observer((props: any) => {
+
+
     const [signingOut, setSigningOut] = useState(false)
     const [submitting, setSubmitting] = useState(false)
     const [visible, setVisible] = useState(false)
     const [editNewerThan, setEditNewerThan] = useState(false)
+
 
     const logout = async () => {
         store.resetLoginCredentials()
@@ -40,13 +43,14 @@ const SettingsScreen: React.FC = observer((props: any) => {
         setSigningOut(true)
         store.resetCredentials()
         store.removeOrders()
+        store.removeAmazonOrders()
         store.removeUserInfo()
+
         await AsyncStorage.removeItem('orders')
         await AsyncStorage.removeItem('amazonOrders')
         await AsyncStorage.removeItem('credentials')
-        setTimeout(() => {
-            setSigningOut(false)
-        }, 5000)
+
+        setSigningOut(false)
 
     }
 
@@ -76,7 +80,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
                         store.updateSettings(switchesRef.current.values)
-                        // console.log(store.settings)
+                        console.log(store.settings)
                         props.navigation.navigate("HomeScreen", {
                             from: "SettingsScreen"
                         })
@@ -350,6 +354,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     </View>
                 </Card>
             </Modal>
+
         </ScrollView >
     )
 })
