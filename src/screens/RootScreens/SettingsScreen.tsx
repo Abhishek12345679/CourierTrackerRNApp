@@ -12,8 +12,12 @@ import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
 import store from '../../store/store'
 
-//FIXME: add picker for callreminder settings
+import { Picker } from '@react-native-picker/picker';
+
+export type reminderFrequency = "all" | "selected" | "none"
+
 const SettingsScreen: React.FC = observer((props: any) => {
+
 
     const [signingOut, setSigningOut] = useState(false)
     const [submitting, setSubmitting] = useState(false)
@@ -28,7 +32,6 @@ const SettingsScreen: React.FC = observer((props: any) => {
         store.removeAmazonOrders()
         store.removeUserInfo()
 
-
         await AsyncStorage.removeItem('loginCredentials')
         await AsyncStorage.removeItem('credentials')
         await AsyncStorage.removeItem('orders')
@@ -40,13 +43,14 @@ const SettingsScreen: React.FC = observer((props: any) => {
         setSigningOut(true)
         store.resetCredentials()
         store.removeOrders()
+        store.removeAmazonOrders()
         store.removeUserInfo()
+
         await AsyncStorage.removeItem('orders')
         await AsyncStorage.removeItem('amazonOrders')
         await AsyncStorage.removeItem('credentials')
-        setTimeout(() => {
-            setSigningOut(false)
-        }, 5000)
+
+        setSigningOut(false)
 
     }
 
@@ -76,7 +80,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
                         store.updateSettings(switchesRef.current.values)
-                        // console.log(store.settings)
+                        console.log(store.settings)
                         props.navigation.navigate("HomeScreen", {
                             from: "SettingsScreen"
                         })
@@ -159,7 +163,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
                         initialValues={{
                             orders_newer_than: store.settings.orders_newer_than,
                             // show_delivered_items: store.settings.show_delivered_items,
-                            remind_all: store.settings.remind_all,
+                            reminder_frequency: store.settings.reminder_frequency,
                             allow_fetching_new_orders: store.settings.allow_fetching_new_orders,
                             dark_mode: store.settings.dark_mode,
                             // show_archived_items: store.settings.show_archived_items,
@@ -194,7 +198,25 @@ const SettingsScreen: React.FC = observer((props: any) => {
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                                <SettingsListItem bgColor="#ffffff00" height={70} label={switches[0].label} toggleStatus={values.remind_all} onValueChange={(value: boolean) => setFieldValue('remind_all', value)} />
+                                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 35 }}>
+                                    <View style={{ flexDirection: 'column' }}>
+                                        <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>When to remind?</Text>
+                                        <Text style={{ color: '#fff', fontSize: 15, }}>{values.reminder_frequency}</Text>
+                                    </View>
+                                    <Picker
+                                        dropdownIconColor="#fff"
+                                        style={{ width: 50 }}
+                                        mode="dropdown"
+                                        selectedValue={values.reminder_frequency}
+                                        onValueChange={(itemValue, itemIndex) =>
+                                            setFieldValue('reminder_frequency', itemValue)
+                                        }>
+                                        <Picker.Item label="All" value="all" />
+                                        <Picker.Item label="Selected" value="selected" />
+                                        <Picker.Item label="None" value="none" />
+                                    </Picker>
+                                </View>
+
                                 <SettingsListItem bgColor="#ffffff00" height={70} label={switches[1].label} toggleStatus={values.allow_fetching_new_orders} onValueChange={(value: boolean) => setFieldValue('allow_fetching_new_orders', value)} />
                                 <SettingsListItem disabled={true} bgColor="#ffffff00" height={70} label={switches[2].label} toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', value)} />
                                 {/* <SettingsListItem bgColor="#ffffff00" height={70} label={switches[3].label} toggleStatus={values.show_archived_items} onValueChange={(value: boolean) => setFieldValue('show_archived_items', value)} /> */}

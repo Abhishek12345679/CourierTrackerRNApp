@@ -2,16 +2,15 @@ import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/ve
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform } from 'react-native'
+import PushNotification from 'react-native-push-notification'
 import { sensitiveData } from '../../../constants/sen_data'
 import Delivered from '../../components/Delivered'
 import { callReminder } from '../../helpers/notificationHelpers'
 import store from '../../store/store'
 import { copyToClipboard } from './OrderDetailsScreen'
 
-const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }) => {
+const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
     const item = route.params.item
-    console.log(item)
-
     const [deliveryStatus, setDeliveryStatus] = useState(false)
 
     useEffect(() => {
@@ -96,13 +95,15 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }) => {
             </ScrollView>
             <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: "#000", height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
-                onPress={
-                    async () => {
-                        await store.toggleAmazonCallReminder(item.orderId, item.ETA)
+                onPress={async () => {
+                    if (!item.callReminder) {
+                        await store.toggleAmazonCallReminder(item.orderId, item.ETA, true)
                         callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
-
+                    } else {
+                        await store.toggleAmazonCallReminder(item.orderId, item.ETA, false)
+                        PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
                     }
-                }>
+                }}>
 
                 {
                     !item.callReminder ?

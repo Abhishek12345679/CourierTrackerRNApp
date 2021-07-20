@@ -24,21 +24,20 @@ export type userInfoType = {
 
 export type settingsType = {
   orders_newer_than: string;
-  remind_all: boolean;
+  reminder_frequency: string;
   allow_fetching_new_orders: boolean;
   dark_mode: boolean;
-  show_archived_items: boolean;
+  // show_archived_items: boolean;
 };
 
 const settings = types.model('settings', {
   orders_newer_than: types.optional(types.string, '7'),
-  remind_all: types.optional(types.boolean, false),
+  reminder_frequency: types.optional(types.string, 'selected'),
   allow_fetching_new_orders: types.optional(types.boolean, false),
   dark_mode: types.optional(types.boolean, true),
   // show_archived_items: types.optional(types.boolean, false),
 });
 
-// TODO: Add firebase to store refresh_token for future logins (if uninstalled)
 const googleCredentials = types.model('googleCredentials', {
   access_token: types.optional(types.string, ''),
   refresh_token: types.optional(types.string, ''),
@@ -191,9 +190,6 @@ const store = types
     removeAmazonOrders() {
       applySnapshot(self.amazonOrders, []);
     },
-    // TODO: toggle ((bool)) callReminder
-    // others
-
     setLoginCredentials(credentials: loginCredentialsType) {
       self.loginCredentials = credentials;
     },
@@ -224,14 +220,13 @@ const store = types
     toggleCallReminder: flow(function* toggleCallReminder(
       orderId: string,
       eta: string,
+      status: boolean,
     ) {
-      console.log({orderId, eta});
       self.orders.map((order) => {
-        console.log(parseInt(order.EstimatedDeliveryTime));
         if (parseInt(order.EstimatedDeliveryTime) === new Date(eta).getTime()) {
           order.orderItems.map((item) => {
             if (item.orderId === orderId) {
-              item.callReminder = !item.callReminder;
+              item.callReminder = status;
               console.log('reminder set');
             }
           });
@@ -242,20 +237,19 @@ const store = types
     toggleAmazonCallReminder: flow(function* toggleAmazonCallReminder(
       orderId: string,
       eta: string,
+      status: boolean,
     ) {
-      console.log({orderId, eta});
       self.amazonOrders.map((order) => {
-        console.log(parseInt(order.EstimatedDeliveryTime));
         if (parseInt(order.EstimatedDeliveryTime) === new Date(eta).getTime()) {
           order.orderItems.map((item) => {
             if (item.orderId === orderId) {
-              item.callReminder = !item.callReminder;
+              item.callReminder = status;
               console.log('reminder set');
             }
           });
         }
       });
-      yield self.saveOrdersLocally(self.orders);
+      yield self.saveAmazonOrdersLocally(self.amazonOrders);
     }),
   }))
   .create({});

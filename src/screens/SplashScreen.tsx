@@ -2,9 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
 import { View, Text, Platform } from 'react-native'
-import { initiateAllNotifications } from '../helpers/notificationHelpers'
+import PushNotification from 'react-native-push-notification'
+import { initiateAllReminders, initiateSelectedReminders } from '../helpers/notificationHelpers'
 import store from '../store/store'
 
+
+enum ReminderFrequency {
+    all = "all",
+    none = "none",
+    selected = "selected"
+}
 
 const SplashScreen = observer(() => {
 
@@ -51,14 +58,27 @@ const SplashScreen = observer(() => {
     }
 
     useEffect(() => {
-        const startUp = async () => {
+        const startUp = async (reminderFrequency: string) => {
             await getCredentials()
             await fetchSettings()
-            if (store.settings.remind_all) {
-                await initiateAllNotifications()
+
+            switch (reminderFrequency) {
+                case ReminderFrequency.all:
+                    await initiateAllReminders()
+                    break;
+                case ReminderFrequency.selected:
+                    PushNotification.cancelAllLocalNotifications()
+                    await initiateSelectedReminders()
+                    break;
+                case ReminderFrequency.none:
+                    PushNotification.cancelAllLocalNotifications()
+                    break;
+                default:
+                    console.error("Invalid Case")
+                //add default code
             }
         }
-        startUp()
+        startUp(store.settings.reminder_frequency)
     }, [])
 
     return (

@@ -22,8 +22,15 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import AmazonOrderList from '../../components/AmazonOrderList'
 import PushNotification from "react-native-push-notification";
 import { Button } from 'react-native';
+import { parse } from 'react-native-svg';
 
 const HomeScreen: React.FC = observer((props: any) => {
+
+    // const getManualOrders = async () => {
+    //     const orders = await AsyncStorage.getItem('orders')
+    //     console.log(orders)
+    // }
+    // getManualOrders()
 
 
     const [gmailAccessStatus, setGmailAccessStatus] = useState(props.route.params.gmailAccess)
@@ -114,6 +121,7 @@ const HomeScreen: React.FC = observer((props: any) => {
 
         setFetchingOrders(true)
         try {
+
             const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
             const myntraOrders = await getMyntraOrders(store.googleCredentials)
             const ajioOrders = await getAjioOrders(store.googleCredentials)
@@ -121,24 +129,25 @@ const HomeScreen: React.FC = observer((props: any) => {
 
             const manualOrders = await fetchManualOrders()
 
-            const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders as Order[])
-            const sortedOrders = sortOrders(groupedOrders)
+            const groupedOrders = await groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders as Order[])
+            const sortedOrders = sortOrders(groupedOrders!)
 
-            const groupedAmazonOrders = groupAmazonOrders(amazonOrders)
+            const groupedAmazonOrders = await groupAmazonOrders(amazonOrders)
             const sortedAmazonOrders = sortAmazonOrders(groupedAmazonOrders)
 
             await store.saveOrders(sortedOrders)
             await store.saveOrdersLocally(sortedOrders)
             await store.saveAmazonOrders(sortedAmazonOrders)
             await store.saveAmazonOrdersLocally(sortedAmazonOrders)
-            setFetchingOrders(false)
+
+            setTimeout(() => {
+                fromScreen = ""
+                setFetchingOrders(false)
+            }, 5000)
         } catch (err) {
             console.error(err)
             setFetchingOrders(false)
         }
-
-        // console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
-        // console.log("sorted orders: ", JSON.stringify(store.amazonOrders, null, 4))
     }
 
 
@@ -149,32 +158,63 @@ const HomeScreen: React.FC = observer((props: any) => {
         return groupedOrders
     }
 
+    const groupOrders = async (flipkartOrders: Order[], myntraOrders: Order[], ajioOrders: Order[], manualOrders: Order[]) => {
+        try {
 
-    const groupOrders = (flipkartOrders: Order[], myntraOrders: Order[], ajioOrders: Order[], manualOrders: Order[]) => {
-        // console.log("manual orders: ", manualOrders)
-        let superArray = []
-        superArray = [...flipkartOrders, ...myntraOrders, ...ajioOrders, ...manualOrders]
-        const groups = superArray.reduce((acc: any, order: Order) => {
-            acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
-            return acc
-        }, {})
+            let superArray: Order[] = []
+            superArray = [...flipkartOrders, ...myntraOrders, ...ajioOrders, ...manualOrders]
 
-        // console.log(JSON.stringify(groups, null, 4))
+            let orders = await AsyncStorage.getItem('orders')
+            if (orders) {
+                const parsedOrders = JSON.parse(orders)
+                const newOrders: Order[] = parsedOrders.reduce((orderList: Order[], items: OrderListType) => [...orderList, ...items.orderItems], [])
 
-        const newOrderList: OrderListType[] = Object.entries(groups).map(([k, v]) => ({
-            EstimatedDeliveryTime: k,
-            orderItems: v as Order[]
-        }))
-        return newOrderList
+                newOrders.forEach((localItem) => {
+                    superArray.forEach((item) => {
+                        console.log(item.orderId, localItem)
+                        if (item.orderId === localItem.orderId) {
+                            console.log("matched")
+                            item.callReminder = localItem.callReminder
+                        }
+                    })
+                })
+            }
+
+            const groups = superArray.reduce((acc: any, order: Order) => {
+                acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
+                return acc
+            }, {})
+
+            const newOrderList: OrderListType[] = Object.entries(groups).map(([k, v]) => ({
+                EstimatedDeliveryTime: k,
+                orderItems: v as Order[]
+            }))
+            return newOrderList
+        } catch (err) {
+            console.error(err)
+        }
     }
 
-    const groupAmazonOrders = (amazonOrders: AmazonOrder[]) => {
+    const groupAmazonOrders = async (amazonOrders: AmazonOrder[]) => {
+
+        let orders = await AsyncStorage.getItem('amazonOrders')
+        if (orders) {
+            const parsedOrders = JSON.parse(orders)
+            const newOrders: Order[] = parsedOrders.reduce((orderList: AmazonOrder[], items: AmazonOrderListType) => [...orderList, ...items.orderItems], [])
+
+            newOrders.forEach((localItem) => {
+                amazonOrders.forEach((item) => {
+                    if (item.orderId === localItem.orderId) {
+                        item.callReminder = localItem.callReminder
+                    }
+                })
+            })
+        }
+
         const groups = amazonOrders.reduce((acc: any, order: AmazonOrder) => {
             acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
             return acc
         }, {})
-
-        // console.log(JSON.stringify(groups, null, 4))
 
         const newOrderList: AmazonOrderListType[] = Object.entries(groups).map(([k, v]) => ({
             EstimatedDeliveryTime: k,
@@ -276,8 +316,8 @@ const HomeScreen: React.FC = observer((props: any) => {
             if (fromScreen === "AddOrderScreen" || fromScreen === "SettingsScreen") {
                 const loadOrders = async () => {
                     console.log("from: ", fromScreen)
+                    // fromScreen = "";
                     await getOrders()
-                    fromScreen = "";
                 }
                 loadOrders()
             }

@@ -7,11 +7,10 @@ import { observer } from 'mobx-react';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import store from '../store/store';
 import { callReminder } from '../helpers/notificationHelpers';
+import PushNotification from 'react-native-push-notification';
 
 
 //BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
-
-
 const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) => {
     const navigation = useNavigation()
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
@@ -78,10 +77,13 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                             justifyContent: "center",
                         }}
                         onPress={async () => {
-                            await store.toggleAmazonCallReminder(item.orderId, item.ETA)
-                            callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
-
-
+                            if (!item.callReminder) {
+                                await store.toggleAmazonCallReminder(item.orderId, item.ETA, true)
+                                callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
+                            } else {
+                                await store.toggleAmazonCallReminder(item.orderId, item.ETA, false)
+                                PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
+                            }
                         }}
                     >
                         <View

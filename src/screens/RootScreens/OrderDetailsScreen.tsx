@@ -11,6 +11,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { Feather } from '@expo/vector-icons'
 import Delivered from '../../components/Delivered'
 import { callReminder } from '../../helpers/notificationHelpers'
+import PushNotification from 'react-native-push-notification'
 
 export const copyToClipboard = (orderNumber: string) => {
     Clipboard.setString(orderNumber);
@@ -180,17 +181,19 @@ const OrderDetailsScreen = observer((props: any) => {
             </ScrollView>
             <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: primaryColor, height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
-                onPress={
-                    async () => {
-                        await store.toggleCallReminder(item.orderId, item.ETA)
+                onPress={async () => {
+                    if (!item.callReminder) {
+                        await store.toggleCallReminder(item.orderId, item.ETA, true)
                         callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
+                    } else {
+                        await store.toggleCallReminder(item.orderId, item.ETA, false)
+                        PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
                     }
-                }>
+                }}>
 
                 {
                     !item.callReminder ?
                         <View style={{ flexDirection: 'row', width: '100%', height: 70, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}>
-                            {/* <Image source={require('../../Assets/Icons/siri.png')} style={{ width: 25, height: 25, marginEnd: 10 }} /> */}
                             <MaterialCommunityIcons name="bell-ring" size={24} color="#fff" style={{ marginEnd: 10 }} />
                             <Text style={{ fontFamily: 'segoe-bold', fontSize: 15, color: '#fff' }}>Add to Calendar</Text>
                         </View> :

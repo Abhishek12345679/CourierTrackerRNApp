@@ -6,13 +6,11 @@ import { Formik } from 'formik'
 import { useRef } from 'react'
 import { View, Text, ScrollView, Image, Dimensions, Pressable, ActivityIndicator } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-ui-lib'
-import SettingsListItem from '../../components/SettingsListItem'
 import SwitchGroup from '../../components/SwitchGroup'
 
 import database from '@react-native-firebase/database';
 import store from '../../store/store'
 
-import * as Calendar from 'expo-calendar'
 
 import storage from '@react-native-firebase/storage';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
@@ -26,7 +24,6 @@ const AddOrderScreen = ({ navigation }: any) => {
 
     const [loading, setLoading] = useState(false)
 
-    // TODO: one new manual order addition rerender the screen (useFocusEffect) or use the real times changes while fetching from rnfb-realtime-database
     const uploadImageAsync = (uri: string, fileName: string) => {
         setLoading(true);
         const ref = storage().ref(`${store.loginCredentials.uid}/productImages`).child(`${fileName}`)
@@ -117,13 +114,9 @@ const AddOrderScreen = ({ navigation }: any) => {
                     android_ripple={{ color: "#121212", radius: 20 }}
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
-                        // navigation.navigate("HomeScreen", {
-                        //     from: "AddOrderScreen"
-                        // })
-
                         const onSubmit = async () => {
 
-                            const callReminder = addToCalendarRef.current.values.callReminder
+                            let callReminder: string | boolean = addToCalendarRef.current.values.callReminder
                             const order = formRef.current.values
 
                             const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
