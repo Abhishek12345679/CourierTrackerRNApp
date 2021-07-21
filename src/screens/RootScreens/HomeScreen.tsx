@@ -282,9 +282,9 @@ const HomeScreen: React.FC = observer((props: any) => {
                         onPress={() => props.navigation.navigate('AddOrder')}>
                         <MaterialIcons name="add" size={24} />
                     </TouchableOpacity> :
-                        <View style={{ flexDirection: 'column' }}>
-                            <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 30, color: "#8abedf" }}>Order</HeaderTitle>
-                            <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 30, color: "#ec5a3c" }}>Gator</HeaderTitle>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <Image source={require('../../Assets/Icons/appicon.png')} style={{ width: 50, height: 50 }} />
+                            <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 20, color: "#ffffff", marginStart: 10, marginTop: 10 }}>OrderGator</HeaderTitle>
                         </View>
                     }
                 </View>

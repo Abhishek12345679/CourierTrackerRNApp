@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
-import { View, Text, Platform } from 'react-native'
+import { View, Text, Platform, Image, StatusBar } from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import { initiateAllReminders, initiateSelectedReminders } from '../helpers/notificationHelpers'
 import store from '../store/store'
@@ -83,12 +83,13 @@ const SplashScreen = observer(() => {
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#121212" }}>
+            <StatusBar backgroundColor="#121212" barStyle="light-content" />
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <Text style={{ fontSize: 80, color: '#a5a2a2', fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', }}>AIO</Text>
-                <Text style={{ fontSize: 15, color: '#8b8888', fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', }}>All in One </Text>
-                <Text style={{ fontFamily: '' }}></Text>
+                {/* <Text style={{ fontSize: 80, color: '#a5a2a2', fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', }}>AIO</Text> */}
+                <Image source={require('../Assets/Icons/appicon.png')} style={{ width: 125, height: 125 }} />
+                {/* <Text style={{ fontSize: 20, color: '#fff', fontWeight: "bold", }}>OrderGator </Text> */}
             </View>
-            <Text style={{ fontSize: 15, color: '#a39e9e', fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', marginBottom: 10 }}>Made with Love in 🇳🇪 </Text>
+            {/* <Text style={{ fontSize: 15, color: '#a39e9e', fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', marginBottom: 10 }}>Made with Love in 🇳🇪 </Text> */}
         </View>
     )
 })

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
 import { useTheme } from '@react-navigation/native';
 import { observer } from 'mobx-react';
@@ -104,7 +104,7 @@ const LoginScreen: React.FC = observer((props: any) => {
                                 onBlur={handleBlur('email')}
                             />
                             {(errors.email && touched.email) &&
-                                <Text style={{ fontSize: 12, color: '#fff', marginStart: 15 }}>{errors.email}</Text>
+                                <Text style={{ fontSize: 12, color: '#239b56', marginStart: 15, fontWeight: 'bold' }}>{errors.email}</Text>
                             }
                             <Input
                                 label="Password"
@@ -118,22 +118,22 @@ const LoginScreen: React.FC = observer((props: any) => {
                                 onBlur={handleBlur('password')}
                             />
                             {(errors.password && touched.password) &&
-                                <Text style={{ fontSize: 12, color: '#fff', marginStart: 15 }}>{errors.password}!!</Text>
+                                <Text style={{ fontSize: 12, color: '#239b56', marginStart: 15, fontWeight: 'bold' }}>{errors.password}!!</Text>
                             }
                             <View style={{ marginTop: 20 }}>
                                 <Text style={{ color: '#e6e1e1', paddingStart: 15, fontSize: 17, marginBottom: 7 }}>Don't have an account?</Text>
-                                <Text style={{ color: '#e6e1e1', paddingStart: 15, fontSize: 17, marginBottom: 7, textDecorationLine: 'underline', textDecorationColor: "#124" }} onPress={() => { setIsSignIn(prev => !prev) }}>Create an account</Text>
+                                <Text style={{ paddingStart: 15, fontSize: 17, marginBottom: 7, textDecorationLine: 'underline', color: "#239b56" }} onPress={() => { setIsSignIn(prev => !prev) }}>Create an account</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', backgroundColor: "#2c2727" }}>
                             <Pressable
                                 disabled={!isValid}
                                 android_ripple={{ color: '#575454', radius: 100, borderless: false }}
-                                style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: '#0d3f5c', marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
+                                style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: '#239b56', marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                                 onPress={handleSubmit}
                             >
                                 {!loggingIn ?
-                                    <Text style={{ fontFamily: 'segoe-bold', fontSize: 17, color: '#aaa8a8' }}>{isSignIn ? "Signin" : "Login"}</Text> :
+                                    <Text style={{ fontFamily: 'segoe-bold', fontSize: 17, color: '#ffffff' }}>{isSignIn ? "Signin" : "Login"}</Text> :
                                     <ActivityIndicator size="large" color="#aaa8a8" />
                                 }
                             </Pressable>
