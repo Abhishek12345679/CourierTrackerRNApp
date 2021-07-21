@@ -1,6 +1,6 @@
 {
     "name": "CourierTracker",
-    "displayName": "CourierTracker",
+    "displayName": "OrderGator",
     "android": {
         "useNextNotificationsApi": true
     }
