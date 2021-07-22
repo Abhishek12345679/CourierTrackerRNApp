@@ -11,7 +11,7 @@ export const callReminder = (
   productName?: string,
 ) => {
   PushNotification.localNotificationSchedule({
-    id: parseInt(orderId.replace('-', '')),
+    id: parseInt(orderId.split('-').join('')), //parse int properly; convert id to
     title: 'Order Delivery Reminder',
     message:
       orderType !== 'amazon'
@@ -20,14 +20,13 @@ export const callReminder = (
     date: new Date(ETA),
     allowWhileIdle: false,
     priority: 'max',
+    largeIcon: require('../Assets/Icons/appicon.png'),
 
     /* Android Only Properties */
     // repeatTime: 1,
     channelId: 'reminder_channel',
-    smallIcon: productImageUrl,
-    largeIconUrl: productImageUrl,
-    bigLargeIconUrl: productImageUrl,
     bigPictureUrl: productImageUrl,
+    smallIcon: 'ic_launcher',
   });
 };
 

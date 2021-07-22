@@ -104,7 +104,7 @@ const LoginScreen: React.FC = observer((props: any) => {
                                 onBlur={handleBlur('email')}
                             />
                             {(errors.email && touched.email) &&
-                                <Text style={{ fontSize: 12, color: '#239b56', marginStart: 15, fontWeight: 'bold' }}>{errors.email}</Text>
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.email}</Text>
                             }
                             <Input
                                 label="Password"
@@ -118,18 +118,18 @@ const LoginScreen: React.FC = observer((props: any) => {
                                 onBlur={handleBlur('password')}
                             />
                             {(errors.password && touched.password) &&
-                                <Text style={{ fontSize: 12, color: '#239b56', marginStart: 15, fontWeight: 'bold' }}>{errors.password}!!</Text>
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.password}!!</Text>
                             }
                             <View style={{ marginTop: 20 }}>
                                 <Text style={{ color: '#e6e1e1', paddingStart: 15, fontSize: 17, marginBottom: 7 }}>Don't have an account?</Text>
-                                <Text style={{ paddingStart: 15, fontSize: 17, marginBottom: 7, textDecorationLine: 'underline', color: "#239b56" }} onPress={() => { setIsSignIn(prev => !prev) }}>Create an account</Text>
+                                <Text style={{ paddingStart: 15, fontSize: 17, marginBottom: 7, textDecorationLine: 'underline', color: "#13c801" }} onPress={() => { setIsSignIn(prev => !prev) }}>Create an account</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', backgroundColor: "#2c2727" }}>
                             <Pressable
                                 disabled={!isValid}
                                 android_ripple={{ color: '#575454', radius: 100, borderless: false }}
-                                style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: '#239b56', marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
+                                style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: '#13c801', marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                                 onPress={handleSubmit}
                             >
                                 {!loggingIn ?

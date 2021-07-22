@@ -10,12 +10,13 @@ import SwitchGroup from '../../components/SwitchGroup'
 
 import database from '@react-native-firebase/database';
 import store from '../../store/store'
-
+import * as yup from 'yup'
 
 import storage from '@react-native-firebase/storage';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 import Firebase from '@react-native-firebase/app'
+import { Order } from '../../../constants/Types/OrderTypes'
 
 const AddOrderScreen = ({ navigation }: any) => {
 
@@ -23,6 +24,23 @@ const AddOrderScreen = ({ navigation }: any) => {
     const formRef = useRef({})
 
     const [loading, setLoading] = useState(false)
+
+    const ValidationSchema = yup.object().shape({
+        orderNumber: yup
+            .string()
+            .matches(/^[a-zA-Z0-9-]*$/, "invalid ordernumber")
+            .required('Order Number is required'),
+        productName: yup
+            .string()
+            .required('Product Name is required'),
+        productLink: yup.string().url('Not an URL').required('Enter Product Link'),
+        ETA: yup.string().required('Enter ETA'),
+        productPrice: yup.string().matches(/^\d*.\d*$/, "not a valid price").required('Enter Product Price'),
+        sellerName: yup.string().notRequired(),
+        quantity: yup.string().matches(/^\d{1,2}$/, "Not a valid quantity").required("Enter Quantity"),
+        from: yup.string().notRequired(),
+        totalPrice: yup.string().matches(/^\d*.\d*$/, "Not a valid price").required("Enter Total Order Price")
+    })
 
     const uploadImageAsync = (uri: string, fileName: string) => {
         setLoading(true);
@@ -111,13 +129,13 @@ const AddOrderScreen = ({ navigation }: any) => {
         navigation.setOptions({
             headerRight: () => (
                 <Pressable
+                    disabled={!formRef.current.isValid}
                     android_ripple={{ color: "#121212", radius: 20 }}
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
                         const onSubmit = async () => {
-
-                            let callReminder: string | boolean = addToCalendarRef.current.values.callReminder
-                            const order = formRef.current.values
+                            let callReminder: boolean = addToCalendarRef.current.values.callReminder
+                            const order: Order = formRef.current.values
 
                             const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
                             const formattedDate = formatDate(order.ETA)
@@ -156,11 +174,11 @@ const AddOrderScreen = ({ navigation }: any) => {
                     initialValues={{
                         orderNumber: "",
                         productName: "",
-                        productImage: `https://img.freepik.com/free-vector/black-white-hypnotic-background-abstract-seamless-pattern-illustration_118124-3765.jpg?size=1024&ext=jpg`,
+                        productImage: "",
                         sellerName: "",
                         // deliveryCharges: "",
                         ETA: "",
-                        quantity: "",
+                        quantity: "1",
                         // deliveryDiscount: "",
                         productPrice: "",
                         productLink: "",
@@ -169,15 +187,24 @@ const AddOrderScreen = ({ navigation }: any) => {
                     }}
                     onSubmit={() => { }}
                     innerRef={formRef}
+                    validationSchema={ValidationSchema}
                 >
-                    {({ handleChange, handleSubmit, values, setFieldValue }) => (
+                    {({ handleChange, handleSubmit, handleBlur, values, setFieldValue, errors, touched }) => (
                         <>
                             <View style={{ width: '100%', height: 400, position: 'relative', backgroundColor: "#121212" }}>
                                 {!loading ?
-                                    <Image
-                                        source={{ uri: values.productImage }}
-                                        style={{ width: '100%', height: 400, resizeMode: 'cover', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, marginTop: 0, backgroundColor: "#121212" }}
-                                    /> :
+                                    values.productImage.length > 0 ?
+                                        <Image
+                                            source={{ uri: values.productImage }}
+                                            style={{ width: '100%', height: 400, resizeMode: 'cover', borderBottomLeftRadius: 20, borderBottomRightRadius: 20, marginTop: 0, backgroundColor: "#121212" }}
+                                        /> :
+                                        <View
+                                            style={{ width: '100%', height: 400, borderBottomLeftRadius: 20, borderBottomRightRadius: 20, backgroundColor: "#121212", justifyContent: 'center', alignItems: "center" }}>
+                                            <Image source={require('../../Assets/Icons/upload.png')} style={{ width: 150, height: 150, marginStart: 15 }} />
+                                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: "bold" }}>No Product Image</Text>
+                                            <Text style={{ color: '#fff' }}>No Product Image</Text>
+                                        </View>
+                                    :
                                     (<View style={{
                                         width: '100%',
                                         height: 400,
@@ -191,12 +218,12 @@ const AddOrderScreen = ({ navigation }: any) => {
                                         <ActivityIndicator color="#fff" size="large" />
                                     </View>)
                                 }
-                                <View style={{ backgroundColor: '#000', opacity: 0.35, width: '100%', height: 400, position: 'absolute' }}></View>
+                                {values.productImage.length > 0 && <View style={{ backgroundColor: '#000', opacity: 0.35, width: '100%', height: 400, position: 'absolute' }}></View>}
                                 <Pressable
                                     android_ripple={{ color: "#fff", radius: 25, }}
                                     style={{
                                         width: 80,
-                                        height: 40,
+                                        height: 50,
                                         borderRadius: 15,
                                         shadowColor: "#ccc",
                                         shadowOpacity: 0.25,
@@ -206,9 +233,10 @@ const AddOrderScreen = ({ navigation }: any) => {
                                         marginBottom: 10,
                                         marginEnd: 10,
                                         right: 0,
-                                        backgroundColor: "#020100",
+                                        backgroundColor: values.productImage.length > 0 ? "#000" : "#fff",
                                         justifyContent: 'center',
-                                        alignItems: 'center'
+                                        alignItems: 'center',
+                                        elevation: 1
                                     }}
                                     onPress={async () => {
                                         launchCamera({
@@ -229,7 +257,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                                         })
                                     }}
                                 >
-                                    <FontAwesome name="camera" size={20} color="#fff" />
+                                    <FontAwesome name="camera" size={20} color={values.productImage.length > 0 ? "#fff" : "#000"} />
                                 </Pressable>
 
                             </View>
@@ -243,7 +271,11 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 placeholder="Enter the Order Number / ID"
                                 value={values.orderNumber}
                                 onChangeText={handleChange('orderNumber')}
+                                onBlur={handleBlur('orderNumber')}
                             />
+                            {(errors.orderNumber && touched.orderNumber) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'normal' }}>{errors.orderNumber}</Text>
+                            }
                             <Input
                                 autoCorrect={false}
                                 autoCapitalize="none"
@@ -254,8 +286,12 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 placeholder="Enter the Product Name"
                                 value={values.productName}
                                 onChangeText={handleChange('productName')}
-                            />
+                                onBlur={handleBlur('productName')}
 
+                            />
+                            {(errors.productName && touched.productName) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.productName}</Text>
+                            }
                             <Datepicker
                                 placement="top"
                                 label="Estimated Delivery Time"
@@ -264,19 +300,29 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 style={{ marginHorizontal: 10, marginVertical: 10 }}
                                 size="large"
                                 date={values.ETA}
-                                onSelect={(date) => setFieldValue('ETA', date)} />
+                                onSelect={(date) => setFieldValue('ETA', date)}
+                                onBlur={() => handleBlur('ETA')}
+                            />
+                            {(errors.ETA && touched.ETA) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.ETA}</Text>
+                            }
 
                             <Input
                                 autoCorrect={false}
                                 autoCapitalize="none"
                                 label="Product Price"
                                 size="large"
+                                keyboardType="numeric"
                                 style={{ fontSize: 17, fontWeight: 'bold', backgroundColor: "#8b8a8a2c", padding: 10 }}
                                 textStyle={{ height: 30, color: '#bdb8b8' }}
                                 placeholder="Enter the Product Price"
                                 value={values.productPrice}
                                 onChangeText={handleChange('productPrice')}
+                                onBlur={handleBlur('productPrice')}
                             />
+                            {(errors.productPrice && touched.productPrice) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.productPrice}</Text>
+                            }
 
                             <Input
                                 autoCorrect={false}
@@ -288,21 +334,32 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 placeholder="Enter the seller name"
                                 value={values.sellerName}
                                 onChangeText={handleChange('sellerName')}
+                                onBlur={handleBlur('sellerName')}
                             />
+                            {(errors.sellerName && touched.sellerName) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.sellerName}</Text>
+                            }
                             <Input
                                 onBlur={() => {
                                     setFieldValue('totalPrice', (parseInt(values.quantity) * parseFloat(values.productPrice)).toString())
+                                    handleBlur('quantity')
                                 }}
                                 autoCorrect={false}
                                 autoCapitalize="none"
                                 label="Quantity"
+                                keyboardType="numeric"
+                                maxLength={1}
                                 size="large"
                                 style={{ fontSize: 17, fontWeight: 'bold', backgroundColor: "#8b8a8a2c", padding: 10 }}
                                 textStyle={{ height: 30, color: '#bdb8b8' }}
                                 placeholder="Enter the quantity"
                                 value={values.quantity}
                                 onChangeText={handleChange('quantity')}
+
                             />
+                            {(errors.quantity && touched.quantity) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.quantity}</Text>
+                            }
                             <Input
                                 autoCorrect={false}
                                 autoCapitalize="none"
@@ -313,7 +370,11 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 placeholder="Enter the Site you bought it from."
                                 value={values.from}
                                 onChangeText={handleChange('from')}
+                                onBlur={handleBlur('from')}
                             />
+                            {(errors.from && touched.from) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.from}</Text>
+                            }
                             <Input
                                 autoCorrect={false}
                                 autoCapitalize="none"
@@ -324,7 +385,12 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 placeholder="Paste the link of the product"
                                 value={values.productLink}
                                 onChangeText={handleChange('productLink')}
+                                keyboardType='url'
+                                onBlur={handleBlur('productLink')}
                             />
+                            {(errors.productLink && touched.productLink) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.productLink}</Text>
+                            }
                             <Input
                                 autoCorrect={false}
                                 autoCapitalize="none"
@@ -335,9 +401,12 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 placeholder="Enter the Product Name"
                                 value={values.totalPrice}
                                 onChangeText={handleChange('totalPrice')}
+                                keyboardType="numeric"
+                                returnKeyType="done"
                             />
-
-
+                            {(errors.totalPrice && touched.totalPrice) &&
+                                <Text style={{ fontSize: 12, color: '#13c801', marginStart: 15, fontWeight: 'bold' }}>{errors.totalPrice}</Text>
+                            }
                         </>
                     )}
                 </Formik>
@@ -355,7 +424,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                         label="Add to Calendar"
                         toggleStatus={values.callReminder}
                         onValueChange={(value: boolean) => setFieldValue('callReminder', value)}
-                        bgColor="#333333"
+                        bgColor="#119605"
                         height={75}
                     />)}
             </Formik>

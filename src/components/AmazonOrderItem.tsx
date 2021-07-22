@@ -10,7 +10,6 @@ import { callReminder } from '../helpers/notificationHelpers';
 import PushNotification from 'react-native-push-notification';
 
 
-//BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
 const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) => {
     const navigation = useNavigation()
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
@@ -22,7 +21,7 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                 flex: 1,
                 flexDirection: 'row',
                 height: 110,
-                marginTop: 15,
+                marginTop: 7.50,
                 backgroundColor: '#202020ed',
                 borderRadius: 7,
                 marginLeft: 20,
@@ -93,14 +92,14 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                                 alignItems: 'center',
                                 justifyContent: "center",
                                 height: 60,
-                                backgroundColor: !item.callReminder ? "#424141" : "#239b56"
+                                backgroundColor: !item.callReminder ? "#424141" : "#11b302"
                             }}>
                             {!item.callReminder ?
                                 (
-                                    <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#c0bdbd" />
+                                    <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#ffffff" />
                                 ) :
                                 (
-                                    <MaterialCommunityIcons name="bell-ring" size={24} color="#c0bdbd" />
+                                    <MaterialCommunityIcons name="bell-ring" size={24} color="#ffffff" />
                                 )}
                         </View>
 

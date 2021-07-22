@@ -53,7 +53,7 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                 flex: 1,
                 flexDirection: 'row',
                 height: 110,
-                marginTop: 15,
+                marginTop: 7.50,
                 backgroundColor: '#202020ed',
                 borderRadius: 7,
                 marginLeft: 20,
@@ -81,7 +81,7 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                 style={{
                     height: 80,
                     width: 80,
-                    marginStart: 8,
+                    marginStart: 15,
                     borderRadius: 5,
                     // flex: 1,
                     backgroundColor: "#000",
@@ -137,14 +137,14 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                                 alignItems: 'center',
                                 justifyContent: "center",
                                 height: 60,
-                                backgroundColor: !item.callReminder ? "#424141" : "#239b56"
+                                backgroundColor: !item.callReminder ? "#424141" : "#11b302"
                             }}>
                             {!item.callReminder ?
                                 (
-                                    <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#c0bdbd" />
+                                    <MaterialCommunityIcons name="bell-ring-outline" size={24} color="#fff" />
                                 ) :
                                 (
-                                    <MaterialCommunityIcons name="bell-ring" size={24} color="#c0bdbd" />
+                                    <MaterialCommunityIcons name="bell-ring" size={24} color="#fff" />
                                 )}
                         </View>
 

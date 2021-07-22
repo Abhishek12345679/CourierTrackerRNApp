@@ -128,7 +128,7 @@ export const AddOrderNavigator = () => {
         <AddOrderStackNavigator.Navigator
             screenOptions={({ route, navigation }) => ({
                 headerTitleStyle: {
-                    color: "#c2c2c2",
+                    color: "#fff",
 
                 },
                 headerTintColor: "#fff",

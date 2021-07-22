@@ -283,8 +283,8 @@ const HomeScreen: React.FC = observer((props: any) => {
                         <MaterialIcons name="add" size={24} />
                     </TouchableOpacity> :
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <Image source={require('../../Assets/Icons/appicon.png')} style={{ width: 50, height: 50 }} />
-                            <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 20, color: "#ffffff", marginStart: 10, marginTop: 10 }}>OrderGator</HeaderTitle>
+                            {/* <Image source={require('../../Assets/Icons/appicon.png')} style={{ width: 40, height: 40 }} /> */}
+                            <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 40, color: "#ffffff", marginStart: 10 }}>{`Orders`}</HeaderTitle>
                         </View>
                     }
                 </View>
@@ -311,18 +311,18 @@ const HomeScreen: React.FC = observer((props: any) => {
 
 
     // re-fetch all orders when adding new manual order
-    useFocusEffect(
-        useCallback(() => {
-            if (fromScreen === "AddOrderScreen" || fromScreen === "SettingsScreen") {
-                const loadOrders = async () => {
-                    console.log("from: ", fromScreen)
-                    // fromScreen = "";
-                    await getOrders()
-                }
-                loadOrders()
-            }
-        }, [fromScreen])
-    )
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         if (fromScreen === "AddOrderScreen" || fromScreen === "SettingsScreen") {
+    //             const loadOrders = async () => {
+    //                 console.log("from: ", fromScreen)
+    //                 // fromScreen = "";
+    //                 await getOrders()
+    //             }
+    //             loadOrders()
+    //         }
+    //     }, [fromScreen])
+    // )
 
     //runs only once when the screen is loaded/rendered [HACKY]
     useEffect(() => {
@@ -380,7 +380,7 @@ const HomeScreen: React.FC = observer((props: any) => {
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
             <StatusBar barStyle="light-content" />
-            <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 50, marginVertical: 15 }}>
+            <View style={{ width: '100%', justifyContent: "center", alignItems: "center", height: 50, marginVertical: 20 }}>
                 <SegmentedControl
                     style={{ width: '85%', height: 40 }}
                     appearance="dark"

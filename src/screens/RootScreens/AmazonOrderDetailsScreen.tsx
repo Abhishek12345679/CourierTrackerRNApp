@@ -13,6 +13,8 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
     const item = route.params.item
     const [deliveryStatus, setDeliveryStatus] = useState(false)
 
+    console.log(parseInt(item.orderId.split("-").join("")))
+
     useEffect(() => {
         const checkAmazonDeliveryStatus = async () => {
             const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkAmazonDeliveryStatus?tokens=${JSON.stringify(store.googleCredentials)}&newer_than=${store.settings.orders_newer_than}`)
