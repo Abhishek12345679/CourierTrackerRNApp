@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
-import { Datepicker, Input } from '@ui-kitten/components'
+import { Feather, FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { Button, Card, Datepicker, Input, Modal } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import { useRef } from 'react'
 import { View, Text, ScrollView, Image, Dimensions, Pressable, ActivityIndicator } from 'react-native'
@@ -24,6 +24,7 @@ const AddOrderScreen = ({ navigation }: any) => {
     const formRef = useRef({})
 
     const [loading, setLoading] = useState(false)
+    const [visible, setVisible] = useState(false)
 
     const ValidationSchema = yup.object().shape({
         orderNumber: yup
@@ -165,6 +166,44 @@ const AddOrderScreen = ({ navigation }: any) => {
         })
     }, [])
 
+    const imageOptions = {
+        mediaType: 'photo',
+        quality: 0.6,
+        cameraType: 'back',
+        saveToPhotos: false,
+    }
+
+    const launchDeviceCamera = async () => {
+        setVisible(false)
+
+        launchCamera(imageOptions as any, async (response) => {
+            if (!response.didCancel) {
+                if (response !== undefined) {
+                    const imageUrl = response.assets[0].uri!
+                    const fileName = response.assets[0].fileName!
+                    uploadImageAsync(imageUrl, fileName)
+                }
+
+            }
+        })
+    }
+
+    const launchDeviceGallery = async () => {
+        setVisible(false)
+        launchImageLibrary(imageOptions as any, async (response) => {
+            if (!response.didCancel) {
+                if (response !== undefined) {
+                    console.log(response)
+                    const imageUrl = response.assets[0].uri!
+                    const fileName = response.assets[0].fileName!
+                    uploadImageAsync(imageUrl, fileName)
+                }
+
+            }
+        })
+    }
+
+
     return (
         <View style={{ flex: 1 }}>
             <KeyboardAwareScrollView
@@ -238,27 +277,63 @@ const AddOrderScreen = ({ navigation }: any) => {
                                         alignItems: 'center',
                                         elevation: 1
                                     }}
-                                    onPress={async () => {
-                                        launchCamera({
-                                            mediaType: 'photo',
-                                            quality: 0.6,
-                                            cameraType: 'back',
-                                            includeBase64: true,
-                                            saveToPhotos: false,
-                                        }, async (response) => {
-                                            if (!response.didCancel) {
-                                                if (response !== undefined) {
-                                                    const imageUrl = response.assets[0].uri!
-                                                    const fileName = response.assets[0].fileName!
-                                                    uploadImageAsync(imageUrl, fileName)
-                                                }
-
-                                            }
-                                        })
+                                    onPress={() => {
+                                        setVisible(true)
                                     }}
                                 >
                                     <FontAwesome name="camera" size={20} color={values.productImage.length > 0 ? "#fff" : "#000"} />
                                 </Pressable>
+
+                                <Modal
+                                    visible={visible}
+                                    backdropStyle={{ backgroundColor: 'rgba(46, 49, 49, 0.4)', }}
+                                    onBackdropPress={() => setVisible(false)}
+                                    style={{ width: "70%", height: 200, marginTop: 20 }}
+                                >
+                                    <Card
+                                        style={{
+                                            flex: 1,
+                                            height: 200,
+                                            borderWidth: 0,
+                                            justifyContent: "space-evenly",
+                                            backgroundColor: '#242323',
+                                            elevation: 1,
+                                            borderRadius: 10
+                                        }}
+                                    >
+                                        <View style={{ justifyContent: 'center', alignItems: 'center', }}>
+                                            <Text
+                                                style={{ fontFamily: 'gotham-bold', fontSize: 15, color: '#fff' }}>
+                                                Launch Camera or Browse Gallery
+                                            </Text>
+                                        </View>
+                                        <View
+                                            style={{
+                                                // flexDirection: 'row',
+                                                width: '100%',
+                                                height: 150,
+                                                alignItems: 'center',
+                                                justifyContent: 'space-around',
+                                                borderWidth: 0
+                                            }}>
+                                            <Button
+                                                appearance="filled"
+                                                onPress={launchDeviceCamera}
+                                                style={{ width: '80%', height: 50, borderWidth: 0, backgroundColor: "#13c801" }}
+                                                accessoryLeft={() => (<FontAwesome name="camera" size={24} color="#fff" />)}>
+                                                Camera
+                                            </Button>
+                                            <Button
+                                                appearance='filled'
+                                                onPress={launchDeviceGallery}
+                                                accessoryLeft={() => (<Ionicons name="image" size={24} color="#fff" />)}
+                                                style={{ width: '80%', height: 50, borderWidth: 0, backgroundColor: "#13c801" }}>
+                                                Gallery
+                                            </Button>
+
+                                        </View>
+                                    </Card>
+                                </Modal>
 
                             </View>
                             <Input
