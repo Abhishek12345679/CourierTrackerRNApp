@@ -227,7 +227,7 @@ const store = types
           order.orderItems.map((item) => {
             if (item.orderId === orderId) {
               item.callReminder = status;
-              console.log('reminder set');
+              console.log('reminder toggled');
             }
           });
         }
@@ -244,7 +244,7 @@ const store = types
           order.orderItems.map((item) => {
             if (item.orderId === orderId) {
               item.callReminder = status;
-              console.log('reminder set');
+              console.log('reminder toggled');
             }
           });
         }

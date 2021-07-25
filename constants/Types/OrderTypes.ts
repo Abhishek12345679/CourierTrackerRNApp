@@ -6,6 +6,11 @@ export type Credentials = {
   expiry_date: number;
 };
 
+export type NotificationInfo = {
+  orderId: string;
+  notificationId: number;
+};
+
 export type Order = {
   orderId: string;
   orderNumber: string;

@@ -26,11 +26,12 @@ import { parse } from 'react-native-svg';
 
 const HomeScreen: React.FC = observer((props: any) => {
 
-    // const getManualOrders = async () => {
-    //     const orders = await AsyncStorage.getItem('orders')
-    //     console.log(orders)
-    // }
-    // getManualOrders()
+    const getManualOrders = async () => {
+        const orders = await AsyncStorage.getItem('notificationList')
+        console.log(orders)
+    }
+    getManualOrders()
+
 
 
     const [gmailAccessStatus, setGmailAccessStatus] = useState(props.route.params.gmailAccess)

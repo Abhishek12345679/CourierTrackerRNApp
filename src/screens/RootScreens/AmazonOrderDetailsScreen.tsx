@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform } from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import { sensitiveData } from '../../../constants/sen_data'
+import { NotificationInfo } from '../../../constants/Types/OrderTypes'
 import Delivered from '../../components/Delivered'
-import { callReminder } from '../../helpers/notificationHelpers'
+import { callReminder, parseHexToInt, parseHexToString, removeNotificationIdLocally } from '../../helpers/notificationHelpers'
 import store from '../../store/store'
 import { copyToClipboard } from './OrderDetailsScreen'
 
@@ -13,7 +14,6 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
     const item = route.params.item
     const [deliveryStatus, setDeliveryStatus] = useState(false)
 
-    console.log(parseInt(item.orderId.split("-").join("")))
 
     useEffect(() => {
         const checkAmazonDeliveryStatus = async () => {
@@ -99,11 +99,15 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: "#000", height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={async () => {
                     if (!item.callReminder) {
+                        const notificationInfo: NotificationInfo = {
+                            orderId: item.orderId,
+                            notificationId: Math.trunc(Math.random() * 1000000)
+                        }
                         await store.toggleAmazonCallReminder(item.orderId, item.ETA, true)
-                        callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
+                        callReminder('', notificationInfo, item.orderNumber, item.ETA, 'amazon');
                     } else {
                         await store.toggleAmazonCallReminder(item.orderId, item.ETA, false)
-                        PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
+                        await removeNotificationIdLocally(item.orderId) //cancel notification
                     }
                 }}>
 

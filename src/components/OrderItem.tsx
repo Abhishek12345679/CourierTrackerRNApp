@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, Pressable, Linking, ListRenderItem, Platform, TouchableOpacity, Image } from 'react-native'
 // import { Image } from 'react-native-ui-lib'
-import { Order } from '../../constants/Types/OrderTypes'
+import { NotificationInfo, Order } from '../../constants/Types/OrderTypes'
 
 import { useNavigation } from '@react-navigation/native';
 import store from '../store/store';
 import { observer } from 'mobx-react';
 import { sensitiveData } from '../../constants/sen_data';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { callReminder } from '../helpers/notificationHelpers';
+import { callReminder, parseHexToInt, parseHexToString, removeNotificationIdLocally } from '../helpers/notificationHelpers';
 import PushNotification from 'react-native-push-notification';
 
 
@@ -17,16 +17,12 @@ import PushNotification from 'react-native-push-notification';
 const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
     console.log(item)
     const navigation = useNavigation()
-
     const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
-
 
     const formattedPrice = new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR'
     }).format(parseInt(item.productPrice))
-
-
 
     const checkFkAndMyntraDeliveryStatus = async (pName: string, from: string) => {
         const statusResponse = await fetch(`${sensitiveData.baseUrl}/check${from}DeliveryStatus`, {
@@ -122,11 +118,16 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                         }}
                         onPress={async () => {
                             if (!item.callReminder) {
+                                const notificationInfo: NotificationInfo = {
+                                    orderId: item.orderId,
+                                    notificationId: Math.trunc(Math.random() * 1000000)
+                                }
                                 await store.toggleCallReminder(item.orderId, item.ETA, true)
-                                callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
+                                console.log("called")
+                                callReminder(item.productImage, notificationInfo, item.orderNumber, item.ETA, item.from, item.productName)
                             } else {
                                 await store.toggleCallReminder(item.orderId, item.ETA, false)
-                                PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
+                                await removeNotificationIdLocally(item.orderId) // test
                             }
                         }}
                     >

@@ -10,8 +10,10 @@ import ImageColors from 'react-native-image-colors'
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Feather } from '@expo/vector-icons'
 import Delivered from '../../components/Delivered'
-import { callReminder } from '../../helpers/notificationHelpers'
+import { callReminder, parseHexToInt, parseHexToString, removeNotificationIdLocally } from '../../helpers/notificationHelpers'
 import PushNotification from 'react-native-push-notification'
+import { NotificationInfo } from '../../../constants/Types/OrderTypes'
+
 
 export const copyToClipboard = (orderNumber: string) => {
     Clipboard.setString(orderNumber);
@@ -183,11 +185,15 @@ const OrderDetailsScreen = observer((props: any) => {
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: primaryColor, height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={async () => {
                     if (!item.callReminder) {
+                        const notificationInfo: NotificationInfo = {
+                            orderId: item.orderId,
+                            notificationId: Math.trunc(Math.random() * 1000000)
+                        }
                         await store.toggleCallReminder(item.orderId, item.ETA, true)
-                        callReminder(item.productImage, item.orderId, item.orderNumber, item.ETA, item.from, item.productName)
+                        callReminder(item.productImage, notificationInfo, item.orderNumber, item.ETA, item.from, item.productName)
                     } else {
                         await store.toggleCallReminder(item.orderId, item.ETA, false)
-                        PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
+                        await removeNotificationIdLocally(item.orderId)//cancel notification
                     }
                 }}>
 

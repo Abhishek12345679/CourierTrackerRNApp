@@ -1,18 +1,17 @@
 import React, { useState } from 'react'
 import { View, Text, Pressable, Linking, ListRenderItem, Platform, TouchableOpacity } from 'react-native'
-import { AmazonOrder } from '../../constants/Types/OrderTypes'
+import { AmazonOrder, NotificationInfo } from '../../constants/Types/OrderTypes'
 
 import { useNavigation } from '@react-navigation/native';
 import { observer } from 'mobx-react';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import store from '../store/store';
-import { callReminder } from '../helpers/notificationHelpers';
+import { callReminder, parseHexToInt, parseHexToString, removeNotificationIdLocally } from '../helpers/notificationHelpers';
 import PushNotification from 'react-native-push-notification';
 
 
 const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) => {
     const navigation = useNavigation()
-    const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
 
     return (
         <Pressable
@@ -77,11 +76,15 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                         }}
                         onPress={async () => {
                             if (!item.callReminder) {
+                                const notificationInfo: NotificationInfo = {
+                                    orderId: item.orderId,
+                                    notificationId: Math.trunc(Math.random() * 1000000)
+                                }
                                 await store.toggleAmazonCallReminder(item.orderId, item.ETA, true)
-                                callReminder('', item.orderId, item.orderNumber, item.ETA, 'amazon');
+                                callReminder('', notificationInfo, item.orderNumber, item.ETA, 'amazon');
                             } else {
                                 await store.toggleAmazonCallReminder(item.orderId, item.ETA, false)
-                                PushNotification.cancelLocalNotifications({ id: item.orderId }) //cancel notification
+                                await removeNotificationIdLocally(item.orderId) //cancel notification
                             }
                         }}
                     >

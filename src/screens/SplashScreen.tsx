@@ -67,6 +67,7 @@ const SplashScreen = observer(() => {
                     await initiateAllReminders()
                     break;
                 case ReminderFrequency.selected:
+                    console.log("selected")
                     PushNotification.cancelAllLocalNotifications()
                     await initiateSelectedReminders()
                     break;
