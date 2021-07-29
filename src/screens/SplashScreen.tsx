@@ -4,7 +4,10 @@ import React, { useEffect } from 'react'
 import { View, Text, Platform, Image, StatusBar } from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import { initiateAllReminders, initiateSelectedReminders } from '../helpers/notificationHelpers'
+import { getOrders } from '../helpers/ordersHelpers'
 import store from '../store/store'
+
+import RNBootSplash from "react-native-bootsplash";
 
 
 enum ReminderFrequency {
@@ -15,30 +18,31 @@ enum ReminderFrequency {
 
 const SplashScreen = observer(() => {
 
+    console.log("Splash Screen Visible !!")
+
     // fetch credentials from the Local Storage of the device
     const getCredentials = async () => {
-        console.log('splash screen')
         store.setTryAutoLogin()
 
         const credentials = await AsyncStorage.getItem('loginCredentials')
         const googleCredentials = await AsyncStorage.getItem('credentials')
 
-        console.log('google creds: ', googleCredentials)
+        // console.log('google creds: ', googleCredentials)
 
         if (credentials) {
             store.setLoginCredentials(JSON.parse(credentials!))
             if (googleCredentials) {
                 if (JSON.parse(googleCredentials).refresh_token !== "" || JSON.parse(googleCredentials).refresh_token !== undefined) {
-                    console.log('Credentials: ', JSON.stringify(credentials, null, 4))
+                    // console.log('Credentials: ', JSON.stringify(credentials, null, 4))
                     store.setCredentials(JSON.parse(googleCredentials))
                 } else {
                     const refToken = await AsyncStorage.getItem('refresh_token')
-                    console.log("ref: ", refToken)
+                    // console.log("ref: ", refToken)
                     let newCreds = JSON.parse(googleCredentials!)
                     newCreds.refresh_token = refToken
 
                     store.setCredentials(newCreds)
-                    console.log('Credentials: ', credentials)
+                    // console.log('Credentials: ', credentials)
                 }
             }
         }
@@ -59,11 +63,17 @@ const SplashScreen = observer(() => {
 
     useEffect(() => {
         const startUp = async (reminderFrequency: string) => {
-            await getCredentials()
-            await fetchSettings()
 
+            const init = async () => {
+                // …do multiple sync or async tasks
+                await getCredentials()
+                await fetchSettings()
+                await getOrders()
+
+            };
             switch (reminderFrequency) {
                 case ReminderFrequency.all:
+                    console.log("ALL")
                     await initiateAllReminders()
                     break;
                 case ReminderFrequency.selected:
@@ -72,25 +82,30 @@ const SplashScreen = observer(() => {
                     await initiateSelectedReminders()
                     break;
                 case ReminderFrequency.none:
+                    console.log("NONE")
                     PushNotification.cancelAllLocalNotifications()
                     break;
                 default:
                     console.error("Invalid Case")
                 //add default code
             }
+            init().then(() => {
+                RNBootSplash.hide()
+            }).catch((err) => {
+                console.error(err)
+                RNBootSplash.hide()
+            })
         }
         startUp(store.settings.reminder_frequency)
     }, [])
+
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#121212" }}>
             <StatusBar backgroundColor="#121212" barStyle="light-content" />
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                {/* <Text style={{ fontSize: 80, color: '#a5a2a2', fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', }}>AIO</Text> */}
                 <Image source={require('../Assets/Icons/appicon.png')} style={{ width: 125, height: 125 }} />
-                {/* <Text style={{ fontSize: 20, color: '#fff', fontWeight: "bold", }}>OrderGator </Text> */}
             </View>
-            {/* <Text style={{ fontSize: 15, color: '#a39e9e', fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', marginBottom: 10 }}>Made with Love in 🇳🇪 </Text> */}
         </View>
     )
 })

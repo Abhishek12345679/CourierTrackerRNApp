@@ -14,32 +14,33 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { Provider } from 'mobx-react';
 import store from './src/store/store';
 
-declare const global: { HermesInternal: null | {} };
+import RNBootSplash from "react-native-bootsplash";
+import { useEffect } from 'react';
 
-//TODO:  add loading up orders here 
+declare const global: { HermesInternal: null | {} };
 
 const App = () => {
   const [fontLoaded, setFontLoaded] = useState<boolean>();
-  const fetchFonts = () => {
+
+  const fetchFonts = async () => {
     return Fonts.loadAsync({
       "segoe-bold": require("./constants/Fonts/Segoe_UI_Bold.ttf"),
       "segoe-normal": require("./constants/Fonts/Segoe_UI.ttf"),
       "gotham-black": require("./constants/Fonts/Gotham/Gotham-Black.otf"),
       "gotham-light": require("./constants/Fonts/Gotham/Gotham-Light.otf"),
       "gotham-normal": require("./constants/Fonts/Gotham/GothamBook.ttf"),
-      "segoe-bold": require("./constants/Fonts/Gotham/GothamBold.ttf"),
+      "gotham-bold": require("./constants/Fonts/Gotham/GothamBold.ttf"),
     });
   };
 
-  if (!fontLoaded) {
-    return (
-      <AppLoading
-        startAsync={fetchFonts}
-        onFinish={() => setFontLoaded(true)}
-        onError={(err: Error) => console.log(err)}
-      />
-    );
-  }
+  useEffect(() => {
+    const init = async () => {
+      // …do multiple sync or async tasks
+      await fetchFonts()
+      await RNBootSplash.show()
+    };
+    init()
+  }, []);
 
   return (
     <Provider store={store}>

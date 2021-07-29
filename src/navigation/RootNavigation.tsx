@@ -8,6 +8,7 @@ import { DarkTheme } from '../../constants/Themes/DarkTheme';
 import store from '../store/store';
 import { observer } from 'mobx-react';
 import SplashScreen from '../screens/SplashScreen';
+import RNBootSplash from "react-native-bootsplash";
 
 
 const AppContainer = observer(() => {

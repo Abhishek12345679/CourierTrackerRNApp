@@ -23,16 +23,9 @@ import AmazonOrderList from '../../components/AmazonOrderList'
 import PushNotification from "react-native-push-notification";
 import { Button } from 'react-native';
 import { parse } from 'react-native-svg';
+import { getAmazonOrders, getOrders } from '../../helpers/ordersHelpers';
 
 const HomeScreen: React.FC = observer((props: any) => {
-
-    const getManualOrders = async () => {
-        const orders = await AsyncStorage.getItem('notificationList')
-        console.log(orders)
-    }
-    getManualOrders()
-
-
 
     const [gmailAccessStatus, setGmailAccessStatus] = useState(props.route.params.gmailAccess)
     const [isLoading, setIsLoading] = useState(false)
@@ -53,48 +46,6 @@ const HomeScreen: React.FC = observer((props: any) => {
         amazon = "amazon",
     }
 
-    useEffect(() => {
-        const fetchInfo = async () => {
-            fetchUserInfo()
-        }
-        fetchInfo()
-    }, [])
-
-    const onRefresh = React.useCallback(() => {
-        console.log("refreshing...")
-        setRefreshing(true);
-        getOrders().then(() => {
-            setRefreshing(false)
-        }).catch((err) => {
-            setRefreshing(false)
-        })
-    }, []);
-
-    const getAmazonOrders = async (auth: Credentials) => {
-        const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
-        const AmazonOrders = await AZResponse.json()
-        // console.log(JSON.stringify(AmazonOrders.amazonOrders, null, 2))
-        return AmazonOrders.amazonOrders
-    }
-
-    const getFlipkartOrders = async (auth: Credentials) => {
-        const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
-        const FlipkartOrders = await FKResponse.json()
-        return FlipkartOrders.flipkartOrders
-    }
-    const getMyntraOrders = async (auth: Credentials) => {
-        const MResponse = await fetch(`${sensitiveData.baseUrl}/getMyntraOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
-        const MyntraOrders = await MResponse.json()
-        return MyntraOrders.myntraOrders
-    }
-
-    const getAjioOrders = async (auth: Credentials) => {
-        const AResponse = await fetch(`${sensitiveData.baseUrl}/getAjioOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
-        const AjioOrders = await AResponse.json()
-        return AjioOrders.ajioOrders
-    }
-
-
     const fetchUserInfo = async () => {
         const userInfo = await store.fetchUserInfo()
         if (userInfo !== undefined) {
@@ -103,133 +54,15 @@ const HomeScreen: React.FC = observer((props: any) => {
         }
     }
 
-    const fetchManualOrders = async (): Promise<Order[] | unknown[]> => {
-        let emptyOrders: Order[] = [];
-        return await database().ref(`/users/${store.loginCredentials.uid}/orders`)
-            .once('value')
-            .then((snapshot) => {
-                const orders = snapshot.val()
-                console.log(orders)
-                if (orders === null) {
-                    return emptyOrders
-                }
-                const newOrders = Object.entries(orders).map(([_, value]) => value)
-                return newOrders
-            });
-    }
-
-    const getOrders = async () => {
-
-        setFetchingOrders(true)
-        try {
-
-            const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
-            const myntraOrders = await getMyntraOrders(store.googleCredentials)
-            const ajioOrders = await getAjioOrders(store.googleCredentials)
-            const amazonOrders = await getAmazonOrders(store.googleCredentials)
-
-            const manualOrders = await fetchManualOrders()
-
-            const groupedOrders = await groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders as Order[])
-            const sortedOrders = sortOrders(groupedOrders!)
-
-            const groupedAmazonOrders = await groupAmazonOrders(amazonOrders)
-            const sortedAmazonOrders = sortAmazonOrders(groupedAmazonOrders)
-
-            await store.saveOrders(sortedOrders)
-            await store.saveOrdersLocally(sortedOrders)
-            await store.saveAmazonOrders(sortedAmazonOrders)
-            await store.saveAmazonOrdersLocally(sortedAmazonOrders)
-
-            setTimeout(() => {
-                fromScreen = ""
-                setFetchingOrders(false)
-            }, 5000)
-        } catch (err) {
-            console.error(err)
-            setFetchingOrders(false)
-        }
-    }
-
-
-    const sortOrders = (groupedOrders: OrderListType[]) => {
-        groupedOrders.sort((a: OrderListType, b: OrderListType) => {
-            return parseInt(a.EstimatedDeliveryTime) - parseInt(b.EstimatedDeliveryTime)
+    const onRefresh = useCallback(() => {
+        console.log("refreshing...")
+        setRefreshing(true);
+        getOrders().then(() => {
+            setRefreshing(false)
+        }).catch((err) => {
+            setRefreshing(false)
         })
-        return groupedOrders
-    }
-
-    const groupOrders = async (flipkartOrders: Order[], myntraOrders: Order[], ajioOrders: Order[], manualOrders: Order[]) => {
-        try {
-
-            let superArray: Order[] = []
-            superArray = [...flipkartOrders, ...myntraOrders, ...ajioOrders, ...manualOrders]
-
-            let orders = await AsyncStorage.getItem('orders')
-            if (orders) {
-                const parsedOrders = JSON.parse(orders)
-                const newOrders: Order[] = parsedOrders.reduce((orderList: Order[], items: OrderListType) => [...orderList, ...items.orderItems], [])
-
-                newOrders.forEach((localItem) => {
-                    superArray.forEach((item) => {
-                        console.log(item.orderId, localItem)
-                        if (item.orderId === localItem.orderId) {
-                            console.log("matched")
-                            item.callReminder = localItem.callReminder
-                        }
-                    })
-                })
-            }
-
-            const groups = superArray.reduce((acc: any, order: Order) => {
-                acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
-                return acc
-            }, {})
-
-            const newOrderList: OrderListType[] = Object.entries(groups).map(([k, v]) => ({
-                EstimatedDeliveryTime: k,
-                orderItems: v as Order[]
-            }))
-            return newOrderList
-        } catch (err) {
-            console.error(err)
-        }
-    }
-
-    const groupAmazonOrders = async (amazonOrders: AmazonOrder[]) => {
-
-        let orders = await AsyncStorage.getItem('amazonOrders')
-        if (orders) {
-            const parsedOrders = JSON.parse(orders)
-            const newOrders: Order[] = parsedOrders.reduce((orderList: AmazonOrder[], items: AmazonOrderListType) => [...orderList, ...items.orderItems], [])
-
-            newOrders.forEach((localItem) => {
-                amazonOrders.forEach((item) => {
-                    if (item.orderId === localItem.orderId) {
-                        item.callReminder = localItem.callReminder
-                    }
-                })
-            })
-        }
-
-        const groups = amazonOrders.reduce((acc: any, order: AmazonOrder) => {
-            acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
-            return acc
-        }, {})
-
-        const newOrderList: AmazonOrderListType[] = Object.entries(groups).map(([k, v]) => ({
-            EstimatedDeliveryTime: k,
-            orderItems: v as AmazonOrder[]
-        }))
-        return newOrderList
-    }
-
-    const sortAmazonOrders = (groupedOrders: AmazonOrderListType[]) => {
-        groupedOrders.sort((a: AmazonOrderListType, b: AmazonOrderListType) => {
-            return parseInt(a.EstimatedDeliveryTime) - parseInt(b.EstimatedDeliveryTime)
-        })
-        return groupedOrders
-    }
+    }, []);
 
     const renderOrderItem: ListRenderItem<OrderListType> = ({ item, index, separators }) => (
         <OrderList
@@ -326,27 +159,27 @@ const HomeScreen: React.FC = observer((props: any) => {
     // )
 
     //runs only once when the screen is loaded/rendered [HACKY]
-    useEffect(() => {
-        const loadOrders = async () => {
-            const googleCreds = await AsyncStorage.getItem('credentials')
-            if (googleCreds !== null) {
-                setGmailAccessStatus(true)
-                const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
-                const amazonOrdersInAsyncStorage = await AsyncStorage.getItem('amazonOrders')
-                if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
-                    await getOrders()
-                    await fetchUserInfo()
-                    // await initiateNotifications()
+    // useEffect(() => {
+    //     const loadOrders = async () => {
+    //         const googleCreds = await AsyncStorage.getItem('credentials')
+    //         if (googleCreds !== null) {
+    //             setGmailAccessStatus(true)
+    //             const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
+    //             const amazonOrdersInAsyncStorage = await AsyncStorage.getItem('amazonOrders')
+    //             if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
+    //                 await getOrders()
+    //                 await fetchUserInfo()
+    //                 // await initiateNotifications()
 
-                } else {
-                    await store.saveOrders(JSON.parse(ordersInAsyncStorage!))
-                    await store.saveAmazonOrders(JSON.parse(amazonOrdersInAsyncStorage!))
-                    // await initiateNotifications()
-                }
-            }
-        }
-        loadOrders()
-    }, [])
+    //             } else {
+    //                 await store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+    //                 await store.saveAmazonOrders(JSON.parse(amazonOrdersInAsyncStorage!))
+    //                 // await initiateNotifications()
+    //             }
+    //         }
+    //     }
+    //     loadOrders()
+    // }, [])
 
     const getGoogleAccess = async () => {
         try {
@@ -377,7 +210,7 @@ const HomeScreen: React.FC = observer((props: any) => {
             </View>
         )
 
-    console.log(gmailAccessStatus)
+    // console.log(gmailAccessStatus)
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
             <StatusBar barStyle="light-content" />
