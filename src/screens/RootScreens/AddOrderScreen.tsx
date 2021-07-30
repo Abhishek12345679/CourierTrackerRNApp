@@ -16,7 +16,8 @@ import storage from '@react-native-firebase/storage';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 import Firebase from '@react-native-firebase/app'
-import { Order } from '../../../constants/Types/OrderTypes'
+import { NotificationInfo, Order } from '../../../constants/Types/OrderTypes'
+import { callReminder } from '../../helpers/notificationHelpers'
 
 const AddOrderScreen = ({ navigation }: any) => {
 
@@ -135,15 +136,24 @@ const AddOrderScreen = ({ navigation }: any) => {
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
                         const onSubmit = async () => {
-                            let callReminder: boolean = addToCalendarRef.current.values.callReminder
+                            let callReminderVal: boolean = addToCalendarRef.current.values.callReminder
                             const order: Order = formRef.current.values
 
                             const orderId = stringToUUID(order.productName + order.orderNumber + order.quantity)
                             const formattedDate = formatDate(order.ETA)
 
-                            order.callReminder = callReminder
+                            // order.callReminder = callReminder
                             order.orderId = orderId
                             order.ETA = formattedDate
+
+                            if (callReminderVal) {
+                                const notificationInfo: NotificationInfo = {
+                                    orderId: orderId,
+                                    notificationId: Math.trunc(Math.random() * 1000000)
+                                }
+                                await store.toggleCallReminder(orderId, formattedDate, true)
+                                callReminder(order.productImage, notificationInfo, order.orderNumber, order.ETA, order.from, order.productName)
+                            }
 
                             database()
                                 .ref(`/users/${store.loginCredentials.uid}/orders`)
@@ -152,9 +162,8 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 .then(() => {
                                     console.log('Data set.')
                                     store.updateManualOrders()
-                                    navigation.navigate("HomeScreen", {
-                                        from: "AddOrderScreen"
-                                    })
+                                    store.updateReRenderScreen("settings")
+                                    navigation.goBack()
                                 });
                         }
                         onSubmit()

@@ -11,9 +11,6 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { callReminder, removeNotificationIdLocally } from '../helpers/notificationHelpers';
 import PushNotification from 'react-native-push-notification';
 
-
-//BUG: Images from firebase storage not visible on OrderItem but visible in OrderDetailsScreen
-
 const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
     console.log(item)
     const navigation = useNavigation()

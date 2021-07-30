@@ -30,6 +30,8 @@ export type settingsType = {
   // show_archived_items: boolean;
 };
 
+export type ForceRenderScreens = 'settings' | 'addOrder' | 'auth' | null;
+
 const settings = types.model('settings', {
   orders_newer_than: types.optional(types.string, '7'),
   reminder_frequency: types.optional(types.string, 'selected'),
@@ -116,6 +118,13 @@ const store = types
     didTryAutoLogin: types.optional(types.boolean, false),
     newItemAdded: types.optional(types.boolean, false),
     manualOrders: types.optional(types.array(types.string), []),
+    reRenderScreen: types.maybeNull(
+      types.union(
+        types.literal('settings'),
+        types.literal('addOrder'),
+        types.literal('auth'),
+      ),
+    ),
   })
   .actions((self) => ({
     updateManualOrders() {
@@ -251,6 +260,11 @@ const store = types
       });
       yield self.saveAmazonOrdersLocally(self.amazonOrders);
     }),
+  }))
+  .actions((self) => ({
+    updateReRenderScreen(screen: ForceRenderScreens) {
+      self.reRenderScreen = screen;
+    },
   }))
   .create({});
 

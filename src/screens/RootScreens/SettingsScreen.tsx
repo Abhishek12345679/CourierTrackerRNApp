@@ -80,11 +80,9 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
                         store.updateSettings(switchesRef.current.values)
+                        store.updateReRenderScreen("settings")
                         console.log(store.settings)
-                        props.navigation.navigate("HomeScreen", {
-                            from: "SettingsScreen"
-                        })
-
+                        props.navigation.goBack()
                     }}>
                     <MaterialIcons name="done" size={24} />
                 </TouchableOpacity>
@@ -354,7 +352,6 @@ const SettingsScreen: React.FC = observer((props: any) => {
                     </View>
                 </Card>
             </Modal>
-
         </ScrollView >
     )
 })

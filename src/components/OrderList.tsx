@@ -7,7 +7,7 @@ const OrderList: ListRenderItem<OrderListType> = ({ item, index, separators, goT
     const ETA = new Date(parseInt(item.EstimatedDeliveryTime)).toDateString()
     return (
         <View style={{ marginBottom: 15 }}>
-            <Text onPress={goToOverview} style={{ color: "#fff", fontFamily: 'segoe-bold', fontSize: 18, marginTop: 15, marginStart: 15 }}>{ETA}</Text>
+            <Text onPress={goToOverview} style={{ color: "#fff", fontFamily: 'segoe-bold', fontSize: 18, marginTop: 15, marginStart: 25 }}>{ETA}</Text>
             {item.orderItems && item.orderItems.map((order, i) => (
                 <OrderItem
                     key={order.orderId}

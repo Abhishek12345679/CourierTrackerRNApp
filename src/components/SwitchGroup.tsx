@@ -16,7 +16,7 @@ const SwitchGroup = (props: switchGroupProps) => {
         <View
             style={{ flexDirection: 'row', width: '100%', height: props.height, justifyContent: 'space-between', alignItems: 'center', paddingStart: 30, paddingEnd: 30, backgroundColor: props.bgColor }}>
             <Text style={{ color: '#fff', fontSize: 18, }}>{props.label}</Text>
-            <Switch value={props.toggleStatus} onValueChange={props.onValueChange} disabled={props.disabled} thumbColor="#000" trackColor={{ false: '#11b302', true: "#fff" }} />
+            <Switch value={props.toggleStatus} onValueChange={props.onValueChange} disabled={props.disabled} />
         </View>
     )
 }

@@ -24,6 +24,7 @@ import PushNotification from "react-native-push-notification";
 import { Button } from 'react-native';
 import { parse } from 'react-native-svg';
 import { getAmazonOrders, getOrders } from '../../helpers/ordersHelpers';
+import { getSnapshot } from 'mobx-state-tree';
 
 const HomeScreen: React.FC = observer((props: any) => {
 
@@ -38,7 +39,6 @@ const HomeScreen: React.FC = observer((props: any) => {
     const [pfp, setPfp] = useState(store.userInfo.profilePicture)
     const [name, setName] = useState(store.userInfo.name)
     const [refreshing, setRefreshing] = useState<boolean>(false);
-    const [forceRefresh, setForceRefresh] = useState(0)
 
     let fromScreen = props.route.params.from
 
@@ -56,11 +56,11 @@ const HomeScreen: React.FC = observer((props: any) => {
 
     const onRefresh = useCallback(() => {
         console.log("refreshing...")
-        setRefreshing(true);
+        setFetchingOrders(true);
         getOrders().then(() => {
-            setRefreshing(false)
+            setFetchingOrders(false)
         }).catch((err) => {
-            setRefreshing(false)
+            setFetchingOrders(false)
         })
     }, []);
 
@@ -143,43 +143,48 @@ const HomeScreen: React.FC = observer((props: any) => {
         }, [fromScreen])
     )
 
+    useFocusEffect(
+        useCallback(() => {
+            const screen = store.reRenderScreen
+            if (screen === "settings") {
+                const loadOrders = async () => {
+                    setFetchingOrders(true)
+                    await getOrders()
+                    setFetchingOrders(false)
+                }
+                loadOrders()
+            } else if (screen === "addOrder") {
+                const loadOrders = async () => {
+                    setFetchingOrders(true)
+                    await getOrders()
+                    setFetchingOrders(false)
+                }
+                loadOrders()
+            } else if (screen === "auth") {
+                const loadOrders = async () => {
+                    const googleCreds = await AsyncStorage.getItem('credentials')
+                    if (googleCreds !== null) {
+                        setGmailAccessStatus(true)
+                        const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
+                        const amazonOrdersInAsyncStorage = await AsyncStorage.getItem('amazonOrders')
+                        if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
+                            await getOrders()
+                            await fetchUserInfo()
 
-    // re-fetch all orders when adding new manual order
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         if (fromScreen === "AddOrderScreen" || fromScreen === "SettingsScreen") {
-    //             const loadOrders = async () => {
-    //                 console.log("from: ", fromScreen)
-    //                 // fromScreen = "";
-    //                 await getOrders()
-    //             }
-    //             loadOrders()
-    //         }
-    //     }, [fromScreen])
-    // )
+                        } else {
+                            await store.saveOrders(JSON.parse(ordersInAsyncStorage!))
+                            await store.saveAmazonOrders(JSON.parse(amazonOrdersInAsyncStorage!))
+                        }
+                    }
+                }
+                loadOrders()
+            } else {
+                //...
+            }
+            store.updateReRenderScreen(null)
+        }, [store.reRenderScreen])
+    )
 
-    //runs only once when the screen is loaded/rendered [HACKY]
-    // useEffect(() => {
-    //     const loadOrders = async () => {
-    //         const googleCreds = await AsyncStorage.getItem('credentials')
-    //         if (googleCreds !== null) {
-    //             setGmailAccessStatus(true)
-    //             const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
-    //             const amazonOrdersInAsyncStorage = await AsyncStorage.getItem('amazonOrders')
-    //             if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
-    //                 await getOrders()
-    //                 await fetchUserInfo()
-    //                 // await initiateNotifications()
-
-    //             } else {
-    //                 await store.saveOrders(JSON.parse(ordersInAsyncStorage!))
-    //                 await store.saveAmazonOrders(JSON.parse(amazonOrdersInAsyncStorage!))
-    //                 // await initiateNotifications()
-    //             }
-    //         }
-    //     }
-    //     loadOrders()
-    // }, [])
 
     const getGoogleAccess = async () => {
         try {
@@ -196,9 +201,7 @@ const HomeScreen: React.FC = observer((props: any) => {
         }
     }
 
-
-    if (store.orders.length === 0 && !gmailAccessStatus)
-
+    if (store.orders.length === 0 && !gmailAccessStatus) {
         return (
             <View style={{ flex: 1, backgroundColor: '#121212' }}>
                 {
@@ -209,8 +212,8 @@ const HomeScreen: React.FC = observer((props: any) => {
                 </View>
             </View>
         )
+    }
 
-    // console.log(gmailAccessStatus)
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
             <StatusBar barStyle="light-content" />
@@ -248,9 +251,9 @@ const HomeScreen: React.FC = observer((props: any) => {
                                     justifyContent: 'center'
                                 }}
                                 keyExtractor={item => item.EstimatedDeliveryTime}
-                                data={store.orders.slice().reverse()}
+                                data={getSnapshot(store.orders).slice().reverse()}
                                 renderItem={renderOrderItem}
-                                refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
+                                refreshing={store.settings.allow_fetching_new_orders ? fetchingOrders : false}
                                 onRefresh={() => {
                                     store.settings.allow_fetching_new_orders && onRefresh()
                                 }
@@ -261,7 +264,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                                 style={{ flex: 1, backgroundColor: '#121212' }}
                                 refreshControl={
                                     <RefreshControl
-                                        refreshing={refreshing}
+                                        refreshing={fetchingOrders}
                                         onRefresh={onRefresh}
                                     />}
                             >
@@ -280,7 +283,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                                     justifyContent: 'center'
                                 }}
                                 keyExtractor={item => item.EstimatedDeliveryTime}
-                                data={store.amazonOrders.slice().reverse()}
+                                data={getSnapshot(store.amazonOrders).slice().reverse()}
                                 renderItem={renderAmazonOrderItem}
                                 refreshing={store.settings.allow_fetching_new_orders ? refreshing : false}
                                 onRefresh={() => {
@@ -293,7 +296,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                                 style={{ flex: 1, backgroundColor: '#121212' }}
                                 refreshControl={
                                     <RefreshControl
-                                        refreshing={refreshing}
+                                        refreshing={fetchingOrders}
                                         onRefresh={onRefresh}
                                     />}
                             >

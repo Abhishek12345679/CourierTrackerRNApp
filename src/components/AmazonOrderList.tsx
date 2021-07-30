@@ -7,19 +7,19 @@ const AmazonOrderList: ListRenderItem<AmazonOrderListType> = ({ item, index, sep
     const ETA = new Date(parseInt(item.EstimatedDeliveryTime)).toDateString()
     return (
         <View style={{ marginBottom: 15 }}>
-            <Text onPress={goToOverview} style={{ color: "#fff", fontFamily: 'segoe-bold', fontSize: 18, marginTop: 15, marginStart: 15 }}>{ETA}</Text>
-            {item.orderItems && item.orderItems.map((order, i) => (
-                <AmazonOrderItem
-                    key={order.orderId}
-                    item={order}
-                    index={i}
-                    separators={separators}
-                />
-            ))}
-        </View>
+            <Text onPress={goToOverview} style={{ color: "#fff", fontFamily: 'segoe-bold', fontSize: 18, marginTop: 15, marginStart: 25 }}>{ETA}</Text>
+            {
+                item.orderItems && item.orderItems.map((order, i) => (
+                    <AmazonOrderItem
+                        key={order.orderId}
+                        item={order}
+                        index={i}
+                        separators={separators}
+                    />
+                ))
+            }
+        </View >
     )
 }
 
 export default AmazonOrderList
-
-//TODO: add toggle reminder everywhere
