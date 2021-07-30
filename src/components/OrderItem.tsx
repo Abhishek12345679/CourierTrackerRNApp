@@ -8,7 +8,7 @@ import store from '../store/store';
 import { observer } from 'mobx-react';
 import { sensitiveData } from '../../constants/sen_data';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { callReminder, parseHexToInt, parseHexToString, removeNotificationIdLocally } from '../helpers/notificationHelpers';
+import { callReminder, removeNotificationIdLocally } from '../helpers/notificationHelpers';
 import PushNotification from 'react-native-push-notification';
 
 

@@ -10,7 +10,7 @@ import ImageColors from 'react-native-image-colors'
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Feather } from '@expo/vector-icons'
 import Delivered from '../../components/Delivered'
-import { callReminder, parseHexToInt, parseHexToString, removeNotificationIdLocally } from '../../helpers/notificationHelpers'
+import { callReminder, removeNotificationIdLocally } from '../../helpers/notificationHelpers'
 import PushNotification from 'react-native-push-notification'
 import { NotificationInfo } from '../../../constants/Types/OrderTypes'
 

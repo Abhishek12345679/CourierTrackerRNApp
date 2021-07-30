@@ -6,7 +6,7 @@ import PushNotification from 'react-native-push-notification'
 import { sensitiveData } from '../../../constants/sen_data'
 import { NotificationInfo } from '../../../constants/Types/OrderTypes'
 import Delivered from '../../components/Delivered'
-import { callReminder, parseHexToInt, parseHexToString, removeNotificationIdLocally } from '../../helpers/notificationHelpers'
+import { callReminder, removeNotificationIdLocally } from '../../helpers/notificationHelpers'
 import store from '../../store/store'
 import { copyToClipboard } from './OrderDetailsScreen'
 

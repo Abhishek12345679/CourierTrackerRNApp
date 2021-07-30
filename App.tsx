@@ -23,14 +23,14 @@ const App = () => {
   const [fontLoaded, setFontLoaded] = useState<boolean>();
 
   const fetchFonts = async () => {
-    return Fonts.loadAsync({
-      "segoe-bold": require("./constants/Fonts/Segoe_UI_Bold.ttf"),
-      "segoe-normal": require("./constants/Fonts/Segoe_UI.ttf"),
-      "gotham-black": require("./constants/Fonts/Gotham/Gotham-Black.otf"),
-      "gotham-light": require("./constants/Fonts/Gotham/Gotham-Light.otf"),
-      "gotham-normal": require("./constants/Fonts/Gotham/GothamBook.ttf"),
-      "gotham-bold": require("./constants/Fonts/Gotham/GothamBold.ttf"),
-    });
+    // return Fonts.loadAsync({
+    //   "segoe-bold": require("./constants/Fonts/Segoe_UI_Bold.ttf"),
+    //   "segoe-normal": require("./constants/Fonts/Segoe_UI.ttf"),
+    //   "gotham-black": require("./constants/Fonts/Gotham/Gotham-Black.otf"),
+    //   "gotham-light": require("./constants/Fonts/Gotham/Gotham-Light.otf"),
+    //   "gotham-normal": require("./constants/Fonts/Gotham/GothamBook.ttf"),
+    //   "gotham-bold": require("./constants/Fonts/Gotham/GothamBold.ttf"),
+    // });
   };
 
   useEffect(() => {

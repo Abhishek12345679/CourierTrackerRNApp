@@ -70,25 +70,27 @@ const SplashScreen = observer(() => {
                 await fetchSettings()
                 await getOrders()
 
+                if (store.orders.length > 0 && store.amazonOrders.length > 0)
+                    switch (reminderFrequency) {
+                        case ReminderFrequency.all:
+                            console.log("ALL")
+                            await initiateAllReminders()
+                            break;
+                        case ReminderFrequency.selected:
+                            console.log("selected")
+                            PushNotification.cancelAllLocalNotifications()
+                            await initiateSelectedReminders()
+                            break;
+                        case ReminderFrequency.none:
+                            console.log("NONE")
+                            PushNotification.cancelAllLocalNotifications()
+                            break;
+                        default:
+                            console.error("Invalid Case")
+                        //add default code
+                    }
             };
-            switch (reminderFrequency) {
-                case ReminderFrequency.all:
-                    console.log("ALL")
-                    await initiateAllReminders()
-                    break;
-                case ReminderFrequency.selected:
-                    console.log("selected")
-                    PushNotification.cancelAllLocalNotifications()
-                    await initiateSelectedReminders()
-                    break;
-                case ReminderFrequency.none:
-                    console.log("NONE")
-                    PushNotification.cancelAllLocalNotifications()
-                    break;
-                default:
-                    console.error("Invalid Case")
-                //add default code
-            }
+
             init().then(() => {
                 RNBootSplash.hide()
             }).catch((err) => {
