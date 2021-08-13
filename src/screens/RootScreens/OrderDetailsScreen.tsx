@@ -71,53 +71,53 @@ const OrderDetailsScreen = observer((props: any) => {
 
 
 
-    const checkFlipkartDeliveryStatus = async (productName: string) => {
-        try {
+    // const checkFlipkartDeliveryStatus = async (productName: string) => {
+    //     try {
 
-            const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkFlipkartDeliveryStatus`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
-            })
-            const delStat = await statusResponse.json()
-            console.log(delStat)
-            setDeliveryStatus(delStat)
-        } catch (err) {
-            console.error("error[checkFlipkartDeliveryStatus]: ", err)
-        }
-    }
+    //         const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkFlipkartDeliveryStatus`, {
+    //             method: "POST",
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
+    //         })
+    //         const delStat = await statusResponse.json()
+    //         console.log(delStat)
+    //         setDeliveryStatus(delStat)
+    //     } catch (err) {
+    //         console.error("error[checkFlipkartDeliveryStatus]: ", err)
+    //     }
+    // }
 
 
-    const checkMyntraDeliveryStatus = async (productName: string) => {
-        try {
-            const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkMyntraDeliveryStatus`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
-            })
-            const delStat = await statusResponse.json()
-            console.log(delStat)
-        } catch (err) {
-            console.error("error[checkMyntraDeliveryStatus]: ", err)
-        }
+    // const checkMyntraDeliveryStatus = async (productName: string) => {
+    //     try {
+    //         const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkMyntraDeliveryStatus`, {
+    //             method: "POST",
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
+    //         })
+    //         const delStat = await statusResponse.json()
+    //         console.log(delStat)
+    //     } catch (err) {
+    //         console.error("error[checkMyntraDeliveryStatus]: ", err)
+    //     }
 
-        // setDeliveryStatus(delStat)
-    }
+    //     // setDeliveryStatus(delStat)
+    // }
 
     useEffect(() => {
         console.log(item.from)
         extractColorsFromImage()
-        if (item.from === "flipkart") {
-            console.log(item.productName)
-            checkFlipkartDeliveryStatus(item.productName)
-        } else if (item.from.toLowerCase() === "myntra") {
-            console.log(item.productName)
-            checkMyntraDeliveryStatus(item.productName)
-        }
+        // if (item.from === "flipkart") {
+        //     console.log(item.productName)
+        //     checkFlipkartDeliveryStatus(item.productName)
+        // } else if (item.from.toLowerCase() === "myntra") {
+        //     console.log(item.productName)
+        //     checkMyntraDeliveryStatus(item.productName)
+        // }
     }, [item])
 
 
@@ -135,7 +135,10 @@ const OrderDetailsScreen = observer((props: any) => {
                     <View style={{ backgroundColor: '#000', opacity: 0.5, width: '100%', height: 400, position: 'absolute', borderRadius: 20 }}></View>
                     <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', marginBottom: 10, width: '100%', justifyContent: "space-between", alignItems: 'flex-end', paddingEnd: 10 }}>
                         <Text style={{ color: "#fff", fontSize: 25, fontFamily: 'segoe-bold', width: '80%', paddingHorizontal: 20 }}>{item.productName.slice(0, 50)}...</Text>
-                        <Delivered bgColor={primaryColor} status={deliveryStatus} width="20%" />
+                        {/**
+                         * commented out for v1
+                         * <Delivered bgColor={primaryColor} status={deliveryStatus} width="20%" /> */}
+
                     </View>
                     <Pressable
                         style={{ width: 50, height: 50, backgroundColor: '#ccc', position: 'absolute', marginTop: 10, marginStart: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}
