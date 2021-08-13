@@ -66,7 +66,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                     </TouchableOpacity>
                 </View>
                 <TouchableOpacity disabled={item.orderPreviewLink === ""} onPress={() => Linking.openURL(item.orderPreviewLink)} style={{ flexDirection: 'row', width: '90%', justifyContent: "space-between", padding: 20, alignItems: 'center', backgroundColor: "#222121", borderRadius: 10, marginBottom: 20 }}>
-                    <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, }}>{item.orderPreviewLink === "" ? "Link not available" : "Go to the Product/Order"}</Text>
+                    <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, fontFamily: 'gotham-bold' }}>{item.orderPreviewLink === "" ? "Link not available" : "Go to the Product/Order"}</Text>
                     {item.orderPreviewLink === "" ? <FontAwesome name="unlink" size={24} color="#fff" /> : <Feather name="link" size={24} color="#fff" />}
                 </TouchableOpacity>
 
@@ -95,6 +95,11 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                             <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'segoe-bold', fontSize: 15, marginTop: 20, lineHeight: 20 }}>{(item.delivery_address as string).split(", ").join("\n")}</Text>
                         </View>
                     </View>
+                </View>
+
+                <View style={{ flexDirection: 'row', width: '90%', justifyContent: "space-between", padding: 20, alignItems: 'center', backgroundColor: "#222121", borderRadius: 10, marginBottom: 20 }}>
+                    <Image source={require('../../Assets/BrandLogos/amazon.png')} style={{ height: 25, width: 25, marginEnd: 20 }} />
+                    <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, fontFamily: 'gotham-bold' }}>This Order has been scraped from Amazon</Text>
                 </View>
 
             </ScrollView>

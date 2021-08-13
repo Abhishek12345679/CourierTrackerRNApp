@@ -210,7 +210,8 @@ const HomeScreen: React.FC = observer((props: any) => {
                     !gmailAccessStatus && (<View style={{ flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center' }}><GoogleSignInCard onPress={getGoogleAccess} loading={isLoading} /></View>)
                 }
                 <View style={{ flex: 3, justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: "#fff" }}>No Orders</Text>
+                    <Text style={{ color: "#fff" }}>No Orders Yet!</Text>
+                    <Text style={{ color: "#fff" }}>Start Ordering!</Text>
                 </View>
             </View>
         )
@@ -270,7 +271,8 @@ const HomeScreen: React.FC = observer((props: any) => {
                                         onRefresh={onRefresh}
                                     />}
                             >
-                                <Text style={{ color: "#fff" }}>Kaalo Badal chaaye ko jasto :3</Text>
+                                <Text style={{ color: "#fff" }}>No Orders Yet!</Text>
+                                <Text style={{ color: "#fff" }}>Start Ordering!</Text>
                             </ScrollView>
                     :
                     fetchingOrders ?
@@ -294,7 +296,7 @@ const HomeScreen: React.FC = observer((props: any) => {
                                 }
                             /> :
                             <ScrollView
-                                contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+                                contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
                                 style={{ flex: 1, backgroundColor: '#121212' }}
                                 refreshControl={
                                     <RefreshControl
@@ -302,7 +304,8 @@ const HomeScreen: React.FC = observer((props: any) => {
                                         onRefresh={onRefresh}
                                     />}
                             >
-                                <Text style={{ color: "#fff" }}>Kaalo Badal chaaye ko jasto :3</Text>
+                                <Text style={{ color: "#fff" }}>No Orders Yet!</Text>
+                                <Text style={{ color: "#fff" }}>Start Ordering!</Text>
                             </ScrollView>
 
             }

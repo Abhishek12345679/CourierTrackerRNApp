@@ -192,6 +192,13 @@ const OrderDetailsScreen = observer((props: any) => {
                         }
                     </View>
                 </View>
+                <View style={{ flexDirection: 'row', width: '90%', justifyContent: "space-between", padding: 20, alignItems: 'center', backgroundColor: "#222121", borderRadius: 10, marginBottom: 20 }}>
+                    {item.from.toLowerCase() === "flipkart" ?
+                        <Image source={require('../../Assets/BrandLogos/flipkart.png')} style={{ height: 50, width: 50, marginEnd: 10 }} /> :
+                        item.from.toLowerCase() === "ajio" ? <Image source={require('../../Assets/BrandLogos/ajio.png')} style={{ height: 50, width: 50, marginEnd: 10 }} /> : item.from.toLowerCase() === "myntra" ?
+                            <Image source={require('../../Assets/BrandLogos/myntra.png')} style={{ height: 35, width: 50, marginEnd: 10 }} /> : <Text style={{ color: "#fff" }}>{item.from}</Text>}
+                    <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, fontFamily: 'gotham-bold' }}>This Order has been scraped from {item.from}.com</Text>
+                </View>
 
             </ScrollView>
             <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
