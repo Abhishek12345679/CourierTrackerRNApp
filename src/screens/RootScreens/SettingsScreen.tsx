@@ -4,7 +4,7 @@ import { Input, Styles, Modal, Card, Button } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import { observer } from 'mobx-react'
 import React, { useEffect, useRef, useState } from 'react'
-import { View, Text, ScrollView, Pressable, TouchableOpacity, StatusBar, TextInput, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, Pressable, TouchableOpacity, StatusBar, TextInput, ActivityIndicator, StyleSheet, Alert } from 'react-native'
 import { Avatar, Switch } from 'react-native-ui-lib'
 import GoogleSignInCard from '../../components/GoogleSignInCard'
 import GoogleSignOutCard from '../../components/GoogleSignOutCard'
@@ -18,6 +18,7 @@ export type reminderFrequency = "all" | "selected" | "none"
 
 const SettingsScreen: React.FC = observer((props: any) => {
 
+    const { navigation } = props
 
     const [signingOut, setSigningOut] = useState(false)
     const [submitting, setSubmitting] = useState(false)
@@ -56,7 +57,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
 
     const switches = [
         { label: "Remind me for all orders" },
-        { label: "allow fetching new orders" },
+        { label: "allow pull to refresh" },
         { label: "dark mode" },
         { label: "show archived orders" },
     ]
@@ -71,6 +72,44 @@ const SettingsScreen: React.FC = observer((props: any) => {
     ]
 
     const switchesRef = useRef()
+
+    // let hasUnsavedChanges = true
+    // if (switchesRef.current) {
+    //     hasUnsavedChanges = JSON.stringify(store.settings) === JSON.stringify(switchesRef.current.values)
+    // }
+
+
+    // FIXME: https://github.com/software-mansion/react-native-screens/pull/801
+
+    // useEffect(
+    //     () =>
+    //         navigation.addListener('beforeRemove', (e: any) => {
+    //             if (!hasUnsavedChanges) {
+    //                 // If we don't have unsaved changes, then we don't need to do anything
+    //                 return;
+    //             }
+
+    //             // Prevent default behavior of leaving the screen
+    //             e.preventDefault();
+
+    //             // Prompt the user before leaving the screen
+    //             Alert.alert(
+    //                 'Discard changes?',
+    //                 'You have unsaved changes. Are you sure to discard them and leave the screen?',
+    //                 [
+    //                     { text: "Don't leave", style: 'cancel', onPress: () => { } },
+    //                     {
+    //                         text: 'Discard',
+    //                         style: 'destructive',
+    //                         // If the user confirmed, then we dispatch the action we blocked earlier
+    //                         // This will continue the action that had triggered the removal of the screen
+    //                         onPress: () => props.navigation.dispatch(e.data.action),
+    //                     },
+    //                 ]
+    //             );
+    //         }),
+    //     [navigation, hasUnsavedChanges]
+    // );
 
 
     useEffect(() => {
@@ -216,7 +255,8 @@ const SettingsScreen: React.FC = observer((props: any) => {
                                 </View>
 
                                 <SettingsListItem bgColor="#ffffff00" height={70} label={switches[1].label} toggleStatus={values.allow_fetching_new_orders} onValueChange={(value: boolean) => setFieldValue('allow_fetching_new_orders', value)} />
-                                <SettingsListItem disabled={true} bgColor="#ffffff00" height={70} label={switches[2].label} toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', value)} />
+                                <SettingsListItem bgColor="#ffffff00" height={70} label={switches[2].label} subLabel="no light mode. COPE" toggleStatus={values.dark_mode} onValueChange={(value: boolean) => setFieldValue('dark_mode', true)} />
+
                                 {/* <SettingsListItem bgColor="#ffffff00" height={70} label={switches[3].label} toggleStatus={values.show_archived_items} onValueChange={(value: boolean) => setFieldValue('show_archived_items', value)} /> */}
                                 <Modal
                                     visible={editNewerThan}

@@ -1,7 +1,7 @@
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform } from 'react-native'
+import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform, ActivityIndicator } from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import { sensitiveData } from '../../../constants/sen_data'
 import { AmazonOrder, NotificationInfo } from '../../../constants/Types/OrderTypes'
@@ -13,10 +13,12 @@ import { copyToClipboard } from './OrderDetailsScreen'
 const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
     const item = route.params.item as AmazonOrder
     const [deliveryStatus, setDeliveryStatus] = useState(false)
+    const [loading, setLoading] = useState(false)
 
 
     useEffect(() => {
         const checkAmazonDeliveryStatus = async () => {
+            setLoading(true)
             const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkAmazonDeliveryStatus?tokens=${JSON.stringify(store.googleCredentials)}&newer_than=${store.settings.orders_newer_than}`)
             const delStat = await statusResponse.json()
             console.log(delStat.deliveredOrders)
@@ -25,6 +27,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                 if (orderNumber === item.orderNumber)
                     setDeliveryStatus(true)
             })
+            setLoading(false)
         }
         checkAmazonDeliveryStatus()
     }, [])
@@ -34,15 +37,15 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
             <StatusBar barStyle="light-content" backgroundColor="#121212" />
             <ScrollView style={{ flex: 1, backgroundColor: "#121212" }} contentContainerStyle={{ justifyContent: 'center', alignItems: "center" }}>
                 <View style={{ width: '95%', height: 400, position: "relative", marginTop: 10 }}>
-                    <Image
+                    {/* <Image
                         source={{ uri: "https://image.shutterstock.com/image-photo/businessman-holding-paper-say-no-260nw-105617738.jpg" }}
                         style={{ width: '100%', height: 400, resizeMode: 'cover', borderRadius: 20, marginTop: 0, backgroundColor: '#000' }}
-                    />
+                    /> */}
 
                     <View style={{ backgroundColor: '#000', opacity: 0.5, width: '100%', height: 400, position: 'absolute', borderRadius: 20 }}></View>
                     <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', marginBottom: 10, width: '100%', justifyContent: "space-between", alignItems: 'flex-end', paddingEnd: 10 }}>
                         <Text style={{ color: "#fff", fontSize: 25, fontFamily: 'segoe-bold', width: '80%', paddingHorizontal: 20 }}>{item.orderContent}</Text>
-                        <Delivered bgColor="#000" status={deliveryStatus} width="20%" />
+                        {!loading ? <Delivered bgColor="#000" status={deliveryStatus} width="20%" /> : <ActivityIndicator size="small" color="#fff" />}
                     </View>
                     <Pressable
                         style={{ width: 50, height: 50, backgroundColor: '#ccc', position: 'absolute', marginTop: 10, marginStart: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}
@@ -62,15 +65,15 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                         <Ionicons name="copy" size={22} color="#000" />
                     </TouchableOpacity>
                 </View>
-                <TouchableOpacity disabled={item.productLink === ""} onPress={() => Linking.openURL(item.orderPreviewLink)} style={{ flexDirection: 'row', width: '90%', justifyContent: "space-between", padding: 20, alignItems: 'center', backgroundColor: "#222121", borderRadius: 10, marginBottom: 20 }}>
-                    <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, }}>{item.productLink === "" ? "Link not available" : "Go to the Product/Order"}</Text>
-                    {item.productLink === "" ? <FontAwesome name="unlink" size={24} color="#fff" /> : <Feather name="link" size={24} color="#fff" />}
+                <TouchableOpacity disabled={item.orderPreviewLink === ""} onPress={() => Linking.openURL(item.orderPreviewLink)} style={{ flexDirection: 'row', width: '90%', justifyContent: "space-between", padding: 20, alignItems: 'center', backgroundColor: "#222121", borderRadius: 10, marginBottom: 20 }}>
+                    <Text style={{ color: "#fff", marginStart: 5, fontSize: 17, }}>{item.orderPreviewLink === "" ? "Link not available" : "Go to the Product/Order"}</Text>
+                    {item.orderPreviewLink === "" ? <FontAwesome name="unlink" size={24} color="#fff" /> : <Feather name="link" size={24} color="#fff" />}
                 </TouchableOpacity>
 
                 <View style={{ width: '90%', backgroundColor: "#222121", borderRadius: 10 }}>
                     <View style={{ paddingTop: 20, paddingLeft: 20 }}>
                         <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'gotham-black', fontSize: 13 }}>Seller Name</Text>
-                        <Text style={{ color: "#fff", marginStart: 5, fontSize: 22, }}>{item.sellerName ? item.sellerName : "NA"}</Text>
+                        <Text style={{ color: "#fff", marginStart: 5, fontSize: 22, }}>{"NA"}</Text>
                     </View>
                     <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 20, alignItems: 'center' }}>
                         <View>
