@@ -19,7 +19,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
         const checkAmazonDeliveryStatus = async () => {
             const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkAmazonDeliveryStatus?tokens=${JSON.stringify(store.googleCredentials)}&newer_than=${store.settings.orders_newer_than}`)
             const delStat = await statusResponse.json()
-            // console.log(delStat.deliveredOrders)
+            console.log(delStat.deliveredOrders)
 
             delStat.deliveredOrders.map((orderNumber: string) => {
                 if (orderNumber === item.orderNumber)

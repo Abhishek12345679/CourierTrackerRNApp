@@ -138,7 +138,7 @@ const store = types
         const userInfo: userInfoType = yield getUserInfo(
           self.googleCredentials,
         );
-        console.log('userInfo: ', userInfo);
+        // console.log('userInfo: ', userInfo);
         self.userInfo = userInfo;
         return userInfo;
       } catch (error) {

@@ -4,7 +4,6 @@ import { Platform, Pressable } from 'react-native';
 import { View, Text, FlatList } from 'react-native'
 
 
-//TODO: Create a matrix looking calender-esque screen
 const ETAOverviewScreen = (props: any) => {
     const ETAList = props.route.params.ETAList
     const months = [

@@ -72,29 +72,39 @@ const OrderDetailsScreen = observer((props: any) => {
 
 
     const checkFlipkartDeliveryStatus = async (productName: string) => {
-        const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkFlipkartDeliveryStatus`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
-        })
-        const delStat = await statusResponse.json()
-        console.log(delStat)
-        setDeliveryStatus(delStat)
+        try {
+
+            const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkFlipkartDeliveryStatus`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
+            })
+            const delStat = await statusResponse.json()
+            console.log(delStat)
+            setDeliveryStatus(delStat)
+        } catch (err) {
+            console.error("error[checkFlipkartDeliveryStatus]: ", err)
+        }
     }
 
 
     const checkMyntraDeliveryStatus = async (productName: string) => {
-        const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkMyntraDeliveryStatus`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
-        })
-        const delStat = await statusResponse.json()
-        console.log(delStat)
+        try {
+            const statusResponse = await fetch(`${sensitiveData.baseUrl}/checkMyntraDeliveryStatus`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tokens: store.googleCredentials, productName: productName })
+            })
+            const delStat = await statusResponse.json()
+            console.log(delStat)
+        } catch (err) {
+            console.error("error[checkMyntraDeliveryStatus]: ", err)
+        }
+
         // setDeliveryStatus(delStat)
     }
 

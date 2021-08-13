@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import database from '@react-native-firebase/database';
 import { Order, AmazonOrder, OrderList as OrderListType, AmazonOrderList as AmazonOrderListType, Credentials } from '../../constants/Types/OrderTypes';
 import { sensitiveData } from '../../constants/sen_data';
+import { getOrders } from '../helpers/ordersHelpers';
 
 
 const AuthUrlScreen = observer((props: any) => {
@@ -60,136 +61,11 @@ const AuthUrlScreen = observer((props: any) => {
         console.log('Saved Refresh Token!')
     }
 
-
-
-    //..
-
-    const getAmazonOrders = async (auth: Credentials) => {
-        const AZResponse = await fetch(`${sensitiveData.baseUrl}/getAmazonOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
-        const AmazonOrders = await AZResponse.json()
-        // console.log("Amazon Orders", JSON.stringify(AmazonOrders.amazonOrders, null, 2))
-        return AmazonOrders.amazonOrders
-    }
-
-    const getFlipkartOrders = async (auth: Credentials) => {
-        const FKResponse = await fetch(`${sensitiveData.baseUrl}/getFlipkartOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
-        const FlipkartOrders = await FKResponse.json()
-        return FlipkartOrders.flipkartOrders
-    }
-    const getMyntraOrders = async (auth: Credentials) => {
-        const MResponse = await fetch(`${sensitiveData.baseUrl}/getMyntraOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
-        const MyntraOrders = await MResponse.json()
-        return MyntraOrders.myntraOrders
-    }
-
-    const getAjioOrders = async (auth: Credentials) => {
-        const AResponse = await fetch(`${sensitiveData.baseUrl}/getAjioOrderDetails?tokens=${JSON.stringify(auth)}&newer_than=${store.settings.orders_newer_than}`)
-        const AjioOrders = await AResponse.json()
-        return AjioOrders.ajioOrders
-    }
-
-    // const fetchUserInfo = async () => {
-    //     const userInfo = await store.fetchUserInfo()
-    //     if (userInfo !== undefined) {
-    //         setPfp(userInfo.profilePicture)
-    //         setName(userInfo.name)
-    //     }
-    // }
-
-    const fetchManualOrders = async (): Promise<Order[] | unknown[]> => {
-        return await database().ref(`/users/${store.loginCredentials.uid}/orders`)
-            .once('value')
-            .then((snapshot) => {
-                const orders = snapshot.val()
-
-                if (!orders) {
-                    return []
-                }
-                const newOrders = Object.entries(orders).map(([_, value]) => value)
-                return newOrders
-            });
-    }
-
-    const getOrders = async () => {
-        // setFetchingOrders(true)
-
-        const flipkartOrders = await getFlipkartOrders(store.googleCredentials)
-        const myntraOrders = await getMyntraOrders(store.googleCredentials)
-        const ajioOrders = await getAjioOrders(store.googleCredentials)
-        const amazonOrders = await getAmazonOrders(store.googleCredentials)
-
-        const manualOrders = await fetchManualOrders()
-
-        const groupedOrders = groupOrders(flipkartOrders, myntraOrders, ajioOrders, manualOrders as Order[])
-        const sortedOrders = sortOrders(groupedOrders)
-
-        const groupedAmazonOrders = groupAmazonOrders(amazonOrders)
-        const sortedAmazonOrders = sortAmazonOrders(groupedAmazonOrders)
-
-        await store.saveOrders(sortedOrders)
-        await store.saveOrdersLocally(sortedOrders)
-        await store.saveAmazonOrders(sortedAmazonOrders)
-        await store.saveAmazonOrdersLocally(sortedAmazonOrders)
-        // setFetchingOrders(false)
-
-        // console.log("sorted orders: ", JSON.stringify(store.orders, null, 4))
-        // console.log("sorted orders: ", JSON.stringify(store.amazonOrders, null, 4))
-    }
-
-
-    const sortOrders = (groupedOrders: OrderListType[]) => {
-        groupedOrders.sort((a: OrderListType, b: OrderListType) => {
-            return parseInt(a.EstimatedDeliveryTime) - parseInt(b.EstimatedDeliveryTime)
-        })
-        return groupedOrders
-    }
-
-
-    const groupOrders = (flipkartOrders: Order[], myntraOrders: Order[], ajioOrders: Order[], manualOrders: Order[]) => {
-        // console.log("manual orders: ", manualOrders)
-        let superArray = []
-        superArray = [...flipkartOrders, ...myntraOrders, ...ajioOrders, ...manualOrders]
-        const groups = superArray.reduce((acc: any, order: Order) => {
-            acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
-            return acc
-        }, {})
-
-        // console.log(JSON.stringify(groups, null, 4))
-
-        const newOrderList: OrderListType[] = Object.entries(groups).map(([k, v]) => ({
-            EstimatedDeliveryTime: k,
-            orderItems: v as Order[]
-        }))
-        return newOrderList
-    }
-
-    const groupAmazonOrders = (amazonOrders: AmazonOrder[]) => {
-        const groups = amazonOrders.reduce((acc: any, order: AmazonOrder) => {
-            acc[Date.parse(order.ETA)] = acc[Date.parse(order.ETA)] ? acc[Date.parse(order.ETA)].concat(order) : [order]
-            return acc
-        }, {})
-
-        // console.log(JSON.stringify(groups, null, 4))
-
-        const newOrderList: AmazonOrderListType[] = Object.entries(groups).map(([k, v]) => ({
-            EstimatedDeliveryTime: k,
-            orderItems: v as AmazonOrder[]
-        }))
-        return newOrderList
-    }
-
-    const sortAmazonOrders = (groupedOrders: AmazonOrderListType[]) => {
-        groupedOrders.sort((a: AmazonOrderListType, b: AmazonOrderListType) => {
-            return parseInt(a.EstimatedDeliveryTime) - parseInt(b.EstimatedDeliveryTime)
-        })
-        return groupedOrders
-    }
-
-
     const loadOrders = async () => {
         const ordersInAsyncStorage = await AsyncStorage.getItem('orders')
         if (ordersInAsyncStorage === "" || ordersInAsyncStorage === undefined || ordersInAsyncStorage === null) {
             await getOrders()
+            // reassign callreminder on re-signin
         } else {
             await store.saveOrders(JSON.parse(ordersInAsyncStorage!))
         }
