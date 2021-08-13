@@ -28,6 +28,8 @@ import { getSnapshot } from 'mobx-state-tree';
 
 const HomeScreen: React.FC = observer((props: any) => {
 
+    console.log(JSON.stringify(store.amazonOrders, null, 4))
+
     const [gmailAccessStatus, setGmailAccessStatus] = useState(props.route.params.gmailAccess)
     const [isLoading, setIsLoading] = useState(false)
     const [fetchingOrders, setFetchingOrders] = useState(false)

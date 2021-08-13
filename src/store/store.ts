@@ -80,6 +80,7 @@ const amazonOrder = types.model('AmazonOrder', {
   orderId: types.optional(types.string, ''),
   totalPrice: types.optional(types.string, ''),
   orderNumber: types.optional(types.string, ''),
+  orderContent: types.optional(types.string, ''),
   ETA: types.optional(types.string, ''),
   delivery_address: types.optional(types.string, ''),
   invoiceLink: types.optional(types.string, ''),

@@ -4,14 +4,14 @@ import { useState } from 'react'
 import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform } from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import { sensitiveData } from '../../../constants/sen_data'
-import { NotificationInfo } from '../../../constants/Types/OrderTypes'
+import { AmazonOrder, NotificationInfo } from '../../../constants/Types/OrderTypes'
 import Delivered from '../../components/Delivered'
 import { callReminder, removeNotificationIdLocally } from '../../helpers/notificationHelpers'
 import store from '../../store/store'
 import { copyToClipboard } from './OrderDetailsScreen'
 
 const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
-    const item = route.params.item
+    const item = route.params.item as AmazonOrder
     const [deliveryStatus, setDeliveryStatus] = useState(false)
 
 
@@ -41,7 +41,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
 
                     <View style={{ backgroundColor: '#000', opacity: 0.5, width: '100%', height: 400, position: 'absolute', borderRadius: 20 }}></View>
                     <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', marginBottom: 10, width: '100%', justifyContent: "space-between", alignItems: 'flex-end', paddingEnd: 10 }}>
-                        <Text style={{ color: "#fff", fontSize: 25, fontFamily: 'segoe-bold', width: '80%', paddingHorizontal: 20 }}>{item.orderNumber}</Text>
+                        <Text style={{ color: "#fff", fontSize: 25, fontFamily: 'segoe-bold', width: '80%', paddingHorizontal: 20 }}>{item.orderContent}</Text>
                         <Delivered bgColor="#000" status={deliveryStatus} width="20%" />
                     </View>
                     <Pressable

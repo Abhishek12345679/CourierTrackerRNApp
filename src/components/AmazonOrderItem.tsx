@@ -54,7 +54,7 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                                 fontSize: 17,
                                 width: '100%'
                             }}>
-                            {item.orderNumber}
+                            {item.orderContent}
                         </Text>
                         <Text style={{ flexShrink: 1, color: '#bfc4c1', fontFamily: 'gotham-black', fontSize: 20 }}>
                             {item.totalPrice}

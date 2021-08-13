@@ -44,6 +44,7 @@ export type AmazonOrder = {
   orderId: string;
   totalPrice: string;
   orderNumber: string;
+  orderContent: string;
   ETA: string;
   delivery_address: string;
   invoiceLink: string;
