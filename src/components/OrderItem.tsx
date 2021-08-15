@@ -8,6 +8,7 @@ import { observer } from 'mobx-react';
 import { sensitiveData } from '../../constants/sen_data';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { callReminder, removeNotificationIdLocally } from '../helpers/notificationHelpers';
+import { ToastAndroid } from 'react-native';
 
 const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
     console.log(item)
@@ -98,20 +99,21 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                         </Text>
                     </View>
                     <Pressable
-                        disabled={new Date(item.ETA).getTime() <= new Date().getTime()}
                         android_ripple={{
                             color: '#000',
-                            borderless: false
+                            borderless: true
                         }}
                         style={{
                             flexDirection: 'row',
                             width: '35%',
-                            // height: 35,
-                            // backgroundColor: "#d8d6d6",
                             alignItems: 'flex-end',
                             justifyContent: "center",
                         }}
                         onPress={async () => {
+                            if (new Date(item.ETA).getTime() <= new Date().getTime()) {
+                                ToastAndroid.showWithGravityAndOffset("Reminders cannot be set on orders older than current date", 2000, ToastAndroid.TOP, 0, 200)
+                                return
+                            }
                             if (!item.callReminder) {
                                 const notificationInfo: NotificationInfo = {
                                     orderId: item.orderId,

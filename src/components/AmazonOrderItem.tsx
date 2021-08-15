@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Pressable, ListRenderItem, Platform } from 'react-native'
+import { View, Text, Pressable, ListRenderItem, Platform, ToastAndroid } from 'react-native'
 import { AmazonOrder, NotificationInfo } from '../../constants/Types/OrderTypes'
 
 import { useNavigation } from '@react-navigation/native';
@@ -62,7 +62,7 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                     <Pressable
                         android_ripple={{
                             color: '#000',
-                            borderless: false
+                            borderless: true
                         }}
                         style={{
                             flexDirection: 'row',
@@ -73,6 +73,10 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                             justifyContent: "center",
                         }}
                         onPress={async () => {
+                            if (new Date(item.ETA).getTime() <= new Date().getTime()) {
+                                ToastAndroid.showWithGravityAndOffset("Reminders cannot be set on orders older than current date", 2000, ToastAndroid.TOP, 0, 200)
+                                return
+                            }
                             if (!item.callReminder) {
                                 const notificationInfo: NotificationInfo = {
                                     orderId: item.orderId,

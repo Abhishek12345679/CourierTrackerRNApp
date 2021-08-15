@@ -1,7 +1,7 @@
 import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform, ActivityIndicator } from 'react-native'
+import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform, ActivityIndicator, ToastAndroid } from 'react-native'
 import { sensitiveData } from '../../../constants/sen_data'
 import { AmazonOrder, NotificationInfo } from '../../../constants/Types/OrderTypes'
 import Delivered from '../../components/Delivered'
@@ -13,6 +13,8 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
     const item = route.params.item as AmazonOrder
     const [deliveryStatus, setDeliveryStatus] = useState(false)
     const [loading, setLoading] = useState(false)
+
+    const [reminder, setReminder] = useState(item.callReminder)
 
 
     useEffect(() => {
@@ -39,7 +41,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                     <View style={{ backgroundColor: '#000', opacity: 0.5, width: '100%', height: 400, position: 'absolute', borderRadius: 20 }}></View>
                     <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', marginBottom: 10, width: '100%', justifyContent: "space-between", alignItems: 'flex-end', paddingEnd: 10 }}>
                         <Text style={{ color: "#fff", fontSize: 25, fontFamily: 'segoe-bold', width: '80%', paddingHorizontal: 20 }}>{item.orderContent}</Text>
-                        {!loading ? <Delivered bgColor="#000" status={deliveryStatus} width="20%" /> : <ActivityIndicator size="small" color="#fff" />}
+                        {!loading ? <Delivered bgColor="#fff" textColor="#000" status={deliveryStatus} width="20%" /> : <ActivityIndicator size="small" color="#fff" />}
                     </View>
                     <Pressable
                         style={{ width: 50, height: 50, backgroundColor: '#ccc', position: 'absolute', marginTop: 10, marginStart: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}
@@ -82,8 +84,8 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                         </View>
                     </View>
                 </View>
-                <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20, marginBottom: 20, height: 150 }}>
-                    <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", height: 150 }}>
+                <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20, marginBottom: 20, height: 135 }}>
+                    <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", height: 125 }}>
                         <View style={{ width: '100%', justifyContent: "space-between", padding: 20 }}>
                             <Text style={{ color: "#fff", marginStart: 5, fontSize: 15, fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', }}>Delivery Address</Text>
                             <Text style={{ color: "#fff", marginStart: 5, fontFamily: 'segoe-bold', fontSize: 15, marginTop: 20, lineHeight: 20 }}>{(item.delivery_address as string).split(", ").join("\n")}</Text>
@@ -97,9 +99,14 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                 </View>
 
             </ScrollView>
-            <Pressable android_ripple={{ color: '#fff', borderless: false }}
+            <Pressable
+                android_ripple={{ color: '#fff', borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: "#000", height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={async () => {
+                    if (new Date(item.ETA).getTime() <= new Date().getTime()) {
+                        ToastAndroid.showWithGravityAndOffset("Reminders cannot be set on orders older than current date", 2000, ToastAndroid.TOP, 0, 200)
+                        return
+                    }
                     if (!item.callReminder) {
                         const notificationInfo: NotificationInfo = {
                             orderId: item.orderId,
@@ -107,14 +114,16 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                         }
                         await store.toggleAmazonCallReminder(item.orderId, item.ETA, true)
                         callReminder('', notificationInfo, item.orderNumber, item.ETA, 'amazon');
+                        setReminder(true)
                     } else {
                         await store.toggleAmazonCallReminder(item.orderId, item.ETA, false)
                         await removeNotificationIdLocally(item.orderId) //cancel notification
+                        setReminder(false)
                     }
                 }}>
 
                 {
-                    !item.callReminder ?
+                    !reminder ?
                         <View style={{ flexDirection: 'row', width: '100%', height: 70, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}>
                             <MaterialCommunityIcons name="bell-ring" size={24} color="#fff" style={{ marginEnd: 10 }} />
                             <Text style={{ fontFamily: 'segoe-bold', fontSize: 15, color: '#fff' }}>Add to Calendar</Text>

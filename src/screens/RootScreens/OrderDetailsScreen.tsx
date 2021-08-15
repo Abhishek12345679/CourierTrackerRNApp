@@ -25,9 +25,10 @@ export const copyToClipboard = (orderNumber: string) => {
 
 const OrderDetailsScreen = observer((props: any) => {
 
-
     const { item } = props.route.params
     const [primaryColor, setPrimaryColor] = useState('')
+    const [reminder, setReminder] = useState(item.callReminder)
+
     // const [deliveryStatus, setDeliveryStatus] = useState(false)
 
     const extraData = [
@@ -201,6 +202,10 @@ const OrderDetailsScreen = observer((props: any) => {
             <Pressable android_ripple={{ color: '#fff', borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: primaryColor, height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={async () => {
+                    if (new Date(item.ETA).getTime() <= new Date().getTime()) {
+                        ToastAndroid.showWithGravityAndOffset("Reminders cannot be set on orders older than current date", 2000, ToastAndroid.TOP, 0, 200)
+                        return
+                    }
                     if (!item.callReminder) {
                         const notificationInfo: NotificationInfo = {
                             orderId: item.orderId,
@@ -208,14 +213,15 @@ const OrderDetailsScreen = observer((props: any) => {
                         }
                         await store.toggleCallReminder(item.orderId, item.ETA, true)
                         callReminder(item.productImage, notificationInfo, item.orderNumber, item.ETA, item.from, item.productName)
+                        setReminder(true)
                     } else {
                         await store.toggleCallReminder(item.orderId, item.ETA, false)
                         await removeNotificationIdLocally(item.orderId)//cancel notification
+                        setReminder(false)
                     }
                 }}>
-
                 {
-                    !item.callReminder ?
+                    !reminder ?
                         <View style={{ flexDirection: 'row', width: '100%', height: 70, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}>
                             <MaterialCommunityIcons name="bell-ring" size={24} color="#fff" style={{ marginEnd: 10 }} />
                             <Text style={{ fontFamily: 'segoe-bold', fontSize: 15, color: '#fff' }}>Add to Calendar</Text>
