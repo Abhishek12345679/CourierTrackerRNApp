@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 
-import { useTheme } from '@react-navigation/native';
 import { observer } from 'mobx-react';
 
 import { Input } from '@ui-kitten/components'
@@ -25,7 +24,6 @@ const authenticationValidationSchema = yup.object().shape({
 })
 
 const LoginScreen: React.FC = observer((props: any) => {
-    // const { colors } = useTheme()
     const [loggingIn, setloggingIn] = useState(false)
     const [isSignIn, setIsSignIn] = useState(false)
 
@@ -84,7 +82,6 @@ const LoginScreen: React.FC = observer((props: any) => {
                     password: ''
                 }}
                 onSubmit={(values) => EmailPasswordSignIn(values.email, values.password)}
-            // innerRef={formRef}
             >
                 {({ handleChange, handleBlur, handleSubmit, values, isValid, errors, touched }) => (
                     <>

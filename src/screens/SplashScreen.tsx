@@ -27,22 +27,18 @@ const SplashScreen = observer(() => {
         const credentials = await AsyncStorage.getItem('loginCredentials')
         const googleCredentials = await AsyncStorage.getItem('credentials')
 
-        // console.log('google creds: ', googleCredentials)
 
         if (credentials) {
             store.setLoginCredentials(JSON.parse(credentials!))
             if (googleCredentials) {
                 if (JSON.parse(googleCredentials).refresh_token !== "" || JSON.parse(googleCredentials).refresh_token !== undefined) {
-                    // console.log('Credentials: ', JSON.stringify(credentials, null, 4))
                     store.setCredentials(JSON.parse(googleCredentials))
                 } else {
                     const refToken = await AsyncStorage.getItem('refresh_token')
-                    // console.log("ref: ", refToken)
                     let newCreds = JSON.parse(googleCredentials!)
                     newCreds.refresh_token = refToken
 
                     store.setCredentials(newCreds)
-                    // console.log('Credentials: ', credentials)
                 }
             }
         }
@@ -87,7 +83,6 @@ const SplashScreen = observer(() => {
                             break;
                         default:
                             console.error("Invalid Case")
-                        //add default code
                     }
             };
 
