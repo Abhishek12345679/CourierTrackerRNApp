@@ -34,7 +34,7 @@ const GoogleSignOutCard = (props: Props) => {
             <Pressable
                 style={{ width: '100%', height: 50, backgroundColor: "#121212", justifyContent: "space-around", flexDirection: "row", alignItems: "center", paddingHorizontal: 90, marginTop: 20, borderRadius: 10 }}
                 onPress={props.onPress}
-                android_ripple={{ color: "#cccccc20", radius: 200, }}
+                android_ripple={{ color: "#cccccc20", borderless: false }}
 
             >
                 {!props.loading ?

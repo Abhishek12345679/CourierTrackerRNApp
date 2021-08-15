@@ -128,7 +128,7 @@ const LoginScreen: React.FC = observer((props: any) => {
                         <View style={{ flexDirection: 'row', backgroundColor: "#2c2727" }}>
                             <Pressable
                                 disabled={!isValid}
-                                android_ripple={{ color: '#575454', radius: 100, borderless: false }}
+                                android_ripple={{ color: '#575454', borderless: false }}
                                 style={{ flexDirection: 'row', width: '100%', height: 70, backgroundColor: '#13c801', marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                                 onPress={handleSubmit}
                             >

@@ -34,7 +34,7 @@ const GoogleSignInCard = (props: Props) => {
             <Pressable
                 style={{ width: '100%', height: 50, backgroundColor: "#fff", justifyContent: "space-around", flexDirection: "row", alignItems: "center", paddingHorizontal: 100, marginTop: 20, borderRadius: 5 }}
                 onPress={props.onPress}
-                android_ripple={{ color: "#121212", radius: 150, }}
+                android_ripple={{ color: "#121212", borderless: false }}
 
             >
                 {!props.loading ? <View style={{ flex: 1, flexDirection: 'row', justifyContent: "space-around", alignItems: 'center' }}>

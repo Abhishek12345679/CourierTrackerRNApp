@@ -1,5 +1,5 @@
-import { Entypo, Ionicons } from '@expo/vector-icons';
 import React from 'react'
+import { Entypo } from '@expo/vector-icons';
 import { Platform, Pressable } from 'react-native';
 import { View, Text, FlatList } from 'react-native'
 
@@ -22,15 +22,10 @@ const ETAOverviewScreen = (props: any) => {
     ];
     return (
         <View style={{ flex: 1, backgroundColor: '#121212' }}>
-            {/* {ETAList.map((data) => (
-                <View style={{ backgroundColor: "#fff" }}>
-                    <Text>{new Date(parseInt(data)).getDate()}</Text>
-                </View>
-            ))} */}
             <Pressable
                 style={{ width: 50, height: 50, backgroundColor: 'transparent', position: 'absolute', marginTop: 10, marginStart: 10, borderRadius: 25, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}
                 onPress={() => props.navigation.goBack()}
-                android_ripple={{ color: "#fff", radius: 25, }}
+                android_ripple={{ color: "#fff", borderless: false }}
 
             >
                 <Entypo name="cross" size={36} color="#fff" />

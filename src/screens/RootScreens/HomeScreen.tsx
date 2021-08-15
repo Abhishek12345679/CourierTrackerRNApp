@@ -74,7 +74,6 @@ const HomeScreen: React.FC = observer((props: any) => {
             goToOverview={() => props.navigation.navigate("ETAOverview", {
                 ETAList: store.orders.map((data) => data.EstimatedDeliveryTime)
             })}
-        // navigation={props.navigation}
         />
     )
     const renderAmazonOrderItem: ListRenderItem<AmazonOrderListType> = ({ item, index, separators }) => (
@@ -85,7 +84,6 @@ const HomeScreen: React.FC = observer((props: any) => {
             goToOverview={() => props.navigation.navigate("ETAOverview", {
                 ETAList: store.orders.map((data) => data.EstimatedDeliveryTime)
             })}
-        // navigation={props.navigation}
         />
     )
 
@@ -98,7 +96,6 @@ const HomeScreen: React.FC = observer((props: any) => {
                         onPress={() => {
                             props.navigation.navigate('AddOrder')
                         }}>
-                        {/* <Text>Add</Text> */}
                         <MaterialIcons name="add" size={24} />
                     </TouchableOpacity>}
                     <TouchableOpacity style={{ marginEnd: 20, }} onPress={() => props.navigation.navigate('Settings')}>
@@ -119,7 +116,6 @@ const HomeScreen: React.FC = observer((props: any) => {
                         <MaterialIcons name="add" size={24} />
                     </TouchableOpacity> :
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            {/* <Image source={require('../../Assets/Icons/appicon.png')} style={{ width: 40, height: 40 }} /> */}
                             <HeaderTitle tintColor="#d6d3d3" style={{ fontFamily: "gotham-black", fontSize: 40, color: "#ffffff", marginStart: 10 }}>{`Orders`}</HeaderTitle>
                         </View>
                     }
@@ -247,7 +243,6 @@ const HomeScreen: React.FC = observer((props: any) => {
                         store.orders.length > 0 ?
                             <FlatList
 
-                                // ListHeaderComponent={<Button title="notify me" onPress={callNotification} />}
                                 showsVerticalScrollIndicator={false}
                                 style={{ backgroundColor: '#121212' }}
                                 contentContainerStyle={{

@@ -4,14 +4,13 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Pressable, StatusBar, TouchableOpacity, Linking, ToastAndroid, Platform } from 'react-native'
 import Image from 'react-native-ui-lib/image'
 import store from '../../store/store'
-import { sensitiveData } from '../../../constants/sen_data'
+// import { sensitiveData } from '../../../constants/sen_data'
 
 import ImageColors from 'react-native-image-colors'
 import Clipboard from '@react-native-clipboard/clipboard';
 import { Feather } from '@expo/vector-icons'
-import Delivered from '../../components/Delivered'
+// import Delivered from '../../components/Delivered'
 import { callReminder, removeNotificationIdLocally } from '../../helpers/notificationHelpers'
-import PushNotification from 'react-native-push-notification'
 import { NotificationInfo } from '../../../constants/Types/OrderTypes'
 
 
@@ -29,16 +28,12 @@ const OrderDetailsScreen = observer((props: any) => {
 
     const { item } = props.route.params
     const [primaryColor, setPrimaryColor] = useState('')
-    // const [secondaryColor, setSecondaryColor] = useState('')
-    const [deliveryStatus, setDeliveryStatus] = useState(false)
+    // const [deliveryStatus, setDeliveryStatus] = useState(false)
 
     const extraData = [
-        // { label: 'Seller Name', data: item.sellerName },
         { label: 'Delivery Charges', data: item.deliveryCharges ? item.deliveryCharges : "NA" },
         { label: 'Delivery Discount', data: item.deliveryDiscount ? item.deliveryDiscount : "NA" },
         { label: 'Total Amount \n(Total Price of the Order)', data: item.totalPrice },
-        // { label: 'Product Link', data: item.productLink },
-        // { label: 'Ordered from', data: item.from },
     ]
 
 
@@ -143,7 +138,7 @@ const OrderDetailsScreen = observer((props: any) => {
                     <Pressable
                         style={{ width: 50, height: 50, backgroundColor: '#ccc', position: 'absolute', marginTop: 10, marginStart: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}
                         onPress={() => props.navigation.goBack()}
-                        android_ripple={{ color: "#fff", radius: 25, }}
+                        android_ripple={{ color: "#fff", borderless: false }}
 
                     >
                         <Ionicons name="arrow-back" size={24} color="#000" style={{ transform: [{ rotate: '-90deg' }] }} />
@@ -184,7 +179,9 @@ const OrderDetailsScreen = observer((props: any) => {
                 <View style={{ width: "100%", justifyContent: "center", alignItems: 'center', marginTop: 20, marginBottom: 20 }}>
                     <View style={{ borderRadius: 10, overflow: 'hidden', backgroundColor: "#202020ed", width: "92%", }}>
                         {extraData.map((data, idx) => (
-                            <View style={{ flexDirection: 'row', width: '100%', justifyContent: "space-between", padding: 20, alignItems: 'center', }}>
+                            <View
+                                key={idx}
+                                style={{ flexDirection: 'row', width: '100%', justifyContent: "space-between", padding: 20, alignItems: 'center', }}>
                                 <Text style={{ color: "#fff", marginStart: 5, fontSize: 15, fontFamily: Platform.OS === "ios" ? "segoe-normal" : 'gotham-normal', }}>{data.label}</Text>
                                 {<Text style={{ color: "#fff", marginStart: 5, fontFamily: 'segoe-bold', fontSize: 15 }}>{isNaN(parseInt(data.data)) ? data.data : formatPrice(data.data)}</Text>}
                             </View>
@@ -201,7 +198,7 @@ const OrderDetailsScreen = observer((props: any) => {
                 </View>
 
             </ScrollView>
-            <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
+            <Pressable android_ripple={{ color: '#fff', borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: primaryColor, height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={async () => {
                     if (!item.callReminder) {

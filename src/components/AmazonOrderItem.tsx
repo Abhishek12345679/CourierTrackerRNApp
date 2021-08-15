@@ -14,7 +14,7 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
 
     return (
         <Pressable
-            android_ripple={{ color: '#8b8a8a2c', radius: 250, borderless: false }}
+            android_ripple={{ color: '#8b8a8a2c', borderless: false }}
             style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -62,7 +62,6 @@ const AmazonOrderItem: ListRenderItem<AmazonOrder> = observer(({ item, index }) 
                     <Pressable
                         android_ripple={{
                             color: '#000',
-                            radius: 15,
                             borderless: false
                         }}
                         style={{

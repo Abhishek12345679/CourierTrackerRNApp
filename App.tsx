@@ -18,12 +18,12 @@ declare const global: { HermesInternal: null | {} };
 
 const App = () => {
 
-  // useEffect(() => {
-  //   const init = async () => {
-  //     await RNBootSplash.show()
-  //   };
-  //   init()
-  // }, []);
+  useEffect(() => {
+    const init = async () => {
+      await RNBootSplash.show()
+    };
+    init()
+  }, []);
 
   return (
     <Provider store={store}>

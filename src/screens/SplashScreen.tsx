@@ -92,12 +92,12 @@ const SplashScreen = observer(() => {
             };
 
             init()
-            // .then(() => {
-            //     RNBootSplash.hide()
-            // }).catch((err) => {
-            //     console.error(err)
-            //     RNBootSplash.hide()
-            // })
+                .then(() => {
+                    RNBootSplash.hide()
+                }).catch((err) => {
+                    console.error(err)
+                    RNBootSplash.hide()
+                })
         }
         startUp(store.settings.reminder_frequency)
     }, [])

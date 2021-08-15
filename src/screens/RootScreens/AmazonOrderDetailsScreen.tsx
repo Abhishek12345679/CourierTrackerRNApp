@@ -2,7 +2,6 @@ import { Feather, FontAwesome, Ionicons, MaterialCommunityIcons } from '@expo/ve
 import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { View, Text, Linking, StatusBar, ScrollView, Image, Pressable, TouchableOpacity, Platform, ActivityIndicator } from 'react-native'
-import PushNotification from 'react-native-push-notification'
 import { sensitiveData } from '../../../constants/sen_data'
 import { AmazonOrder, NotificationInfo } from '../../../constants/Types/OrderTypes'
 import Delivered from '../../components/Delivered'
@@ -37,11 +36,6 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
             <StatusBar barStyle="light-content" backgroundColor="#121212" />
             <ScrollView style={{ flex: 1, backgroundColor: "#121212" }} contentContainerStyle={{ justifyContent: 'center', alignItems: "center" }}>
                 <View style={{ width: '95%', height: 400, position: "relative", marginTop: 10 }}>
-                    {/* <Image
-                        source={{ uri: "https://image.shutterstock.com/image-photo/businessman-holding-paper-say-no-260nw-105617738.jpg" }}
-                        style={{ width: '100%', height: 400, resizeMode: 'cover', borderRadius: 20, marginTop: 0, backgroundColor: '#000' }}
-                    /> */}
-
                     <View style={{ backgroundColor: '#000', opacity: 0.5, width: '100%', height: 400, position: 'absolute', borderRadius: 20 }}></View>
                     <View style={{ position: 'absolute', bottom: 0, flexDirection: 'row', marginBottom: 10, width: '100%', justifyContent: "space-between", alignItems: 'flex-end', paddingEnd: 10 }}>
                         <Text style={{ color: "#fff", fontSize: 25, fontFamily: 'segoe-bold', width: '80%', paddingHorizontal: 20 }}>{item.orderContent}</Text>
@@ -50,7 +44,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                     <Pressable
                         style={{ width: 50, height: 50, backgroundColor: '#ccc', position: 'absolute', marginTop: 10, marginStart: 10, borderRadius: 10, justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}
                         onPress={() => navigation.goBack()}
-                        android_ripple={{ color: "#fff", radius: 25, }}
+                        android_ripple={{ color: "#fff", borderless: false }}
 
                     >
                         <Ionicons name="arrow-back" size={24} color="#000" style={{ transform: [{ rotate: '-90deg' }] }} />
@@ -103,7 +97,7 @@ const AmazonOrderDetailsScreen: React.FC = ({ route, navigation }: any) => {
                 </View>
 
             </ScrollView>
-            <Pressable android_ripple={{ color: '#fff', radius: 100, borderless: false }}
+            <Pressable android_ripple={{ color: '#fff', borderless: false }}
                 style={{ flexDirection: 'row', width: '100%', backgroundColor: "#000", height: 70, marginEnd: 30, elevation: 100, borderRadius: 0, alignItems: 'center', justifyContent: "center" }}
                 onPress={async () => {
                     if (!item.callReminder) {

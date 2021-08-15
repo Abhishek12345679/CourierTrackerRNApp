@@ -39,7 +39,7 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
 
     return (
         <Pressable
-            android_ripple={{ color: '#8b8a8a2c', radius: 250, borderless: false }}
+            android_ripple={{ color: '#8b8a8a2c', borderless: false }}
             style={{
                 flex: 1,
                 flexDirection: 'row',
@@ -98,9 +98,9 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                         </Text>
                     </View>
                     <Pressable
+                        disabled={new Date(item.ETA).getTime() <= new Date().getTime()}
                         android_ripple={{
                             color: '#000',
-                            radius: 15,
                             borderless: false
                         }}
                         style={{

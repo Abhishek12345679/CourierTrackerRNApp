@@ -132,7 +132,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
     const Item = (props: { children: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined, borderColor: string, onPress: () => void, height: number, style?: any }) => (
         <TouchableOpacity
             onPress={props.onPress}
-            // android_ripple={{ color: '#8b8a8a2c', radius: 100, borderless: false }}
+            // android_ripple={{ color: '#8b8a8a2c',  borderless: false }}
             style={{
                 ...{
                     flex: 1,
@@ -157,7 +157,7 @@ const SettingsScreen: React.FC = observer((props: any) => {
         <ScrollView style={{ flex: 1, backgroundColor: "#121212", }}>
             <StatusBar barStyle="light-content" />
             <Pressable
-                android_ripple={{ color: '#8b8a8a2c', radius: 250, borderless: false }}
+                android_ripple={{ color: '#8b8a8a2c', borderless: false }}
                 style={{
                     flex: 1,
                     flexDirection: 'row',

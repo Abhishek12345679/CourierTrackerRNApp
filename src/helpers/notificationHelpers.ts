@@ -50,7 +50,7 @@ export const callReminder = async (
   console.log('calling notifications');
   PushNotification.localNotificationSchedule({
     id: notificationInfo.notificationId,
-    title: 'Order Delivery Reminder',
+    title: 'Delivery Reminder',
     message:
       orderType !== 'amazon'
         ? `Your Item ${productName} Order #${orderNumber} is estimated to arrive by ${ETA}`

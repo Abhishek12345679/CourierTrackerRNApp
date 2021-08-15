@@ -3,11 +3,8 @@ import React from 'react'
 import AuthUrlScreen from "../screens/AuthUrlScreen";
 import HomeScreen from "../screens/RootScreens/HomeScreen";
 import LoginScreen from "../screens/LoginScreen";
-import { TouchableOpacity } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { createNativeStackNavigator } from 'react-native-screens/native-stack';
-import { Avatar } from 'react-native-ui-lib';
-import { useNavigation } from '@react-navigation/native';
 import SettingsScreen from '../screens/RootScreens/SettingsScreen';
 import OrderDetailsScreen from '../screens/RootScreens/OrderDetailsScreen';
 import AddOrderScreen from '../screens/RootScreens/AddOrderScreen';
@@ -35,13 +32,12 @@ const RootStackNavigator = createNativeStackNavigator();
 export const RootNavigator = () => {
     return (
         <RootStackNavigator.Navigator
-            screenOptions={({ route, navigation }) => ({
+            screenOptions={() => ({
                 headerTitleStyle: {
                     color: "#FFF",
                     fontSize: 20,
                     fontFamily: 'gotham-black',
                 },
-                // headerTintColor: "#fff",
                 headerStyle: {
                     backgroundColor: "#121212",
 
@@ -71,7 +67,6 @@ export const RootNavigator = () => {
                         color: "#FFF",
                         fontWeight: 'bold',
                         fontSize: 20,
-                        // fontFamily: 'segoe-bold'
                     },
                 }} />
             <RootStackNavigator.Screen
@@ -83,7 +78,6 @@ export const RootNavigator = () => {
                         color: "#FFF",
                         fontWeight: 'bold',
                         fontSize: 20,
-                        // fontFamily: 'segoe-bold'
                     },
                 }} />
             <RootStackNavigator.Screen name="Settings" component={SettingsNavigator} options={{ headerShown: false }} />
@@ -103,7 +97,7 @@ const SettingsStackNavigator = createNativeStackNavigator();
 export const SettingsNavigator = () => {
     return (
         <SettingsStackNavigator.Navigator
-            screenOptions={({ route, navigation }) => ({
+            screenOptions={() => ({
                 headerTitleStyle: {
                     color: "#ffffff",
                 },
@@ -126,7 +120,7 @@ const AddOrderStackNavigator = createNativeStackNavigator();
 export const AddOrderNavigator = () => {
     return (
         <AddOrderStackNavigator.Navigator
-            screenOptions={({ route, navigation }) => ({
+            screenOptions={() => ({
                 headerTitleStyle: {
                     color: "#fff",
 

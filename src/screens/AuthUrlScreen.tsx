@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react'
-import { View, Text, ActivityIndicator } from 'react-native'
+import React, { useRef } from 'react'
+import { View, ActivityIndicator } from 'react-native'
 import { WebView } from 'react-native-webview';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,8 +7,6 @@ import store from '../store/store';
 import { observer } from 'mobx-react';
 
 import database from '@react-native-firebase/database';
-import { Order, AmazonOrder, OrderList as OrderListType, AmazonOrderList as AmazonOrderListType, Credentials } from '../../constants/Types/OrderTypes';
-import { sensitiveData } from '../../constants/sen_data';
 import { getOrders } from '../helpers/ordersHelpers';
 
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 
-import { Feather, FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { Button, Card, Datepicker, Input, Modal } from '@ui-kitten/components'
 import { Formik } from 'formik'
 import { useRef } from 'react'
@@ -51,18 +51,7 @@ const AddOrderScreen = ({ navigation }: any) => {
 
         return uploadTask.on(
             Firebase.storage.TaskEvent.STATE_CHANGED,
-            (s) => {
-                // var progress = (s.bytesTransferred / s.totalBytes) * 100;
-                // console.log("Upload is " + progress + "% done");
-                // switch (s.state) {
-                //     case Firebase.storage.TaskState.PAUSED: // or 'paused'
-                //         console.log("Upload is paused");
-                //         break;
-                //     case Firebase.storage.TaskState.RUNNING: // or 'running'
-                //         console.log("Upload is running");
-                //         break;
-                // }
-            },
+            (s) => { },
             (error) => {
                 console.log(error);
                 setLoading(false)
@@ -132,7 +121,7 @@ const AddOrderScreen = ({ navigation }: any) => {
             headerRight: () => (
                 <Pressable
                     disabled={!formRef.current.isValid}
-                    android_ripple={{ color: "#121212", radius: 20 }}
+                    android_ripple={{ color: "#121212", borderless: false }}
                     style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: '#d8d6d6', justifyContent: 'center', alignItems: 'center', marginEnd: 20 }}
                     onPress={() => {
                         const onSubmit = async () => {
@@ -268,7 +257,7 @@ const AddOrderScreen = ({ navigation }: any) => {
                                 }
                                 {values.productImage.length > 0 && <View style={{ backgroundColor: '#000', opacity: 0.35, width: '100%', height: 400, position: 'absolute' }}></View>}
                                 <Pressable
-                                    android_ripple={{ color: "#fff", radius: 25, }}
+                                    android_ripple={{ color: "#fff", borderless: false }}
                                     style={{
                                         width: 80,
                                         height: 50,

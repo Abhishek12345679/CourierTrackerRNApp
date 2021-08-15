@@ -67,7 +67,6 @@ const fetchManualOrders = async (): Promise<Order[] | unknown[]> => {
 };
 
 export const getOrders = async () => {
-  // setFetchingOrders(true)
   try {
     const flipkartOrders = await getFlipkartOrders(store.googleCredentials);
     const myntraOrders = await getMyntraOrders(store.googleCredentials);
@@ -93,7 +92,6 @@ export const getOrders = async () => {
     await store.saveAmazonOrdersLocally(sortedAmazonOrders);
   } catch (err) {
     console.error(err);
-    // setFetchingOrders(false)
   }
 };
 
