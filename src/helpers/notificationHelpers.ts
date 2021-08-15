@@ -59,8 +59,8 @@ export const callReminder = async (
     allowWhileIdle: true,
     priority: 'max',
 
-    // smallIcon: 'ic_launcher',
-    // largeIcon: 'ic_launcher',
+    smallIcon: 'ic_notification',
+    largeIcon: 'ic_notification',
 
     /* Android Only Properties */
     repeatTime: 1,

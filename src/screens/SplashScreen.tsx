@@ -103,7 +103,6 @@ const SplashScreen = observer(() => {
             <StatusBar backgroundColor="#121212" barStyle="light-content" />
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <Image source={require('../Assets/Icons/appicon.png')} style={{ width: 125, height: 125 }} />
-                <ActivityIndicator color="#fff" size="large" />
             </View>
         </View>
     )
