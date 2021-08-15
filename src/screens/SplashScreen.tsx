@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { observer } from 'mobx-react'
 import React, { useEffect } from 'react'
-import { View, Text, Platform, Image, StatusBar } from 'react-native'
+import { View, Text, Platform, Image, StatusBar, ActivityIndicator } from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import { initiateAllReminders, initiateSelectedReminders } from '../helpers/notificationHelpers'
 import { getOrders } from '../helpers/ordersHelpers'
@@ -103,6 +103,7 @@ const SplashScreen = observer(() => {
             <StatusBar backgroundColor="#121212" barStyle="light-content" />
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <Image source={require('../Assets/Icons/appicon.png')} style={{ width: 125, height: 125 }} />
+                <ActivityIndicator color="#fff" size="large" />
             </View>
         </View>
     )
