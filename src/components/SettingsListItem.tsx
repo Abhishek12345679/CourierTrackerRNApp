@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View } from 'react-native'
 import SwitchGroup from './SwitchGroup'
 
 import { switchGroupProps } from './SwitchGroup'
@@ -11,10 +11,7 @@ const SettingsListItem = (props: switchGroupProps) => {
             flex: 1,
             flexDirection: 'row',
             height: 60,
-            // marginTop: 15,
             backgroundColor: '#202020ed',
-            // borderRadius: 7,
-            // marginHorizontal: 20,
             justifyContent: 'flex-start',
             alignItems: 'center',
             padding: 5,

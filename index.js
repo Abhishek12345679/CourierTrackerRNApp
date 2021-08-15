@@ -8,13 +8,12 @@ import {name as appName} from './app.json';
 
 import PushNotification, {Importance} from 'react-native-push-notification';
 
-// testing android first
 PushNotification.configure({
   onRegister: function (token) {
-    console.log('TOKEN:', token);
+    // console.log('TOKEN:', token);
   },
   onNotification: function (notification) {
-    console.log('NOTIFICATION:', notification);
+    // console.log('NOTIFICATION:', notification);
   },
   popInitialNotification: true,
   requestPermissions: true,

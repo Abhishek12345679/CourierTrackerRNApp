@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text, ListRenderItem } from 'react-native'
-import { Order, OrderList as OrderListType } from '../../constants/Types/OrderTypes'
+import { OrderList as OrderListType } from '../../constants/Types/OrderTypes'
 import OrderItem from './OrderItem'
 
 const OrderList: ListRenderItem<OrderListType> = ({ item, index, separators, goToOverview }) => {

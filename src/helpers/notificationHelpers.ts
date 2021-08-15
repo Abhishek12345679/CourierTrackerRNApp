@@ -59,13 +59,12 @@ export const callReminder = async (
     allowWhileIdle: true,
     priority: 'max',
 
+    smallIcon: 'ic_launcher',
+    largeIcon: 'ic_launcher',
+
     /* Android Only Properties */
     repeatTime: 1,
     channelId: 'reminder_channel',
-    bigPictureUrl: productImageUrl,
-    // smallIcon: 'ic_launcher',
-    // bigLargeIcon: 'ic_launcher',
-    // largeIcon: 'ic_launcher',
   });
   await saveNotificationIdLocally(notificationInfo);
 };

@@ -1,10 +1,7 @@
 import 'react-native-gesture-handler';
-import React, { useState } from 'react'
+import React from 'react'
 
 import { StatusBar } from 'react-native'
-
-import * as Fonts from "expo-font";
-import AppLoading from "expo-app-loading";
 
 import AppContainer from './src/navigation/RootNavigation';
 
@@ -20,12 +17,13 @@ import { useEffect } from 'react';
 declare const global: { HermesInternal: null | {} };
 
 const App = () => {
-  useEffect(() => {
-    const init = async () => {
-      await RNBootSplash.show()
-    };
-    init()
-  }, []);
+
+  // useEffect(() => {
+  //   const init = async () => {
+  //     await RNBootSplash.show()
+  //   };
+  //   init()
+  // }, []);
 
   return (
     <Provider store={store}>

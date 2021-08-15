@@ -1,38 +1,36 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, Pressable, Linking, ListRenderItem, Platform, TouchableOpacity, Image } from 'react-native'
-// import { Image } from 'react-native-ui-lib'
+import React, { useState } from 'react'
+import { View, Text, Pressable, ListRenderItem, Platform, Image } from 'react-native'
 import { NotificationInfo, Order } from '../../constants/Types/OrderTypes'
 
 import { useNavigation } from '@react-navigation/native';
 import store from '../store/store';
 import { observer } from 'mobx-react';
 import { sensitiveData } from '../../constants/sen_data';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { callReminder, removeNotificationIdLocally } from '../helpers/notificationHelpers';
-import PushNotification from 'react-native-push-notification';
 
 const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
     console.log(item)
     const navigation = useNavigation()
-    const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
+    // const [hasBeenDelivered, setHasBeenDelivered] = useState(false)
 
     const formattedPrice = new Intl.NumberFormat('en-IN', {
         style: 'currency',
         currency: 'INR'
     }).format(parseInt(item.productPrice))
 
-    const checkFkAndMyntraDeliveryStatus = async (pName: string, from: string) => {
-        const statusResponse = await fetch(`${sensitiveData.baseUrl}/check${from}DeliveryStatus`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ tokens: store.googleCredentials, productName: pName })
-        })
-        const delStat = await statusResponse.json()
-        console.log(delStat.deliveryStatus)
-        setHasBeenDelivered(delStat.deliveryStatus)
-    }
+    // const checkFkAndMyntraDeliveryStatus = async (pName: string, from: string) => {
+    //     const statusResponse = await fetch(`${sensitiveData.baseUrl}/check${from}DeliveryStatus`, {
+    //         method: "POST",
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({ tokens: store.googleCredentials, productName: pName })
+    //     })
+    //     const delStat = await statusResponse.json()
+    //     console.log(delStat.deliveryStatus)
+    //     // setHasBeenDelivered(delStat.deliveryStatus)
+    // }
 
     // useEffect(() => {
     //     const capitalize = (s: string): string => s && s[0].toUpperCase() + s.slice(1)
@@ -55,14 +53,14 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                 alignItems: 'center',
 
                 //ios
-                shadowRadius: 10,
-                shadowColor: "#202020ed",
-                shadowOpacity: 0.2,
-                shadowOffset: {
-                    height: 10,
-                    width: 10
-                },
-                elevation: 1
+                // shadowRadius: 10,
+                // shadowColor: "#202020ed",
+                // shadowOpacity: 0.2,
+                // shadowOffset: {
+                //     height: 10,
+                //     width: 10
+                // },
+                // elevation: 1
             }}
             onPress={() => navigation.navigate('OrderDetailsScreen', {
                 item: item
@@ -149,7 +147,6 @@ const OrderItem: ListRenderItem<Order> = observer(({ item, index }) => {
                     </Pressable>
                 </View>
             </View>
-
         </Pressable>
     )
 })
